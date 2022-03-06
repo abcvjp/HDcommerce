@@ -1,0 +1,56 @@
+version: "3.9"
+services:
+  product-service:
+    depends_on:
+      - product-db
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - ./product-service:/workdir
+      - /workdir/node_modules
+    networks:
+      - backend
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DB_TYPE: 'mysql'
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: hoaideptrai
+      DB_PWD: 123456
+      DB_NAME: abcshop
+  product-db:
+    image: mysql:8.0.26
+    expose:
+      - 3306
+    volumes:
+      - product-db-data:/var/lib/mysql
+    networks:
+      - backend
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=webshop_db
+      - MYSQL_USER=hoaideptrai
+      - MYSQL_PASSWORD=123456
+    cap_add:
+      - CAP_SYS_NICE
+  phpmyadmin:
+    depends_on:
+      - product-db
+    image: phpmyadmin/phpmyadmin
+    networks:
+      - backend
+    expose:
+      - 80
+    environment:
+      - PMA_HOST=product-db
+      - PMA_PORT=3306
+      - PMA_ARBITRARY=1
+volumes:
+  product-db-data:
+networks:
+  backend:
+    driver: bridge
