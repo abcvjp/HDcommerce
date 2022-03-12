@@ -3,4 +3,5 @@ ENV NODE_ENV=development
 WORKDIR /workdir
 COPY . ./
 RUN yarn install
+RUN yarn build
 CMD ["yarn", "start:dev"]

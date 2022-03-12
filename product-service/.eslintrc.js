@@ -1,10 +1,25 @@
 module.exports = {
-  extends: 'imbudhiraja',
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    project: 'tsconfig.json',
+    sourceType: 'module',
+    tsconfigRootDir: __dirname,
+  },
+  plugins: ['@typescript-eslint/eslint-plugin'],
+  extends: [
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended',
+  ],
+  root: true,
+  env: {
+    node: true,
+    jest: true,
+  },
+  ignorePatterns: ['.eslintrc.js'],
   rules: {
-    'filenames/match-exported': [2, 'kebab'],
-    'linebreak-style': 'off',
-    'max-lines': ["error", {"max": 1000, "skipComments": true, "skipBlankLines": true }],
-    'no-console': 'off',
-    'no-underscore-dangle': 'off'
+    '@typescript-eslint/interface-name-prefix': 'off',
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
   },
 };
