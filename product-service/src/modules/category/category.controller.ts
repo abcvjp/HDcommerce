@@ -30,7 +30,10 @@ export class CategoryController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateCategoryDto: CreateCategoryDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateCategoryDto: CreateCategoryDto,
+  ) {
     return this.categoryService.update(id, updateCategoryDto);
   }
 

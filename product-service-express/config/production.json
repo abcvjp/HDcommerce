@@ -1,0 +1,48 @@
+{
+  "env": "development",
+  "serviceName": "Product Service",
+  "port": "3000",
+  "db": {
+    "host": "product-db",
+    "name": "product-db",
+    "username": "hoaideptrai",
+    "password": "123456",
+    "pool": {
+      "max": 10,
+      "min": 0,
+      "acquire": 30000,
+      "idle": 10000
+    }
+  },
+  "sequelize": {
+    "username": "hoaideptrai",
+    "password": "123456",
+    "database": "product-db",
+    "host": "product-db",
+    "dialect": "mysql",
+    "dialectOptions": {
+      "decimalNumbers": true
+    }
+  },
+  "redis": {
+    "host": "redis",
+    "port": 6379,
+    "password": "123456"
+  },
+  "cors": {
+    "credentials": true
+  },
+  "log": {
+	  "enableLogFiles": true
+  },
+  "jwt": {
+    "secret": "Ysg$fG&DG",
+    "secret_options": {
+      "expiresIn": "1d"
+    },
+    "refresh_secret": "123asdfasd",
+    "refresh_secret_options": {
+      "expiresIn": "7d"
+    }
+  }
+}

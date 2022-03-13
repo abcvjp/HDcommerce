@@ -4,19 +4,19 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { InjectModel } from "@nestjs/mongoose";
-import { IProduct } from "./interfaces/product.interface";
+import { InjectModel } from '@nestjs/mongoose';
+import { IProduct } from './interfaces/product.interface';
 import { Product } from './schemas/product.schema';
 import { CreateProductDto } from './dto/create-product.dto';
 import * as slug from 'slug';
 
 @Injectable()
 export class ProductService {
-	constructor(
-		@InjectModel(Product.name) private readonly productModel: Model<Product>
-	) {}
+  constructor(
+    @InjectModel(Product.name) private readonly productModel: Model<Product>,
+  ) {}
 
-	async findOne(id: string): Promise<IProduct> {
+  async findOne(id: string): Promise<IProduct> {
     const foundProduct = await this.productModel.findById(id).exec();
     if (!foundProduct) {
       throw new NotFoundException('Product not found');
@@ -33,7 +33,7 @@ export class ProductService {
     // check uniqueness of name
     const productByName = await this.productModel
       .findOne({
-				"name": productName
+        name: productName,
       })
       .exec();
     if (productByName) {
@@ -41,9 +41,9 @@ export class ProductService {
     }
 
     const createdProduct = await this.productModel.create({
-			...dto,
-			slug: slug(productName)
-		});
+      ...dto,
+      slug: slug(productName),
+    });
 
     return createdProduct;
   }

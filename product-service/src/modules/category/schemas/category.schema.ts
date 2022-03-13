@@ -6,7 +6,7 @@ export class Category extends Document {
   @Prop({
     type: String,
     required: true,
-    unique: true
+    unique: true,
   })
   name: string;
 
@@ -19,7 +19,7 @@ export class Category extends Document {
 
   @Prop({
     type: String,
-    required: true
+    required: true,
   })
   description: string;
 
@@ -32,24 +32,24 @@ export class Category extends Document {
   @Prop({
     type: String,
     required: true,
-    unique: true
+    unique: true,
   })
   slug: string;
 
   @Prop({
-    type: String
+    type: String,
   })
   thumbnail: string;
 
   @Prop({
     type: String,
-    required: true
+    required: true,
   })
   metaTitle: string;
 
   @Prop({
     type: String,
-    required: true
+    required: true,
   })
   metaDescription: string;
 
@@ -61,7 +61,7 @@ export class Category extends Document {
   @Prop({
     type: SchemaTypes.ObjectId,
     ref: Category.name,
-    required: false
+    required: false,
   })
   parentId: string;
 }

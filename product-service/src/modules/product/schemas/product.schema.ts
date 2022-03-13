@@ -30,71 +30,71 @@ export class Product extends Document {
   })
   isPublic: boolean;
 
-	@Prop({
-		type: Number,
-		required: true
-	})
-	price: number;
+  @Prop({
+    type: Number,
+    required: true,
+  })
+  price: number;
 
-	@Prop({
-		type: Number,
-		required: true
-	})
-	originalPrice: number;
+  @Prop({
+    type: Number,
+    required: true,
+  })
+  originalPrice: number;
 
-	@Prop({
-		type: Number,
-		required: true
-	})
-	stockQuantity: number;
+  @Prop({
+    type: Number,
+    required: true,
+  })
+  stockQuantity: number;
 
-	@Prop({
-		type: Number,
-		required: true,
-		default: 0
-	})
-	soldQuantity: number;
+  @Prop({
+    type: Number,
+    required: true,
+    default: 0,
+  })
+  soldQuantity: number;
 
   @Prop({
     type: String,
-    required: true
+    required: true,
   })
   description: string;
 
   @Prop({
     type: String,
-    required: true
+    required: true,
   })
   shortDescription: string;
 
   @Prop({
     type: String,
     required: true,
-    unique: true
+    unique: true,
   })
   slug: string;
 
   @Prop({
-    type: String
+    type: String,
   })
   thumbnail: string;
 
   @Prop({
-		type: [String],
-		required: true,
-		default: []
-	})
+    type: [String],
+    required: true,
+    default: [],
+  })
   images: string[];
 
   @Prop({
     type: String,
-    required: true
+    required: true,
   })
   metaTitle: string;
 
   @Prop({
     type: String,
-    required: true
+    required: true,
   })
   metaDescription: string;
 
@@ -103,11 +103,11 @@ export class Product extends Document {
   })
   metaKeywords: string;
 
-	@Prop({
-		type: SchemaTypes.ObjectId,
-		ref: Category.name
-	})
-	categoryId: string;
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    ref: Category.name,
+  })
+  categoryId: string;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

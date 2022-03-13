@@ -4,19 +4,19 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { InjectModel } from "@nestjs/mongoose";
-import { ICategory } from "./interfaces/category.interface";
-import { Category } from "./schemas/category.schema";
+import { InjectModel } from '@nestjs/mongoose';
+import { ICategory } from './interfaces/category.interface';
+import { Category } from './schemas/category.schema';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import * as slug from 'slug';
 
 @Injectable()
 export class CategoryService {
-	constructor(
-		@InjectModel(Category.name) private readonly categoryModel: Model<Category>
-	) {}
+  constructor(
+    @InjectModel(Category.name) private readonly categoryModel: Model<Category>,
+  ) {}
 
-	async findOne(id: string): Promise<ICategory> {
+  async findOne(id: string): Promise<ICategory> {
     const foundCategory = await this.categoryModel.findById(id).exec();
     if (!foundCategory) {
       throw new NotFoundException('Category not found');
@@ -33,7 +33,7 @@ export class CategoryService {
     // check uniqueness of name
     const categoryByName = await this.categoryModel
       .findOne({
-				"name": categoryName
+        name: categoryName,
       })
       .exec();
     if (categoryByName) {
@@ -41,10 +41,10 @@ export class CategoryService {
     }
 
     const createdCategory = await this.categoryModel.create({
-			...dto,
-			path: categoryName,
-			slug: slug(categoryName)
-		});
+      ...dto,
+      path: categoryName,
+      slug: slug(categoryName),
+    });
 
     return createdCategory;
   }
