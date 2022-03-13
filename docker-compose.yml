@@ -11,8 +11,6 @@ services:
     volumes:
       - ./product-service:/workdir
       - /workdir/node_modules
-    networks:
-      - backend
     environment:
       NODE_ENV: development
       PORT: 3000
@@ -22,6 +20,24 @@ services:
       DB_USER: hoaideptrai
       DB_PASS: 123Gjmptw
       DB_NAME: abcshop-product
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    ports:
+      - 3001:3001
+    volumes:
+      - ./order-service:/workdir
+      - /workdir/node_modules
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DB_TYPE: 'mongo'
+      DB_HOST: cluster0.uh8yi.mongodb.net
+      DB_PORT: 27017
+      DB_USER: hoaideptrai
+      DB_PASS: 123Gjmptw
+      DB_NAME: abcshop-order
   # product-db:
     # image: mysql:8.0.26
     # expose:
@@ -51,6 +67,3 @@ services:
       # - PMA_ARBITRARY=1
 # volumes:
   # product-db-data:
-networks:
-  backend:
-    driver: bridge
