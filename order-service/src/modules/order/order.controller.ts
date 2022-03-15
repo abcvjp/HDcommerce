@@ -3,16 +3,21 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   Param,
   Post,
   Put,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Controller('order')
 export class OrderController {
-  constructor(private orderService: OrderService) {}
+  constructor(
+    private orderService: OrderService,
+    @Inject('PRODUCT_SERVICE') private productClient: ClientProxy,
+  ) {}
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -21,7 +26,8 @@ export class OrderController {
 
   @Get()
   findAll() {
-    return this.orderService.findAll();
+    return this.productClient.send('get_products', {});
+    // return this.orderService.findAll();
   }
 
   @Post()
@@ -37,5 +43,10 @@ export class OrderController {
   @Delete(':id')
   deleteOne(@Param('id') id: string) {
     return this.orderService.deleteOne(id);
+  }
+
+  @Get('test-service')
+  testService() {
+    return this.productClient.send('get_products', null);
   }
 }

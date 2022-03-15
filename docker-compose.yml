@@ -1,15 +1,17 @@
 version: "3.9"
 services:
-  product-service:
+  catalog-service:
     # depends_on:
       # - product-db
     build:
-      context: ./product-service
+      context: ./catalog-service
       dockerfile: Dockerfile
     ports:
       - 3000:3000
+    expose:
+      - 3001
     volumes:
-      - ./product-service:/workdir
+      - ./catalog-service:/workdir
       - /workdir/node_modules
     environment:
       NODE_ENV: development
@@ -19,7 +21,7 @@ services:
       DB_PORT: 27017
       DB_USER: hoaideptrai
       DB_PASS: 123Gjmptw
-      DB_NAME: abcshop-product
+      DB_NAME: abcshop-catalog
   order-service:
     build:
       context: ./order-service
@@ -31,7 +33,7 @@ services:
       - /workdir/node_modules
     environment:
       NODE_ENV: development
-      PORT: 3000
+      PORT: 3001
       DB_TYPE: 'mongo'
       DB_HOST: cluster0.uh8yi.mongodb.net
       DB_PORT: 27017

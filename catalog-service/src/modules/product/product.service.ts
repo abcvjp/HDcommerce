@@ -3,12 +3,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Model } from 'mongoose';
+import { Model, FilterQuery } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { IProduct } from './interfaces/product.interface';
 import { Product } from './schemas/product.schema';
 import { CreateProductDto } from './dto/create-product.dto';
 import * as slug from 'slug';
+import { FindAllProductDto } from './dto/find-all-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -24,8 +25,21 @@ export class ProductService {
     return foundProduct;
   }
 
-  async findAll(): Promise<IProduct[]> {
-    return await this.productModel.find().exec();
+  async findAll(query: FindAllProductDto): Promise<IProduct[]> {
+    const { startId, skip, limit, sort } = query;
+
+    const filters: FilterQuery<Product> = startId
+      ? {
+          _id: { $gt: startId },
+        }
+      : {};
+
+    const dbQuery = this.productModel
+      .find(filters)
+      .sort(sort ? sort : { _id: 1 })
+      .skip(skip)
+      .limit(limit);
+    return await dbQuery.exec();
   }
 
   async create(dto: CreateProductDto): Promise<IProduct> {

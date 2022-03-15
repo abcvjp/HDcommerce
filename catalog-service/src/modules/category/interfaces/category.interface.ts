@@ -8,5 +8,5 @@ export interface ICategory {
   metaTitle: string;
   metaDescription: string;
   metaKeywords?: string;
-  parentId?: string;
+  parentId?: string | null;
 }

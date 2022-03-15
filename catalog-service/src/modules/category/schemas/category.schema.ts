@@ -59,11 +59,16 @@ export class Category extends Document {
   metaKeywords: string;
 
   @Prop({
-    type: SchemaTypes.ObjectId,
+    type: [SchemaTypes.ObjectId],
     ref: Category.name,
     required: false,
+    default: [],
   })
-  parentId: string;
+  children: Category[];
 }
 
-export const CategorySchema = SchemaFactory.createForClass(Category);
+const CategorySchema = SchemaFactory.createForClass(Category);
+
+CategorySchema.index({ children: 1 });
+
+export { CategorySchema };

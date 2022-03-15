@@ -110,4 +110,8 @@ export class Product extends Document {
   categoryId: string;
 }
 
-export const ProductSchema = SchemaFactory.createForClass(Product);
+const ProductSchema = SchemaFactory.createForClass(Product);
+
+ProductSchema.index({ name: 'text' });
+
+export { ProductSchema };
