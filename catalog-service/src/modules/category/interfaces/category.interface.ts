@@ -2,7 +2,7 @@ export interface ICategory {
   name: string;
   isPublic: boolean;
   description: string;
-  path: string;
+  path: string[];
   slug: string;
   thumbnail: string;
   metaTitle: string;

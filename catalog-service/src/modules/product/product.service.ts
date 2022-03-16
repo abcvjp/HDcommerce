@@ -26,13 +26,14 @@ export class ProductService {
   }
 
   async findAll(query: FindAllProductDto): Promise<IProduct[]> {
-    const { startId, skip, limit, sort } = query;
+    const { startId, skip, limit, sort, categoryId } = query;
 
     const filters: FilterQuery<Product> = startId
       ? {
           _id: { $gt: startId },
         }
       : {};
+    categoryId && (filters.categoryId = categoryId);
 
     const dbQuery = this.productModel
       .find(filters)

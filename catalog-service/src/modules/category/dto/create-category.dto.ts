@@ -8,7 +8,7 @@ export class CreateCategoryDto {
   readonly isPublic: boolean;
 
   @IsNotEmpty()
-  readonly description: boolean;
+  readonly description: string;
 
   @IsNotEmpty()
   readonly thumbnail: string;

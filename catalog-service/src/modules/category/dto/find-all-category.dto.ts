@@ -8,4 +8,7 @@ export class FindAllCategoryDto extends FindAllDto {
 
   @IsOptional()
   readonly slug: string;
+
+  @IsOptional()
+  readonly includeChildren: boolean;
 }

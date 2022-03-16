@@ -7,7 +7,9 @@ import {
   Post,
   Put,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
+import { SanitizeMongooseModelInterceptor } from 'nestjs-mongoose-exclude';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { FindAllCategoryDto } from './dto/find-all-category.dto';
@@ -15,6 +17,12 @@ import { FindOneCategoryDto } from './dto/find-one-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Controller('category')
+@UseInterceptors(
+  new SanitizeMongooseModelInterceptor({
+    excludeMongooseId: false,
+    excludeMongooseV: true,
+  }),
+)
 export class CategoryController {
   constructor(private categoryService: CategoryService) {}
 

@@ -1,7 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, SchemaTypes } from 'mongoose';
 
-@Schema()
+@Schema({
+  versionKey: false,
+  timestamps: true,
+})
 export class Category extends Document {
   @Prop({
     type: String,
@@ -24,10 +27,10 @@ export class Category extends Document {
   description: string;
 
   @Prop({
-    type: String,
+    type: [String],
     required: true,
   })
-  path: string;
+  path: string[];
 
   @Prop({
     type: String,

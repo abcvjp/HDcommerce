@@ -25,6 +25,8 @@ export class CategoryService {
     const dbQuery = this.categoryModel.findById(id);
     if (query.includeChildren) {
       dbQuery.populate('children');
+    } else {
+      dbQuery.select('-children');
     }
     const foundCategory = await dbQuery.exec();
     if (!foundCategory) {
@@ -34,7 +36,7 @@ export class CategoryService {
   }
 
   async findAll(query: FindAllCategoryDto): Promise<ICategory[]> {
-    const { startId, skip, limit, sort, slug, parentId } = query;
+    const { startId, skip, limit, sort, slug, includeChildren } = query;
 
     const filters: FilterQuery<Category> = startId
       ? {
@@ -42,13 +44,19 @@ export class CategoryService {
         }
       : {};
     slug && (filters.slug = slug);
-    parentId && (filters.parentId = parentId);
 
     const dbQuery = this.categoryModel
       .find(filters)
       .sort(sort ? sort : { _id: 1 })
       .skip(skip)
       .limit(limit);
+
+    if (includeChildren) {
+      dbQuery.populate('children');
+    } else {
+      dbQuery.select('-children');
+    }
+
     return await dbQuery.exec();
   }
 
@@ -68,7 +76,7 @@ export class CategoryService {
     const slug = slugify(name);
 
     if (!parentId) {
-      return await this.categoryModel.create({ ...dto, path: name, slug });
+      return await this.categoryModel.create({ ...dto, path: [name], slug });
     } else {
       const parentCategory = await this.categoryModel.findById(parentId).exec();
       if (!parentCategory) {
@@ -78,13 +86,16 @@ export class CategoryService {
       const session = await this.dbConnection.startSession();
       session.startTransaction();
       try {
+        // create the category
         createdCategory = await this.categoryModel.create({
           ...dto,
-          path: parentCategory.path + name,
+          path: parentCategory.path.concat(name),
           slug,
         });
+        // add reference to its parent
         parentCategory.children.push(createdCategory._id);
         await parentCategory.save();
+
         await session.commitTransaction();
       } catch (error) {
         await session.abortTransaction();
@@ -97,13 +108,44 @@ export class CategoryService {
   }
 
   async update(id: string, dto: UpdateCategoryDto): Promise<ICategory> {
-    const existingCategory = this.categoryModel.findByIdAndUpdate(id, dto, {
-      new: true,
-    });
+    const newName = dto.name;
+    const existingCategory = await this.categoryModel.findById(id);
     if (!existingCategory) {
       throw new NotFoundException('Category not found');
     }
-    return existingCategory;
+
+    const oldName = existingCategory.name;
+    Object.assign(existingCategory, dto);
+
+    if (newName === oldName) {
+      await existingCategory.save();
+    } else {
+      existingCategory.slug = slugify(newName);
+      const session = await this.dbConnection.startSession();
+      session.startTransaction();
+      try {
+        await existingCategory.save();
+        const relatedCategories = await this.categoryModel.find({
+          path: oldName,
+        });
+        await Promise.all(
+          relatedCategories.map((category) => {
+            category.path = category.path.map((i) =>
+              i === oldName ? newName : i,
+            );
+            return category.save();
+          }),
+        );
+        await session.commitTransaction();
+      } catch (error) {
+        await session.abortTransaction();
+        throw error;
+      } finally {
+        session.endSession();
+      }
+    }
+
+    return await this.categoryModel.findById(id);
   }
 
   async deleteOne(id: string): Promise<boolean> {
@@ -115,13 +157,21 @@ export class CategoryService {
     const session = await this.dbConnection.startSession();
     session.startTransaction();
     try {
-      await this.categoryModel.updateOne(
-        { children: id },
-        {
-          $pull: { children: id },
-        },
-      );
-      await foundCategory.delete();
+      // remove reference from its parent
+      // await this.categoryModel.updateOne(
+      // { children: id },
+      // {
+      // $pull: { children: id },
+      // },
+      // );
+      // delete the category
+      // await foundCategory.delete();
+      // delete the subcategories
+      const subcategories = await foundCategory.populate({
+        path: 'children',
+        populate: { path: 'children' },
+      });
+      console.log(subcategories);
       await session.commitTransaction();
     } catch (error) {
       await session.abortTransaction();

@@ -3809,6 +3809,11 @@ neo-async@^2.6.2:
   resolved "https://registry.npmjs.org/neo-async/-/neo-async-2.6.2.tgz"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
+nestjs-mongoose-exclude@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/nestjs-mongoose-exclude/-/nestjs-mongoose-exclude-1.0.5.tgz#2952b9c77eec5e08bfa931b37199ec289f8fe8e7"
+  integrity sha512-h6ImKwSxepAn8ubGhO5nz/hJzmnkhMqbF6dx+p1XiqzTnLlD2g2a6G7eJKEUc+TjiTU/8ElttDErJymTFS/7KQ==
+
 node-emoji@1.11.0:
   version "1.11.0"
   resolved "https://registry.npmjs.org/node-emoji/-/node-emoji-1.11.0.tgz"

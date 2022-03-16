@@ -7,13 +7,21 @@ import {
   Post,
   Put,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { MessagePattern } from '@nestjs/microservices';
 import { FindAllProductDto } from './dto/find-all-product.dto';
+import { SanitizeMongooseModelInterceptor } from 'nestjs-mongoose-exclude';
 
 @Controller('product')
+@UseInterceptors(
+  new SanitizeMongooseModelInterceptor({
+    excludeMongooseId: false,
+    excludeMongooseV: true,
+  }),
+)
 export class ProductController {
   constructor(private productService: ProductService) {}
 
