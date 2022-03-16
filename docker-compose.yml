@@ -1,71 +1,30 @@
 version: "3.9"
 services:
   catalog-service:
-    # depends_on:
-      # - product-db
     build:
       context: ./catalog-service
       dockerfile: Dockerfile
     ports:
       - 3000:3000
     expose:
-      - 3001
+      - 3000
     volumes:
       - ./catalog-service:/workdir
       - /workdir/node_modules
     environment:
       NODE_ENV: development
       PORT: 3000
-      DB_TYPE: 'mongo'
-      DB_HOST: cluster0.uh8yi.mongodb.net
-      DB_PORT: 27017
-      DB_USER: hoaideptrai
-      DB_PASS: 123Gjmptw
-      DB_NAME: abcshop-catalog
   order-service:
     build:
       context: ./order-service
       dockerfile: Dockerfile
     ports:
       - 3001:3001
+    expose:
+      - 3001
     volumes:
       - ./order-service:/workdir
       - /workdir/node_modules
     environment:
       NODE_ENV: development
       PORT: 3001
-      DB_TYPE: 'mongo'
-      DB_HOST: cluster0.uh8yi.mongodb.net
-      DB_PORT: 27017
-      DB_USER: hoaideptrai
-      DB_PASS: 123Gjmptw
-      DB_NAME: abcshop-order
-  # product-db:
-    # image: mysql:8.0.26
-    # expose:
-      # - 3306
-    # volumes:
-      # - product-db-data:/var/lib/mysql
-    # networks:
-      # - backend
-    # environment:
-      # - MYSQL_ROOT_PASSWORD=123456
-      # - MYSQL_DATABASE=webshop_db
-      # - MYSQL_USER=hoaideptrai
-      # - MYSQL_PASSWORD=123456
-    # cap_add:
-      # - CAP_SYS_NICE
-  # phpmyadmin:
-    # depends_on:
-      # - product-db
-    # image: phpmyadmin/phpmyadmin
-    # networks:
-      # - backend
-    # expose:
-      # - 80
-    # environment:
-      # - PMA_HOST=product-db
-      # - PMA_PORT=3306
-      # - PMA_ARBITRARY=1
-# volumes:
-  # product-db-data:
