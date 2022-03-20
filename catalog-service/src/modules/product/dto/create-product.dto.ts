@@ -23,13 +23,10 @@ export class CreateProductDto {
   readonly stockQuantity: number;
 
   @IsNotEmpty()
-  readonly soldQuantity: number;
+  readonly description: string;
 
   @IsNotEmpty()
-  readonly description: boolean;
-
-  @IsNotEmpty()
-  readonly shortDescription: boolean;
+  readonly shortDescription: string;
 
   @IsNotEmpty()
   readonly thumbnail: string;
@@ -45,4 +42,7 @@ export class CreateProductDto {
 
   @IsOptional()
   readonly metaKeywords: string;
+
+  @IsNotEmpty()
+  readonly categoryId: string;
 }

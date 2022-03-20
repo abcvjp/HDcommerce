@@ -1,4 +1,5 @@
 export interface IProduct {
+  _id?: string;
   name: string;
   title: string;
   isEnabled: boolean;
@@ -15,4 +16,5 @@ export interface IProduct {
   metaTitle: string;
   metaDescription: string;
   metaKeywords?: string;
+  categoryId: string;
 }

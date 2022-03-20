@@ -3,13 +3,19 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Model, FilterQuery } from 'mongoose';
+import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { IProduct } from './interfaces/product.interface';
 import { Product } from './schemas/product.schema';
 import { CreateProductDto } from './dto/create-product.dto';
 import * as slug from 'slug';
 import { FindAllProductDto } from './dto/find-all-product.dto';
+import mongoose from 'mongoose';
+import {
+  DEFAULT_DBQUERY_LIMIT,
+  DEFAULT_DBQUERY_SKIP,
+  DEFAULT_DBQUERY_SORT,
+} from 'src/common/constants';
 
 @Injectable()
 export class ProductService {
@@ -26,20 +32,48 @@ export class ProductService {
   }
 
   async findAll(query: FindAllProductDto): Promise<IProduct[]> {
-    const { startId, skip, limit, sort, categoryId } = query;
+    const {
+      startId,
+      skip,
+      limit,
+      sort,
+      categoryId,
+      price,
+      name,
+      isEnabled,
+      isPublic,
+      originalPrice,
+      stockQuantity,
+      soldQuantity,
+    } = query;
 
-    const filters: FilterQuery<Product> = startId
-      ? {
-          _id: { $gt: startId },
-        }
-      : {};
-    categoryId && (filters.categoryId = categoryId);
+    const filters = [];
+    startId && filters.push({ _id: { $gt: startId } });
+    categoryId &&
+      filters.push({ categoryId: new mongoose.Types.ObjectId(categoryId) });
+    name && filters.push({ name });
+    isEnabled && filters.push({ isEnabled });
+    isPublic && filters.push({ isPublic });
+    price && filters.push({ price: price.toMongooseFormat() });
+    originalPrice &&
+      filters.push({ originalPrice: originalPrice.toMongooseFormat() });
+    stockQuantity &&
+      filters.push({ stockQuantity: stockQuantity.toMongooseFormat() });
+    soldQuantity &&
+      filters.push({ soldQuantity: soldQuantity.toMongooseFormat() });
 
     const dbQuery = this.productModel
-      .find(filters)
-      .sort(sort ? sort : { _id: 1 })
-      .skip(skip)
-      .limit(limit);
+      .aggregate()
+      .match(filters.length === 0 ? {} : { $and: filters })
+      .skip(skip ? skip : DEFAULT_DBQUERY_SKIP)
+      .limit(limit ? limit : DEFAULT_DBQUERY_LIMIT)
+      .append({
+        $set: {
+          _id: { $toString: '$_id' },
+          categoryId: { $toString: '$categoryId' },
+        },
+      })
+      .append({ $sort: sort ? sort : DEFAULT_DBQUERY_SORT });
     return await dbQuery.exec();
   }
 
