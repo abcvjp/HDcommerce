@@ -14,6 +14,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { MessagePattern } from '@nestjs/microservices';
 import { FindAllProductDto } from './dto/find-all-product.dto';
 import { SanitizeMongooseModelInterceptor } from 'nestjs-mongoose-exclude';
+import { IProduct } from './interfaces/product.interface';
 
 @Controller('product')
 @UseInterceptors(
@@ -51,7 +52,7 @@ export class ProductController {
   }
 
   @MessagePattern('get_products')
-  async getProducts() {
-    return 'hoai dep trai vai lon';
+  async getProducts(data): Promise<IProduct> {
+    return await this.productService.findOne('6231ae7f8f0ca8cbca9771be');
   }
 }

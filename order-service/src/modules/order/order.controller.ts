@@ -11,23 +11,38 @@ import {
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 
 @Controller('order')
 export class OrderController {
   constructor(
     private orderService: OrderService,
-    @Inject('PRODUCT_SERVICE') private productClient: ClientProxy,
+    @Inject('CATALOG_SERVICE') private catalogClient: ClientProxy,
   ) {}
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOne(id);
+  @Get('test-service')
+  async testService() {
+    let result;
+    try {
+      result = await firstValueFrom(
+        this.catalogClient.send('get_products', {}),
+      );
+    } catch (err) {
+      console.log('loi roi');
+      console.log(err);
+    }
+    console.log(result);
+    return result;
   }
 
   @Get()
   findAll() {
-    return this.productClient.send('get_products', {});
-    // return this.orderService.findAll();
+    return this.orderService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.orderService.findOne(id);
   }
 
   @Post()
@@ -43,10 +58,5 @@ export class OrderController {
   @Delete(':id')
   deleteOne(@Param('id') id: string) {
     return this.orderService.deleteOne(id);
-  }
-
-  @Get('test-service')
-  testService() {
-    return this.productClient.send('get_products', null);
   }
 }

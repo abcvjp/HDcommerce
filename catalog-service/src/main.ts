@@ -3,8 +3,6 @@ import { AppModule } from './app.module';
 
 import { ConfigService } from '@nestjs/config';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
@@ -35,8 +33,6 @@ async function bootstrap() {
         config.get('app.environment') === 'development' ? true : false,
     }),
   );
-  app.useGlobalInterceptors(new TransformInterceptor());
-  app.useGlobalFilters(new HttpExceptionFilter());
 
   const environment = config.get('app.environment');
   await app.startAllMicroservices();

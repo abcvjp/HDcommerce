@@ -10,10 +10,10 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
     ClientsModule.register([
       {
-        name: 'PRODUCT_SERVICE',
+        name: 'CATALOG_SERVICE',
         transport: Transport.TCP,
         options: {
-          host: 'product-service',
+          host: 'catalog-service',
           port: 3001,
         },
       },
