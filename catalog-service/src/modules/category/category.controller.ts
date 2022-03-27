@@ -10,6 +10,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { SanitizeMongooseModelInterceptor } from 'nestjs-mongoose-exclude';
+import { MongoIdPipe } from 'src/common/pipes/mongo-id.pipe';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { FindAllCategoryDto } from './dto/find-all-category.dto';
@@ -27,7 +28,10 @@ export class CategoryController {
   constructor(private categoryService: CategoryService) {}
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Query() query: FindOneCategoryDto) {
+  findOne(
+    @Param('id', MongoIdPipe) id: string,
+    @Query() query: FindOneCategoryDto,
+  ) {
     return this.categoryService.findOne(id, query);
   }
 

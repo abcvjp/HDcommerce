@@ -1,10 +1,12 @@
 import {
   ConflictException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { IProduct } from './interfaces/product.interface';
 import { Product } from './schemas/product.schema';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -16,11 +18,16 @@ import {
   DEFAULT_DBQUERY_SKIP,
   DEFAULT_DBQUERY_SORT,
 } from 'src/common/constants';
+import { CategoryService } from '../category/category.service';
+import { Category } from '../category/schemas/category.schema';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectModel(Product.name) private readonly productModel: Model<Product>,
+    @InjectConnection() private readonly dbConnection: mongoose.Connection,
+    @Inject(forwardRef(() => CategoryService))
+    private readonly categoryService: CategoryService,
   ) {}
 
   async findOne(id: string): Promise<IProduct> {
@@ -107,11 +114,41 @@ export class ProductService {
     return existingProduct;
   }
 
-  async deleteOne(id: string): Promise<boolean> {
+  async deleteOne(id: string): Promise<void> {
     const foundProduct = await this.productModel.findById(id);
     if (!foundProduct) {
       throw new NotFoundException('Product not found');
     }
-    return (await foundProduct.delete()) && true;
+    await foundProduct.delete();
+  }
+
+  async deleteMany(ids: string[]): Promise<void> {
+    const foundProducts = await this.productModel.find({
+      _id: { $in: ids },
+    });
+    if (foundProducts.length !== ids.length) {
+      throw new NotFoundException('One or several products do not exist');
+    }
+
+    const session = await this.dbConnection.startSession();
+    session.startTransaction();
+    try {
+      await Promise.all(
+        foundProducts.map((product) => product.delete({ session })),
+      );
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
+
+  async deleteByCategory(category: Category, session?: any): Promise<void> {
+    await this.productModel.deleteMany(
+      { categoryId: category.id },
+      { session },
+    );
   }
 }
