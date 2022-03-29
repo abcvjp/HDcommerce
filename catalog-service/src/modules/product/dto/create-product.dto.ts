@@ -43,6 +43,9 @@ export class CreateProductDto {
   @IsOptional()
   readonly metaKeywords: string;
 
+  @IsOptional()
+  readonly tags: string[];
+
   @IsNotEmpty()
   readonly categoryId: string;
 }

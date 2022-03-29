@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, Transport } from '@nestjs/microservices';
 import { FindAllProductDto } from './dto/find-all-product.dto';
 import { SanitizeMongooseModelInterceptor } from 'nestjs-mongoose-exclude';
 import { IProduct } from './interfaces/product.interface';
@@ -51,8 +51,13 @@ export class ProductController {
     return this.productService.deleteOne(id);
   }
 
-  @MessagePattern('get_products')
-  async getProducts(data): Promise<IProduct> {
-    return await this.productService.findOne('6231ae7f8f0ca8cbca9771be');
+  @MessagePattern('get_product', Transport.TCP)
+  async getProduct(id: string): Promise<IProduct> {
+    return await this.productService.findOne(id);
+  }
+
+  @MessagePattern('get_products', Transport.TCP)
+  async getProducts(ids: string[]): Promise<IProduct[]> {
+    return await this.productService.findByIds(ids);
   }
 }

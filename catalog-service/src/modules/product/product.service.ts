@@ -52,6 +52,7 @@ export class ProductService {
       originalPrice,
       stockQuantity,
       soldQuantity,
+      tags,
     } = query;
 
     const filters = [];
@@ -68,6 +69,7 @@ export class ProductService {
       filters.push({ stockQuantity: stockQuantity.toMongooseFormat() });
     soldQuantity &&
       filters.push({ soldQuantity: soldQuantity.toMongooseFormat() });
+    tags && filters.push({ tags: { $all: tags } });
 
     const dbQuery = this.productModel
       .aggregate()
@@ -84,21 +86,33 @@ export class ProductService {
     return await dbQuery.exec();
   }
 
+  async findByIds(ids: string[]): Promise<Product[]> {
+    const foundProducts = await this.productModel.find({ _id: { $in: ids } });
+    if (foundProducts.length !== ids.length) {
+      throw new NotFoundException('One or several products do not exist');
+    }
+    return foundProducts;
+  }
+
   async create(dto: CreateProductDto): Promise<IProduct> {
-    const productName = dto.name;
+    const { name, categoryId } = dto;
+
     // check uniqueness of name
     const productByName = await this.productModel
       .findOne({
-        name: productName,
+        name,
       })
       .exec();
     if (productByName) {
       throw new ConflictException('Product name is already exist');
     }
 
+    // check if category existed
+    await this.categoryService.findOne(categoryId);
+
     const createdProduct = await this.productModel.create({
       ...dto,
-      slug: slug(productName),
+      slug: slug(name),
     });
 
     return createdProduct;

@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { IsOptional, IsMongoId, IsBoolean } from 'class-validator';
 import { IsNumberFilter } from 'src/common/decorators/is-number-filter.decorator';
 import { FindAllDto } from 'src/common/dto/find-all.dto';
@@ -22,6 +23,10 @@ export class FindAllProductDto extends FindAllDto {
   @IsOptional()
   @IsNumberFilter()
   readonly price: NumberFilter;
+
+  @IsOptional()
+  @Transform(({ value }) => value.split(','))
+  readonly tags: string[];
 
   @IsOptional()
   @IsNumberFilter()

@@ -11,6 +11,7 @@ export class Product extends Document implements IProduct {
   @Prop({
     type: String,
     required: true,
+    index: true,
   })
   name: string;
 
@@ -108,8 +109,15 @@ export class Product extends Document implements IProduct {
   metaKeywords: string;
 
   @Prop({
+    type: [String],
+    index: true,
+  })
+  tags: string[];
+
+  @Prop({
     type: SchemaTypes.ObjectId,
     ref: Category.name,
+    index: true,
   })
   categoryId: string;
 }

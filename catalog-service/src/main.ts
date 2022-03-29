@@ -11,7 +11,8 @@ async function bootstrap() {
   const config = app.get(ConfigService);
   const port = config.get('app.port');
 
-  // TCP microservices
+  // Microservice Transports
+  // TCP Transport
   app.connectMicroservice(
     {
       transport: Transport.TCP,
