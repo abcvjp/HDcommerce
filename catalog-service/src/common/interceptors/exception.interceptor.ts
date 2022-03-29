@@ -15,6 +15,7 @@ export class ExceptionInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       catchError((exception) => {
+        console.log(exception);
         const hostType = context.getType();
         if (hostType === 'http') {
           if (exception instanceof HttpException) {
@@ -31,7 +32,7 @@ export class ExceptionInterceptor implements NestInterceptor {
           } else if (exception instanceof RpcException) {
             throw exception;
           } else {
-            throw new RpcException('Internal server error');
+            throw new RpcException('Catalog service error');
           }
         }
       }),

@@ -15,6 +15,7 @@ import { MessagePattern, Transport } from '@nestjs/microservices';
 import { FindAllProductDto } from './dto/find-all-product.dto';
 import { SanitizeMongooseModelInterceptor } from 'nestjs-mongoose-exclude';
 import { IProduct } from './interfaces/product.interface';
+import { MongoIdPipe } from 'src/common/pipes/mongo-id.pipe';
 
 @Controller('product')
 @UseInterceptors(
@@ -27,7 +28,7 @@ export class ProductController {
   constructor(private productService: ProductService) {}
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', MongoIdPipe) id: string) {
     return this.productService.findOne(id);
   }
 
@@ -42,12 +43,15 @@ export class ProductController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: CreateProductDto) {
+  update(
+    @Param('id', MongoIdPipe) id: string,
+    @Body() updateProductDto: CreateProductDto,
+  ) {
     return this.productService.update(id, updateProductDto);
   }
 
   @Delete(':id')
-  deleteOne(@Param('id') id: string) {
+  deleteOne(@Param('id', MongoIdPipe) id: string) {
     return this.productService.deleteOne(id);
   }
 

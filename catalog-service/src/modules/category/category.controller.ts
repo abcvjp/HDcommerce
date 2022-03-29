@@ -47,14 +47,14 @@ export class CategoryController {
 
   @Put(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', MongoIdPipe) id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
     return this.categoryService.update(id, updateCategoryDto);
   }
 
   @Delete(':id')
-  deleteOne(@Param('id') id: string) {
+  deleteOne(@Param('id', MongoIdPipe) id: string) {
     return this.categoryService.deleteOne(id);
   }
 }

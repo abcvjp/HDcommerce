@@ -1,5 +1,5 @@
-import { Transform } from 'class-transformer';
-import { IsOptional, IsMongoId, IsBoolean } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsOptional, IsMongoId, IsBoolean, IsString } from 'class-validator';
 import { IsNumberFilter } from 'src/common/decorators/is-number-filter.decorator';
 import { FindAllDto } from 'src/common/dto/find-all.dto';
 import { NumberFilter } from 'src/common/dto/number-filter.dto';
@@ -10,6 +10,7 @@ export class FindAllProductDto extends FindAllDto {
   readonly categoryId: string;
 
   @IsOptional()
+  @IsString()
   readonly name: string;
 
   @IsOptional()
@@ -26,6 +27,7 @@ export class FindAllProductDto extends FindAllDto {
 
   @IsOptional()
   @Transform(({ value }) => value.split(','))
+  @Type(() => String)
   readonly tags: string[];
 
   @IsOptional()
