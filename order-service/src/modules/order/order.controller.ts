@@ -25,7 +25,7 @@ export class OrderController {
     let result;
     try {
       result = await firstValueFrom(
-        this.catalogClient.send('get_products', {}),
+        this.catalogClient.send('get_product', '624289acf909f74bc92b3fd7'),
       );
     } catch (err) {
       console.log('loi roi');

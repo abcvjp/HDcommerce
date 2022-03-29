@@ -5,25 +5,26 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
-
-export interface Response<T> {
-  statusCode: number;
-  data: T;
-}
+import { OkResponse } from '../responses';
 
 @Injectable()
-export class TransformInterceptor<T>
-  implements NestInterceptor<T, Response<T>>
+export class ResponseSerializator<T>
+  implements NestInterceptor<T, OkResponse<T> | T>
 {
   intercept(
     context: ExecutionContext,
     next: CallHandler<T>,
-  ): Observable<Response<T>> | Promise<Observable<Response<T>>> {
+  ): Observable<OkResponse<T> | T> | Promise<Observable<OkResponse<T> | T>> {
     return next.handle().pipe(
-      map((data) => ({
-        statusCode: context.switchToHttp().getResponse().statusCode,
-        data,
-      })),
+      map((data) => {
+        const hostType = context.getType();
+        if (hostType === 'http') {
+          const { statusCode } = context.switchToHttp().getResponse();
+          return new OkResponse(data, statusCode);
+        } else {
+          return data;
+        }
+      }),
     );
   }
 }

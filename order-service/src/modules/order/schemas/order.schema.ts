@@ -1,5 +1,6 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, SchemaTypes } from 'mongoose';
+import { IOrder } from '../interfaces/order.interface';
 
 export enum OrderStatus {
   PENDING = 'Pending',
@@ -21,7 +22,7 @@ export enum DeliveryStatus {
 }
 
 @Schema()
-export class Order extends Document {
+export class Order extends Document implements IOrder {
   @Prop({
     type: String,
     required: true,
@@ -32,8 +33,8 @@ export class Order extends Document {
   @Prop({
     type: String,
     required: true,
-    enum: ['Pending', 'Handling', 'Completed', 'Canceled'],
-    default: 'Pending',
+    enum: Object.values(OrderStatus),
+    default: OrderStatus.PENDING,
   })
   status: OrderStatus;
 
@@ -58,16 +59,16 @@ export class Order extends Document {
   @Prop({
     type: String,
     required: true,
-    enum: ['Undelivered', 'Delivering', 'Success', 'Failed'],
-    default: 'Undelivered',
+    enum: Object.values(DeliveryStatus),
+    default: DeliveryStatus.UNDELIVERED,
   })
   deliveryStatus: string;
 
   @Prop({
     type: String,
     required: true,
-    enum: ['Unpaid', 'Paid'],
-    default: 'Unpaid',
+    enum: Object.values(PaymentStatus),
+    default: PaymentStatus.UNPAID,
   })
   paymentStatus: string;
 
