@@ -17,11 +17,12 @@ import { ResponseSerializator } from './common/interceptors/transform.intercepto
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { RPCExceptionFilter } from './common/filters/rpc-exception.filter';
 import { SortQueryParamPipe } from './common/pipes/sort-query-param.pipe';
+import brokerConfig from './config/broker.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [appConfig, dbConfig],
+      load: [appConfig, dbConfig, brokerConfig],
     }),
     DatabaseModule,
     CategoryModule,
