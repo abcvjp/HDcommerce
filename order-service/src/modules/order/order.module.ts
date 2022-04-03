@@ -3,21 +3,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { OrderController } from './order.controller';
 import { Order, OrderSchema } from './schemas/order.schema';
 import { OrderService } from './order.service';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { BrokerModule } from 'src/broker/broker.module';
+import { CatalogModule } from 'src/rpc/catalog/catalog.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
-    ClientsModule.register([
-      {
-        name: 'CATALOG_SERVICE',
-        transport: Transport.TCP,
-        options: {
-          host: 'catalog-service',
-          port: 3001,
-        },
-      },
-    ]),
+    BrokerModule,
+    CatalogModule,
   ],
   providers: [OrderService],
   controllers: [OrderController],
