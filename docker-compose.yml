@@ -2,6 +2,9 @@ version: "3.9"
 services:
   #---------------MAIN SERVICES--------------#
   catalog-service:
+    profiles:
+      - litedev
+      - dev
     build:
       context: ./catalog-service
       dockerfile: Dockerfile
@@ -16,6 +19,9 @@ services:
       NODE_ENV: development
       PORT: 3000
   order-service:
+    profiles:
+      - litedev
+      - dev
     build:
       context: ./order-service
       dockerfile: Dockerfile
@@ -32,12 +38,16 @@ services:
   
   #------------------------ KAFKA --------------------------#
   kafka-zookeeper:
+    profiles:
+      - dev
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     expose:
       - 2181
   kafka:
+    profiles:
+      - dev
     image: confluentinc/cp-kafka:latest
     depends_on: 
       - kafka-zookeeper
@@ -47,14 +57,16 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     expose:
       - 29092
-  # kafka-ui:
-    # image: provectuslabs/kafka-ui
-    # depends_on:
-      # - kafka
-      # - kafka-zookeeper
-    # ports:
-      # - 9000:8080
-    # environment:
-      # # - KAFKA_CLUSTERS_0_NAME=local
-      # KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
-      # KAFKA_CLUSTERS_0_ZOOKEEPER: kafka-zookeeper:2181
+  kafka-ui:
+    profiles:
+      - dev
+    image: provectuslabs/kafka-ui
+    depends_on:
+      - kafka
+      - kafka-zookeeper
+    ports:
+      - 9000:8080
+    environment:
+      # - KAFKA_CLUSTERS_0_NAME=local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: kafka-zookeeper:2181
