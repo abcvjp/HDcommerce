@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { MessagePattern, Transport } from '@nestjs/microservices';
+import { EventPattern, MessagePattern, Transport } from '@nestjs/microservices';
 import { FindAllProductDto } from './dto/find-all-product.dto';
 import { SanitizeMongooseModelInterceptor } from 'nestjs-mongoose-exclude';
 import { IProduct } from './interfaces/product.interface';
@@ -63,5 +63,10 @@ export class ProductController {
   @MessagePattern('get_products', Transport.TCP)
   async getProducts(ids: string[]): Promise<IProduct[]> {
     return await this.productService.findByIds(ids);
+  }
+
+  @EventPattern('test_event', Transport.KAFKA)
+  handleTestEvent(data: any) {
+    console.log(`hoai dep trai da handle ${data.value}`);
   }
 }

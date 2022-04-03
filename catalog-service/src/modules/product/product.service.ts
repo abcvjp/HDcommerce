@@ -87,11 +87,7 @@ export class ProductService {
   }
 
   async findByIds(ids: string[]): Promise<Product[]> {
-    const foundProducts = await this.productModel.find({ _id: { $in: ids } });
-    if (foundProducts.length !== ids.length) {
-      throw new NotFoundException('One or several products do not exist');
-    }
-    return foundProducts;
+    return await this.productModel.find({ _id: { $in: ids } }).lean();
   }
 
   async create(dto: CreateProductDto): Promise<IProduct> {

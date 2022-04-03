@@ -18,6 +18,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { RPCExceptionFilter } from './common/filters/rpc-exception.filter';
 import { SortQueryParamPipe } from './common/pipes/sort-query-param.pipe';
 import brokerConfig from './config/broker.config';
+import { CartModule } from './modules/cart/cart.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import brokerConfig from './config/broker.config';
     DatabaseModule,
     CategoryModule,
     ProductModule,
+    CartModule,
   ],
   controllers: [AppController],
   providers: [
