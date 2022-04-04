@@ -29,3 +29,20 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3001
+  user-service:
+    profiles:
+      - litedev
+      - dev
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    ports:
+      - 3002:3002
+    expose:
+      - 3001
+    volumes:
+      - ./user-service:/workdir
+      - /workdir/node_modules
+    environment:
+      NODE_ENV: development
+      PORT: 3001
