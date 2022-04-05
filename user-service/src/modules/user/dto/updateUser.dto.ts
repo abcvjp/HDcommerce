@@ -1,34 +1,53 @@
-import { IsBoolean, IsDate, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, IsUrl } from "class-validator";
+import { Transform, Type } from 'class-transformer';
+import {
+  IsBoolean,
+  IsDate,
+  IsEmail,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUrl,
+} from 'class-validator';
+import * as moment from 'moment';
+import { Gender, UserRole } from '../schemas/user.schema';
 
 export class UpdateUserDto {
-	@IsOptional()
-	@IsEmail()
-	email: string;
+  @IsOptional()
+  @IsEmail()
+  email: string;
 
-	@IsOptional()
-	role: number;
+  @IsOptional()
+  @IsEnum(UserRole)
+  role: number;
 
-	@IsOptional()
-	@IsBoolean()
-	isEnabled: boolean;
+  @IsOptional()
+  @IsBoolean()
+  isEnabled: boolean;
 
-	@IsOptional()
-	@IsInt()
-	gender: number;
+  @IsOptional()
+  @IsString()
+  fullName: string;
 
-	@IsOptional()
-	@IsDate()
-	birthDay: Date;
+  @IsOptional()
+  @IsEnum(Gender)
+  gender: number;
 
-	@IsOptional()
-	@IsString()
-	phoneNumber: string;
+  @Transform(({ value }) => moment(value, 'DD/MM/YY').toDate())
+  @Type(() => Date)
+  @IsOptional()
+  @IsDate()
+  birthDay: Date;
 
-	@IsOptional()
-	addresses: string[];
+  @IsOptional()
+  @IsString()
+  phoneNumber: string;
 
-	@IsOptional()
-	@IsString()
-	@IsUrl()
-	avatar: string;
+  @IsOptional()
+  addresses: string[];
+
+  @IsOptional()
+  @IsString()
+  @IsUrl()
+  avatar: string;
 }

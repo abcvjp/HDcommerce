@@ -16,6 +16,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { RPCExceptionFilter } from './common/filters/rpc-exception.filter';
 import { SortQueryParamPipe } from './common/pipes/sort-query-param.pipe';
 import brokerConfig from './config/broker.config';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import brokerConfig from './config/broker.config';
       load: [appConfig, dbConfig, brokerConfig],
     }),
     DatabaseModule,
+    UserModule
   ],
   controllers: [AppController],
   providers: [

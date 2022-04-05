@@ -1,30 +1,53 @@
-import { IsDate, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { Transform, Type } from 'class-transformer';
+import {
+  IsDate,
+  IsEmail,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUrl,
+  MinLength,
+} from 'class-validator';
+import * as moment from 'moment';
 
 export class CreateUserDto {
-	@IsNotEmpty()
-	@IsEmail()
-	email: string;
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
 
-	@IsNotEmpty()
-	@IsString()
-	password: string;
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(6)
+  password: string;
 
-	@IsOptional()
-	role: number;
+  @IsOptional()
+  role: number;
 
-	@IsNotEmpty()
-	@IsInt()
-	gender: number;
+  @IsNotEmpty()
+  @IsString()
+  fullName: string;
 
-	@IsNotEmpty()
-	@IsDate()
-	birthDay: Date;
+  @IsNotEmpty()
+  @IsInt()
+  gender: number;
 
-	@IsNotEmpty()
-	@IsString()
-	phoneNumber: string;
+  @Transform(({ value }) => moment(value, 'DD/MM/YY').toDate())
+  @Type(() => Date)
+  @IsNotEmpty()
+  @IsDate()
+  birthDay: Date;
 
-	@IsOptional()
-	@IsString()
-	address: string;
+  @IsNotEmpty()
+  @IsString()
+  phoneNumber: string;
+
+  @IsOptional()
+  @IsString()
+  address: string;
+
+  @IsOptional()
+  @IsString()
+  @IsUrl()
+  avatar: string;
 }

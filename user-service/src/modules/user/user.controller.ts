@@ -1,17 +1,27 @@
-import { Controller, Get, Put, Post, Delete, Param, Body } from "@nestjs/common";
-import { CreateUserDto } from "./dto/createUser.dto";
-import { UpdateUserDto } from "./dto/updateUser.dto";
-import { UserService } from "./user.service";
+import {
+  Controller,
+  Get,
+  Put,
+  Post,
+  Delete,
+  Param,
+  Body,
+  Query,
+} from '@nestjs/common';
+import { MessagePattern, Transport } from '@nestjs/microservices';
+import { CreateUserDto } from './dto/createUser.dto';
+import { FindAllUserDto } from './dto/findAllUser.dto';
+import { UpdateUserDto } from './dto/updateUser.dto';
+import { UpdateUserInfoDto } from './dto/updateUserInfo.dto';
+import { UserService } from './user.service';
 
-@Controller('user')
+@Controller('')
 export class UserController {
-	constructor(
-		private userService: UserService,
-	) {}
+  constructor(private userService: UserService) {}
 
-	@Get()
-  findAll() {
-    return this.userService.findAll();
+  @Get()
+  findAll(@Query() query: FindAllUserDto) {
+    return this.userService.findAll(query);
   }
 
   @Get(':id')
@@ -25,7 +35,7 @@ export class UserController {
   }
 
   @Put(':id/info')
-  updateInfo(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+  updateInfo(@Param('id') id: string, @Body() dto: UpdateUserInfoDto) {
     return this.userService.updateInfo(id, dto);
   }
 
@@ -37,5 +47,10 @@ export class UserController {
   @Delete(':id')
   deleteOne(@Param('id') id: string) {
     return this.userService.deleteOne(id);
+  }
+
+  @MessagePattern('get_user', Transport.TCP)
+  async getUser(id: string) {
+    return this.userService.findOne(id);
   }
 }
