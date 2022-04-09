@@ -29,7 +29,7 @@ export class UserController {
     return this.userService.findOne(id);
   }
 
-  @Post()
+  @Post('')
   create(@Body() dto: CreateUserDto) {
     return this.userService.create(dto);
   }
