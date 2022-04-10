@@ -33,4 +33,10 @@ export class GatewayService {
       this.httpService.get(`/consumers/${consumerUserName}/jwt`),
     );
   }
+
+  deleteConsumerJWT(consumerUserName: string, jwtId: string): Promise<any> {
+    return httpCallHandler(
+      this.httpService.delete(`/consumers/${consumerUserName}/jwt/${jwtId}`),
+    );
+  }
 }

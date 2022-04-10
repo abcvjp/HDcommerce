@@ -32,4 +32,8 @@ export class AuthService {
       }),
     };
   }
+
+  async logout(userId: string, jwtId: string) {
+    await this.gatewayService.deleteConsumerJWT(userId, jwtId);
+  }
 }
