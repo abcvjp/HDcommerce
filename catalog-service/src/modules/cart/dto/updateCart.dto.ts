@@ -4,6 +4,7 @@ import {
   IsBoolean,
   IsInt,
   IsMongoId,
+  IsNotEmpty,
   IsNumber,
   Min,
   ValidateNested,
@@ -21,7 +22,8 @@ export class CartItemDto {
   price: number;
 
   @IsBoolean()
-  isSelected: boolean;
+  @IsNotEmpty()
+  selected: boolean;
 }
 
 export class UpdateCartDto {

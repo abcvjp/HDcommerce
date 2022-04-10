@@ -1,17 +1,10 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Put,
-  Query,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Get, Put, UseInterceptors } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { SanitizeMongooseModelInterceptor } from 'nestjs-mongoose-exclude';
 import { ICart } from './interfaces/cart.interface';
-import { MongoIdPipe } from 'src/common/pipes/mongo-id.pipe';
 import { UpdateCartDto } from './dto/updateCart.dto';
 import { CheckItemsValidDto } from './dto/checkItemsValid.dto';
+import { UserId } from 'src/common/decorators/user-id.decorator';
 
 @Controller('cart')
 @UseInterceptors(
@@ -24,7 +17,7 @@ export class CartController {
   constructor(private cartService: CartService) {}
 
   @Get('')
-  findOne(@Query('userId', MongoIdPipe) userId: string): Promise<ICart> {
+  findOne(@UserId() userId: string): Promise<ICart> {
     return this.cartService.findByUserId(userId);
   }
 
@@ -34,7 +27,7 @@ export class CartController {
   }
 
   @Put('')
-  updateCart(@Body() dto: UpdateCartDto): Promise<any> {
-    return this.cartService.updateCart(dto);
+  updateCart(@UserId() userId, @Body() dto: UpdateCartDto): Promise<any> {
+    return this.cartService.updateCart(userId, dto);
   }
 }

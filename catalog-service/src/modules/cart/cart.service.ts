@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserService } from 'src/clients/user/user.service';
 import { ProductService } from '../product/product.service';
 import { Product } from '../product/schemas/product.schema';
 import { CheckItemsValidDto } from './dto/checkItemsValid.dto';
@@ -14,20 +13,17 @@ export class CartService {
   constructor(
     @InjectModel(Cart.name) private readonly cartModel: Model<Cart>,
     private readonly productService: ProductService,
-    private readonly userService: UserService,
   ) {}
 
   async findByUserId(userId: string): Promise<ICart> {
-    const foundCart = await this.cartModel
-      .findOne({ userId }, { userId: 0 })
-      .lean();
+    const foundCart = await this.cartModel.findOne({ userId }, { userId: 0 });
     if (!foundCart) {
       return null;
     }
     return foundCart;
   }
 
-  async updateCart(dto: UpdateCartDto) {
+  async updateCart(userId: string, dto: UpdateCartDto) {
     const { items } = dto;
 
     const productsFromDb = await this.productService.findByIds(
@@ -79,15 +75,21 @@ export class CartService {
       }
 
       if (messageBuffer.length > 0) messages[i] = messageBuffer;
-      if (!updatedItem.isBuyable && item.isSelected)
-        updatedItem.isSelected = false;
-      if (updatedItem.isSelected && updatedItem.isBuyable)
+      if (!updatedItem.isBuyable && item.selected) updatedItem.selected = false;
+      if (updatedItem.selected && updatedItem.isBuyable)
         subTotal += updatedItem.price;
 
       return updatedItem;
     });
 
-    return { messages, updatedItems, subTotal };
+    const newCart = {
+      messages: Object.keys(messages).length > 0 ? messages : null,
+      items: updatedItems,
+      subTotal,
+    };
+    this.cartModel.updateOne({ userId }, newCart, { upsert: true });
+
+    return newCart;
   }
 
   async checkItemsValid(dto: CheckItemsValidDto): Promise<boolean> {
