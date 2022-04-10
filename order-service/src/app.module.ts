@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 
 import { ConfigModule } from '@nestjs/config';
 
@@ -17,6 +17,8 @@ import { ResponseSerializator } from './common/interceptors/transform.intercepto
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { RPCExceptionFilter } from './common/filters/rpc-exception.filter';
 import brokerConfig from './config/broker.config';
+import { UserModule } from './clients/user/user.module';
+import { UserMiddleware } from './common/middlewares/user.middleware';
 
 @Module({
   imports: [
@@ -25,6 +27,7 @@ import brokerConfig from './config/broker.config';
     }),
     DatabaseModule,
     OrderModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [
@@ -51,4 +54,11 @@ import brokerConfig from './config/broker.config';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(UserMiddleware).forRoutes({
+      path: '*',
+      method: RequestMethod.ALL,
+    });
+  }
+}

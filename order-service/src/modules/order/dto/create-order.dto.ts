@@ -1,11 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-  IsEmail,
-  IsMongoId,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 class OrderItemDto {
   @IsNotEmpty()
@@ -47,10 +41,6 @@ export class CreateOrderDto {
   @IsNotEmpty()
   @IsString()
   readonly paymentMethod: string;
-
-  @IsOptional()
-  @IsMongoId()
-  readonly userId: string;
 
   @IsNotEmpty()
   @Type(() => CustomerInfoDto)

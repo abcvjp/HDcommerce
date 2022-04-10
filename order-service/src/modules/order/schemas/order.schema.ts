@@ -53,6 +53,7 @@ export class Order extends Document implements IOrder {
   @Prop({
     type: Number,
     required: true,
+    default: 0,
   })
   deliveryFee: number;
 

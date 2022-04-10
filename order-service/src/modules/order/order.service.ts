@@ -1,18 +1,25 @@
 import {
   ConflictException,
   Injectable,
+  NotAcceptableException,
   NotFoundException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { IOrder } from './interfaces/order.interface';
 import { Order, OrderStatus } from './schemas/order.schema';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { CatalogService } from 'src/clients/catalog/catalog.service';
+
+import * as shortid from 'shortid';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectModel(Order.name) private readonly orderModel: Model<Order>,
+    @InjectConnection() private readonly dbConnection: mongoose.Connection,
+    private readonly catalogService: CatalogService,
   ) {}
 
   async findOne(id: string): Promise<IOrder> {
@@ -27,8 +34,40 @@ export class OrderService {
     return await this.orderModel.find().exec();
   }
 
-  async create(dto: CreateOrderDto): Promise<IOrder> {
-    const createdOrder = await this.orderModel.create(dto);
+  async create(userId: string, dto: CreateOrderDto): Promise<IOrder> {
+    const { isValid, subTotal } = (
+      await this.catalogService.checkItemsValid(dto.items)
+    ).data;
+    if (!isValid)
+      throw new NotAcceptableException('Items are not valid to order');
+
+    const code = shortid.generate();
+
+    let createdOrder;
+    const session = await this.dbConnection.startSession();
+    session.startTransaction();
+    try {
+      createdOrder = (
+        await this.orderModel.create(
+          [
+            {
+              ...dto,
+              code,
+              itemTotal: subTotal,
+              orderTotal: subTotal,
+              userId,
+            },
+          ],
+          { session },
+        )
+      )[0];
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
 
     return createdOrder;
   }

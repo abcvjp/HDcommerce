@@ -23,4 +23,4 @@ import { CatalogService } from './catalog.service';
   providers: [CatalogService],
   exports: [CatalogService],
 })
-export class UserModule {}
+export class CatalogModule {}

@@ -12,8 +12,9 @@ import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { ClientKafka } from '@nestjs/microservices';
 import { BROKER_SERVICE } from 'src/broker/broker.provider';
+import { UserId } from 'src/common/decorators/user-id.decorator';
 
-@Controller('order')
+@Controller('')
 export class OrderController {
   constructor(
     private orderService: OrderService,
@@ -31,8 +32,8 @@ export class OrderController {
   }
 
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.orderService.create(createOrderDto);
+  create(@UserId() userId: string, @Body() createOrderDto: CreateOrderDto) {
+    return this.orderService.create(userId, createOrderDto);
   }
 
   @Put(':id')

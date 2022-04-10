@@ -13,7 +13,7 @@ export class CatalogService {
   checkItemsValid(items: object[]): Promise<any> {
     return httpCallHandler(
       this.httpService.get('/cart/check-valid', {
-        data: items,
+        data: { items },
       }),
     );
   }

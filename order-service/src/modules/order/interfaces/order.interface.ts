@@ -1,4 +1,5 @@
 export interface IOrder {
+  _id?: string;
   id?: string;
   code: string;
   status: string;
