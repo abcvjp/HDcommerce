@@ -1,5 +1,6 @@
+import { ObjectId } from 'mongoose';
 export interface IProduct {
-  _id?: string;
+  _id?: string | ObjectId;
   name: string;
   title: string;
   isEnabled: boolean;

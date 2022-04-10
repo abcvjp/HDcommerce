@@ -20,6 +20,7 @@ import {
 } from 'src/common/constants';
 import { CategoryService } from '../category/category.service';
 import { Category } from '../category/schemas/category.schema';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -31,10 +32,12 @@ export class ProductService {
   ) {}
 
   async findOne(id: string): Promise<IProduct> {
-    const foundProduct = await this.productModel.findById(id).exec();
+    const foundProduct = await this.productModel.findById(id).lean();
     if (!foundProduct) {
       throw new NotFoundException('Product not found');
     }
+    foundProduct._id = foundProduct._id.toString();
+    foundProduct.categoryId = foundProduct.categoryId.toString();
     return foundProduct;
   }
 
@@ -98,7 +101,7 @@ export class ProductService {
       .findOne({
         name,
       })
-      .exec();
+      .lean();
     if (productByName) {
       throw new ConflictException('Product name is already exist');
     }
@@ -114,10 +117,18 @@ export class ProductService {
     return createdProduct;
   }
 
-  async update(id: string, dto: CreateProductDto): Promise<IProduct> {
-    const existingProduct = this.productModel.findByIdAndUpdate(id, dto, {
-      new: true,
-    });
+  async update(id: string, dto: UpdateProductDto): Promise<IProduct> {
+    const updatePattern: any = dto;
+    if (dto.name) {
+      updatePattern.slug = slug(dto.name);
+    }
+    const existingProduct = this.productModel.findByIdAndUpdate(
+      id,
+      updatePattern,
+      {
+        new: true,
+      },
+    );
     if (!existingProduct) {
       throw new NotFoundException('Product not found');
     }

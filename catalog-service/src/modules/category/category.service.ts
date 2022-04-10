@@ -16,6 +16,7 @@ import { FindOneCategoryDto } from './dto/find-one-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import mongoose from 'mongoose';
 import { ProductService } from '../product/product.service';
+import { ICategory } from './interfaces/category.interface';
 
 @Injectable()
 export class CategoryService {
@@ -26,10 +27,10 @@ export class CategoryService {
     private readonly productService: ProductService,
   ) {}
 
-  async findOne(id: string, query?: FindOneCategoryDto): Promise<Category> {
-    const dbQuery = this.categoryModel.findById(id);
+  async findOne(id: string, query?: FindOneCategoryDto): Promise<ICategory> {
+    const dbQuery = this.categoryModel.findById(id).lean();
     if (query?.includeChildren) {
-      dbQuery.populate('children');
+      dbQuery.populate('children', { children: 0 });
     } else {
       dbQuery.select('-children');
     }
@@ -37,10 +38,16 @@ export class CategoryService {
     if (!foundCategory) {
       throw new NotFoundException('Category not found');
     }
+    foundCategory._id = foundCategory._id.toString();
+    if (foundCategory.children) {
+      foundCategory.children.forEach((x) => {
+        x._id = x._id.toString();
+      });
+    }
     return foundCategory;
   }
 
-  async findAll(query: FindAllCategoryDto): Promise<Category[]> {
+  async findAll(query: FindAllCategoryDto): Promise<ICategory[]> {
     const { startId, skip, limit, sort, slug, includeChildren } = query;
 
     const filters: FilterQuery<Category> = startId
@@ -52,17 +59,27 @@ export class CategoryService {
 
     const dbQuery = this.categoryModel
       .find(filters)
+      .lean()
       .sort(sort ? sort : { _id: 1 })
       .skip(skip)
       .limit(limit);
 
     if (includeChildren) {
-      dbQuery.populate('children');
+      dbQuery.populate('children', { children: 0 });
     } else {
       dbQuery.select('-children');
     }
 
-    return await dbQuery.exec();
+    const foundCategories = await dbQuery;
+    foundCategories.forEach((category) => {
+      category._id = category._id.toString();
+      if (category.children) {
+        category.children.forEach((x) => {
+          x._id = x._id.toString();
+        });
+      }
+    });
+    return foundCategories;
   }
 
   async create(dto: CreateCategoryDto): Promise<Category> {
@@ -73,7 +90,7 @@ export class CategoryService {
       .findOne({
         name,
       })
-      .exec();
+      .lean();
     if (categoryByName) {
       throw new ConflictException('Category name is already exist');
     }
@@ -83,7 +100,7 @@ export class CategoryService {
     if (!parentId) {
       return await this.categoryModel.create({ ...dto, path: [name], slug });
     } else {
-      const parentCategory = await this.categoryModel.findById(parentId).exec();
+      const parentCategory = await this.categoryModel.findById(parentId);
       if (!parentCategory) {
         throw new NotFoundException('Parent category is not exist');
       }
@@ -92,14 +109,18 @@ export class CategoryService {
       session.startTransaction();
       try {
         // create the category
-        createdCategory = await this.categoryModel.create(
-          {
-            ...dto,
-            path: parentCategory.path.concat(name),
-            slug,
-          },
-          { session },
-        );
+        createdCategory = (
+          await this.categoryModel.create(
+            [
+              {
+                ...dto,
+                path: parentCategory.path.concat(name),
+                slug,
+              },
+            ],
+            { session },
+          )
+        )[0];
         // add reference to its parent
         parentCategory.children.push(createdCategory._id);
         await parentCategory.save({ session });

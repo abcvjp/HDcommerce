@@ -1,5 +1,6 @@
+import { ObjectId } from 'mongoose';
 export interface ICategory {
-  _id?: string;
+  _id?: string | ObjectId;
   name: string;
   isPublic: boolean;
   description: string;

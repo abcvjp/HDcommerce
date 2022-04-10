@@ -38,6 +38,7 @@ export class Product extends Document implements IProduct {
   @Prop({
     type: Number,
     required: true,
+    index: true,
   })
   price: number;
 

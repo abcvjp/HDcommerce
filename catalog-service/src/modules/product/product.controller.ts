@@ -17,6 +17,7 @@ import { SanitizeMongooseModelInterceptor } from 'nestjs-mongoose-exclude';
 import { MongoIdPipe } from 'src/common/pipes/mongo-id.pipe';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/common/constants';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('product')
 @UseInterceptors(
@@ -48,7 +49,7 @@ export class ProductController {
   @Roles(UserRole.ADMIN)
   update(
     @Param('id', MongoIdPipe) id: string,
-    @Body() updateProductDto: CreateProductDto,
+    @Body() updateProductDto: UpdateProductDto,
   ) {
     return this.productService.update(id, updateProductDto);
   }
