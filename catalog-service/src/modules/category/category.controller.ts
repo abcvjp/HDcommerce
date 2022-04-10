@@ -10,6 +10,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { SanitizeMongooseModelInterceptor } from 'nestjs-mongoose-exclude';
+import { UserRole } from 'src/common/constants';
+import { Roles } from 'src/common/decorators/roles.decorator';
 import { MongoIdPipe } from 'src/common/pipes/mongo-id.pipe';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -41,11 +43,13 @@ export class CategoryController {
   }
 
   @Post()
+  @Roles(UserRole.ADMIN)
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoryService.create(createCategoryDto);
   }
 
   @Put(':id')
+  @Roles(UserRole.ADMIN)
   update(
     @Param('id', MongoIdPipe) id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
@@ -54,6 +58,7 @@ export class CategoryController {
   }
 
   @Delete(':id')
+  @Roles(UserRole.ADMIN)
   deleteOne(@Param('id', MongoIdPipe) id: string) {
     return this.categoryService.deleteOne(id);
   }

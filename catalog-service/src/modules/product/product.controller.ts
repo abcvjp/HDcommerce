@@ -11,11 +11,12 @@ import {
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { EventPattern, MessagePattern, Transport } from '@nestjs/microservices';
+import { EventPattern, Transport } from '@nestjs/microservices';
 import { FindAllProductDto } from './dto/find-all-product.dto';
 import { SanitizeMongooseModelInterceptor } from 'nestjs-mongoose-exclude';
-import { IProduct } from './interfaces/product.interface';
 import { MongoIdPipe } from 'src/common/pipes/mongo-id.pipe';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { UserRole } from 'src/common/constants';
 
 @Controller('product')
 @UseInterceptors(
@@ -38,11 +39,13 @@ export class ProductController {
   }
 
   @Post()
+  @Roles(UserRole.ADMIN)
   create(@Body() createProductDto: CreateProductDto) {
     return this.productService.create(createProductDto);
   }
 
   @Put(':id')
+  @Roles(UserRole.ADMIN)
   update(
     @Param('id', MongoIdPipe) id: string,
     @Body() updateProductDto: CreateProductDto,
@@ -51,6 +54,7 @@ export class ProductController {
   }
 
   @Delete(':id')
+  @Roles(UserRole.ADMIN)
   deleteOne(@Param('id', MongoIdPipe) id: string) {
     return this.productService.deleteOne(id);
   }

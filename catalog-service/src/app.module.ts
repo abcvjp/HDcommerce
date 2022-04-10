@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 
 import { ConfigModule } from '@nestjs/config';
 
@@ -11,7 +11,7 @@ import dbConfig from './config/db.config';
 import { DatabaseModule } from './database';
 import { CategoryModule } from './modules/category/category.module';
 import { ProductModule } from './modules/product/product.module';
-import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ExceptionInterceptor } from './common/interceptors/exception.interceptor';
 import { ResponseSerializator } from './common/interceptors/transform.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -19,6 +19,9 @@ import { RPCExceptionFilter } from './common/filters/rpc-exception.filter';
 import { SortQueryParamPipe } from './common/pipes/sort-query-param.pipe';
 import brokerConfig from './config/broker.config';
 import { CartModule } from './modules/cart/cart.module';
+import { RolesGuards } from './common/guards/roles.guard';
+import { UserModule } from './clients/user/user.module';
+import { UserMiddleware } from './common/middlewares/user.middleware';
 
 @Module({
   imports: [
@@ -29,10 +32,15 @@ import { CartModule } from './modules/cart/cart.module';
     CategoryModule,
     ProductModule,
     CartModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuards,
+    },
     {
       provide: APP_PIPE,
       useClass: SortQueryParamPipe,
@@ -55,4 +63,11 @@ import { CartModule } from './modules/cart/cart.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(UserMiddleware).forRoutes({
+      path: '*',
+      method: RequestMethod.ALL,
+    });
+  }
+}
