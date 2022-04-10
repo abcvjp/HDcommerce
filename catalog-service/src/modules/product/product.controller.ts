@@ -55,16 +55,6 @@ export class ProductController {
     return this.productService.deleteOne(id);
   }
 
-  @MessagePattern('get_product', Transport.TCP)
-  async getProduct(id: string): Promise<IProduct> {
-    return await this.productService.findOne(id);
-  }
-
-  @MessagePattern('get_products', Transport.TCP)
-  async getProducts(ids: string[]): Promise<IProduct[]> {
-    return await this.productService.findByIds(ids);
-  }
-
   @EventPattern('test_event', Transport.KAFKA)
   handleTestEvent(data: any) {
     console.log(`hoai dep trai da handle ${data.value}`);

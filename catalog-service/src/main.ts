@@ -9,20 +9,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = app.get(ConfigService);
-  const { port, tcpPort } = config.get('app');
+  const { port } = config.get('app');
 
   // Microservice Transports
-  // TCP Transport
-  app.connectMicroservice(
-    {
-      transport: Transport.TCP,
-      options: {
-        host: '0.0.0.0',
-        port: tcpPort,
-      },
-    },
-    { inheritAppConfig: true },
-  );
   // Kafka Transport
   app.connectMicroservice({
     transport: Transport.KAFKA,
@@ -41,7 +30,7 @@ async function bootstrap() {
   );
 
   const environment = config.get('app.environment');
-  await app.startAllMicroservices();
+  app.startAllMicroservices();
   await app.listen(port, () => {
     Logger.log(`Server is listening at http://localhost:${port}`);
     Logger.log(`Evironment: ${environment}`);

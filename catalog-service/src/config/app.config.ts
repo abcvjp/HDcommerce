@@ -5,14 +5,12 @@ export default registerAs('app', () => {
   const config = {
     environment: process.env.NODE_ENV || 'development',
     port: process.env.PORT || 3000,
-    tcpPort: process.env.TCP_PORT || 3001,
   };
   const schema = Joi.object({
     environment: Joi.string()
       .valid('development', 'production', 'test', 'provision')
       .required(),
     port: Joi.number().required(),
-    tcpPort: Joi.number().required(),
   });
   const validationResult = schema.validate(config);
   if (validationResult.error) {
