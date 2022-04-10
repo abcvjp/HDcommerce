@@ -9,20 +9,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = app.get(ConfigService);
-  const { port, tcpPort } = config.get('app');
+  const { port } = config.get('app');
 
   // Microservice Transports
-  // TCP Transport
-  app.connectMicroservice(
-    {
-      transport: Transport.TCP,
-      options: {
-        host: '0.0.0.0',
-        port: tcpPort,
-      },
-    },
-    { inheritAppConfig: true },
-  );
   // Kafka Transport
   app.connectMicroservice({
     transport: Transport.KAFKA,

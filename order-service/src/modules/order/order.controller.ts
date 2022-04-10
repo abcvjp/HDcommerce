@@ -10,34 +10,15 @@ import {
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { ClientKafka, ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
+import { ClientKafka } from '@nestjs/microservices';
 import { BROKER_SERVICE } from 'src/broker/broker.provider';
-import { CATALOG_SERVICE } from 'src/rpc/catalog/catalog.provider';
 
 @Controller('order')
 export class OrderController {
   constructor(
     private orderService: OrderService,
-    @Inject(CATALOG_SERVICE) private catalogClient: ClientProxy,
     @Inject(BROKER_SERVICE) private readonly brokerClient: ClientKafka,
   ) {}
-
-  @Get('test-service')
-  async testService() {
-    let result;
-    try {
-      result = await firstValueFrom(
-        this.catalogClient.send('get_product', '624289acf909f74bc92b3fd7'),
-      );
-      await this.brokerClient.emit('test_event', 'hoai dep trai');
-    } catch (err) {
-      console.log('loi roi');
-      console.log(err);
-    }
-    console.log(result);
-    return result;
-  }
 
   @Get()
   findAll() {

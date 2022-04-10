@@ -1,12 +1,14 @@
 import { registerAs } from '@nestjs/config';
 // import * as Joi from 'joi';
 
-export default registerAs('rpc', () => {
-  const { CATALOG_SERVICE_HOST, CATALOG_SERVICE_RPC_PORT } = process.env;
+export default registerAs('httpClient', () => {
+  const { HTTP_CLIENT_TIMEOUT } = process.env;
   const config = {
-    catalog: {
-      host: CATALOG_SERVICE_HOST || 'catalog-service',
-      port: CATALOG_SERVICE_RPC_PORT || 3001,
+    timeout: HTTP_CLIENT_TIMEOUT || 5000,
+    maxRedirects: 5,
+    clients: {
+      userService: { baseURL: 'http://user-service:3000' },
+      catalogService: { baseURL: 'http://catalog-service:3000' },
     },
   };
   // const schema = Joi.object({
