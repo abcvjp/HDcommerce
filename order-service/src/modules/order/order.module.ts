@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { OrderController } from './order.controller';
 import { Order, OrderSchema } from './schemas/order.schema';
@@ -9,7 +9,7 @@ import { CatalogModule } from 'src/clients/catalog/catalog.module';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
-    BrokerModule,
+    forwardRef(() => BrokerModule),
     CatalogModule,
   ],
   providers: [OrderService],

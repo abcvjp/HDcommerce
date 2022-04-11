@@ -22,6 +22,7 @@ import { CartModule } from './modules/cart/cart.module';
 import { RolesGuards } from './common/guards/roles.guard';
 import { UserModule } from './clients/user/user.module';
 import { UserMiddleware } from './common/middlewares/user.middleware';
+import { BrokerModule } from './broker/broker.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { UserMiddleware } from './common/middlewares/user.middleware';
     ProductModule,
     CartModule,
     UserModule,
+    BrokerModule,
   ],
   controllers: [AppController],
   providers: [

@@ -11,7 +11,6 @@ import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { IUser } from './interfaces/user.interface';
 import { UpdateUserInfoDto } from './dto/updateUserInfo.dto';
-import { BROKER_SERVICE } from 'src/broker/broker.provider';
 import { ClientKafka } from '@nestjs/microservices';
 import { FindAllUserDto } from './dto/findAllUser.dto';
 import {
@@ -21,6 +20,7 @@ import {
 import { GatewayService } from 'src/clients/gateway/gateway.service';
 import { hashPassword } from 'src/utils/password';
 import mongoose from 'mongoose';
+import { BORKER_PROVIDER } from 'src/broker/broker.provider';
 // import * as moment from 'moment';
 
 @Injectable()
@@ -28,7 +28,7 @@ export class UserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
     @InjectConnection() private readonly dbConnection: mongoose.Connection,
-    @Inject(BROKER_SERVICE) private readonly brokerClient: ClientKafka,
+    @Inject(BORKER_PROVIDER) private readonly brokerClient: ClientKafka,
     private readonly gatewayService: GatewayService,
   ) {}
 

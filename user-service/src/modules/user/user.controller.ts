@@ -8,7 +8,6 @@ import {
   Body,
   Query,
 } from '@nestjs/common';
-import { MessagePattern, Transport } from '@nestjs/microservices';
 import { CreateUserDto } from './dto/createUser.dto';
 import { FindAllUserDto } from './dto/findAllUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
@@ -47,10 +46,5 @@ export class UserController {
   @Delete(':id')
   deleteOne(@Param('id') id: string) {
     return this.userService.deleteOne(id);
-  }
-
-  @MessagePattern('get_user', Transport.TCP)
-  async getUser(id: string) {
-    return this.userService.findOne(id);
   }
 }

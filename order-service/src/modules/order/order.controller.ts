@@ -3,23 +3,17 @@ import {
   Controller,
   Delete,
   Get,
-  Inject,
   Param,
   Post,
   Put,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { ClientKafka, EventPattern } from '@nestjs/microservices';
-import { BROKER_SERVICE } from 'src/broker/broker.provider';
 import { UserId } from 'src/common/decorators/user-id.decorator';
 
 @Controller('')
 export class OrderController {
-  constructor(
-    private orderService: OrderService,
-    @Inject(BROKER_SERVICE) private readonly brokerClient: ClientKafka,
-  ) {}
+  constructor(private orderService: OrderService) {}
 
   @Get()
   findAll() {
@@ -44,17 +38,5 @@ export class OrderController {
   @Delete(':id')
   deleteOne(@Param('id') id: string) {
     return this.orderService.deleteOne(id);
-  }
-
-  @EventPattern('orderCreation-OK')
-  async handleOrderCreationSucceed(message: any) {
-    const { orderId } = message.value;
-    await this.orderService.handleOrderCreationSucceed(orderId);
-  }
-
-  @EventPattern('orderCreation-stockUpdateERR')
-  async handleStockUpdateERR(message: any) {
-    const { orderId } = message.value;
-    await this.orderService.handleStockUpdateERR(orderId);
   }
 }

@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { EventPattern, Transport } from '@nestjs/microservices';
 import { FindAllProductDto } from './dto/find-all-product.dto';
 import { SanitizeMongooseModelInterceptor } from 'nestjs-mongoose-exclude';
 import { MongoIdPipe } from 'src/common/pipes/mongo-id.pipe';
@@ -58,16 +57,5 @@ export class ProductController {
   @Roles(UserRole.ADMIN)
   deleteOne(@Param('id', MongoIdPipe) id: string) {
     return this.productService.deleteOne(id);
-  }
-
-  @EventPattern('test_event', Transport.KAFKA)
-  handleTestEvent(data: any) {
-    console.log(`hoai dep trai da handle ${data.value}`);
-  }
-
-  @EventPattern('orderCreation-orderCreated', Transport.KAFKA)
-  async handleOrderCreated(message: any) {
-    const { items, orderId } = message.value;
-    await this.productService.handleOrderCreated(orderId, items);
   }
 }
