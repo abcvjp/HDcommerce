@@ -5,7 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Model } from 'mongoose';
+import { Model, FilterQuery } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { IProduct } from './interfaces/product.interface';
 import { Product } from './schemas/product.schema';
@@ -56,6 +56,7 @@ export class ProductService {
       stockQuantity,
       soldQuantity,
       tags,
+      keyword,
     } = query;
 
     const filters = [];
@@ -63,8 +64,10 @@ export class ProductService {
     categoryId &&
       filters.push({ categoryId: new mongoose.Types.ObjectId(categoryId) });
     name && filters.push({ name });
-    isEnabled && filters.push({ isEnabled });
-    isPublic && filters.push({ isPublic });
+    isEnabled !== undefined && filters.push({ isEnabled });
+    isPublic !== undefined && filters.push({ isPublic });
+    keyword && filters.push({ $text: { $search: keyword } });
+    tags && filters.push({ tags: { $all: tags } });
     price && filters.push({ price: price.toMongooseFormat() });
     originalPrice &&
       filters.push({ originalPrice: originalPrice.toMongooseFormat() });
@@ -72,20 +75,28 @@ export class ProductService {
       filters.push({ stockQuantity: stockQuantity.toMongooseFormat() });
     soldQuantity &&
       filters.push({ soldQuantity: soldQuantity.toMongooseFormat() });
-    tags && filters.push({ tags: { $all: tags } });
 
-    const dbQuery = this.productModel
-      .aggregate()
-      .match(filters.length === 0 ? {} : { $and: filters })
+    const dbQuery = this.productModel.aggregate();
+
+    filters.length !== 0 && dbQuery.match({ $and: filters });
+
+    dbQuery
       .skip(skip ? skip : DEFAULT_DBQUERY_SKIP)
       .limit(limit ? limit : DEFAULT_DBQUERY_LIMIT)
       .append({
         $set: {
           _id: { $toString: '$_id' },
           categoryId: { $toString: '$categoryId' },
+          // relevance: { $meta: 'textScore' },
         },
       })
-      .append({ $sort: sort ? sort : DEFAULT_DBQUERY_SORT });
+      .append({
+        $sort: sort
+          ? sort
+          : keyword
+          ? { relevance: { $meta: 'textScore' } }
+          : DEFAULT_DBQUERY_SORT,
+      });
     return await dbQuery.exec();
   }
 

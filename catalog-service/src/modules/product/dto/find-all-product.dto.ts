@@ -1,5 +1,6 @@
 import { Transform, Type } from 'class-transformer';
-import { IsOptional, IsMongoId, IsBoolean, IsString } from 'class-validator';
+import { IsOptional, IsMongoId, IsString } from 'class-validator';
+import { BooleanQuery } from 'src/common/decorators/boolean-query.decorator';
 import { IsNumberFilter } from 'src/common/decorators/is-number-filter.decorator';
 import { FindAllDto } from 'src/common/dto/find-all.dto';
 import { NumberFilter } from 'src/common/dto/number-filter.dto';
@@ -14,11 +15,11 @@ export class FindAllProductDto extends FindAllDto {
   readonly name: string;
 
   @IsOptional()
-  @IsBoolean()
+  @BooleanQuery()
   readonly isEnabled: boolean;
 
   @IsOptional()
-  @IsBoolean()
+  @BooleanQuery()
   readonly isPublic: boolean;
 
   @IsOptional()
@@ -41,4 +42,8 @@ export class FindAllProductDto extends FindAllDto {
   @IsOptional()
   @IsNumberFilter()
   readonly soldQuantity: NumberFilter;
+
+  @IsOptional()
+  @IsString()
+  readonly keyword: string;
 }

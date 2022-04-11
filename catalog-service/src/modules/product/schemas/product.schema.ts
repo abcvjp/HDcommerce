@@ -125,6 +125,12 @@ export class Product extends Document implements IProduct {
 
 const ProductSchema = SchemaFactory.createForClass(Product);
 
-ProductSchema.index({ name: 'text' });
+ProductSchema.index({
+  name: 'text',
+  title: 'text',
+  shortDescription: 'text',
+  tags: 'text',
+  metaKeywords: 'text',
+});
 
 export { ProductSchema };
