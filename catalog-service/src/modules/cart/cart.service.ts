@@ -92,14 +92,14 @@ export class CartService {
     return newCart;
   }
 
-  async checkItemsValid(dto: CheckItemsValidDto): Promise<boolean> {
+  async checkItemsValid(dto: CheckItemsValidDto): Promise<any> {
     const { items } = dto;
 
     const productsFromDb = await this.productService.findByIds(
       items.map((item) => item.productId),
     );
 
-    if (productsFromDb.length !== items.length) return false;
+    if (productsFromDb.length !== items.length) return { isValid: false };
 
     // build a dict for products from db
     const producsFromDbDict: Record<string, Product> = {};
@@ -107,8 +107,11 @@ export class CartService {
       producsFromDbDict[product._id] = product;
     });
 
-    return items.every((item) => {
+    let subTotal = 0;
+
+    const isValid = items.every((item) => {
       const productFromDb = producsFromDbDict[item.productId];
+      subTotal += productFromDb.price * item.quantity;
       if (
         !productFromDb.isEnabled ||
         productFromDb.stockQuantity === 0 ||
@@ -117,5 +120,7 @@ export class CartService {
         return false;
       return true;
     });
+
+    return isValid ? { isValid, subTotal } : { isValid };
   }
 }

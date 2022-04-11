@@ -22,7 +22,7 @@ export class CartController {
   }
 
   @Get('check-valid')
-  checkItemsValid(@Body() dto: CheckItemsValidDto): Promise<boolean> {
+  checkItemsValid(@Body() dto: CheckItemsValidDto): Promise<any> {
     return this.cartService.checkItemsValid(dto);
   }
 
