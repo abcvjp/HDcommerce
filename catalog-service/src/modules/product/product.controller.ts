@@ -64,4 +64,10 @@ export class ProductController {
   handleTestEvent(data: any) {
     console.log(`hoai dep trai da handle ${data.value}`);
   }
+
+  @EventPattern('orderCreation-orderCreated', Transport.KAFKA)
+  async handleOrderCreated(message: any) {
+    const { items, orderId } = message.value;
+    await this.productService.handleOrderCreated(orderId, items);
+  }
 }

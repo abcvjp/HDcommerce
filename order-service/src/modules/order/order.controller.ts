@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { ClientKafka } from '@nestjs/microservices';
+import { ClientKafka, EventPattern } from '@nestjs/microservices';
 import { BROKER_SERVICE } from 'src/broker/broker.provider';
 import { UserId } from 'src/common/decorators/user-id.decorator';
 
@@ -44,5 +44,17 @@ export class OrderController {
   @Delete(':id')
   deleteOne(@Param('id') id: string) {
     return this.orderService.deleteOne(id);
+  }
+
+  @EventPattern('orderCreation-OK')
+  async handleOrderCreationSucceed(message: any) {
+    const { orderId } = message.value;
+    await this.orderService.handleOrderCreationSucceed(orderId);
+  }
+
+  @EventPattern('orderCreation-stockUpdateERR')
+  async handleStockUpdateERR(message: any) {
+    const { orderId } = message.value;
+    await this.orderService.handleStockUpdateERR(orderId);
   }
 }

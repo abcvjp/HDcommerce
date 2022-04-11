@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  Inject,
   Injectable,
   NotAcceptableException,
   NotFoundException,
@@ -13,12 +14,15 @@ import { CatalogService } from 'src/clients/catalog/catalog.service';
 
 import * as shortid from 'shortid';
 import mongoose from 'mongoose';
+import { BROKER_SERVICE } from 'src/broker/broker.provider';
+import { ClientKafka } from '@nestjs/microservices';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectModel(Order.name) private readonly orderModel: Model<Order>,
     @InjectConnection() private readonly dbConnection: mongoose.Connection,
+    @Inject(BROKER_SERVICE) private readonly brokerClient: ClientKafka,
     private readonly catalogService: CatalogService,
   ) {}
 
@@ -61,6 +65,10 @@ export class OrderService {
           { session },
         )
       )[0];
+      await this.brokerClient.emit('orderCreation-orderCreated', {
+        orderId: createdOrder._id,
+        items: dto.items,
+      });
       await session.commitTransaction();
     } catch (error) {
       await session.abortTransaction();
@@ -144,5 +152,16 @@ export class OrderService {
     }
 
     await foundOrder.update({ status: OrderStatus.CANCELED });
+  }
+
+  async handleStockUpdateERR(id: string): Promise<void> {
+    await this.orderModel.updateOne(
+      { _id: id },
+      { status: OrderStatus.FAILED },
+    );
+  }
+
+  async handleOrderCreationSucceed(id: string): Promise<void> {
+    console.log(`order ${id} created`);
   }
 }

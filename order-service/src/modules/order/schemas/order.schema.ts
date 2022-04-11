@@ -3,6 +3,8 @@ import { Document, SchemaTypes } from 'mongoose';
 import { IOrder } from '../interfaces/order.interface';
 
 export enum OrderStatus {
+  CREATING = 'Creating',
+  FAILED = 'Failed',
   PENDING = 'Pending',
   HANDLING = 'Handling',
   COMPLETED = 'Completed',
@@ -34,7 +36,7 @@ export class Order extends Document implements IOrder {
     type: String,
     required: true,
     enum: Object.values(OrderStatus),
-    default: OrderStatus.PENDING,
+    default: OrderStatus.CREATING,
   })
   status: OrderStatus;
 

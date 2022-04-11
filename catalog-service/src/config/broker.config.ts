@@ -17,6 +17,11 @@ export default registerAs('broker', () => {
     },
     consumer: {
       groupId: 'catalog-consumer',
+      allowAutoTopicCreation: true,
+    },
+    producer: {
+      allowAutoTopicCreation: true,
+      idempotent: true,
     },
   };
   // const schema = Joi.object({

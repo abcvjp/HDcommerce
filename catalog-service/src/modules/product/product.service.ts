@@ -21,12 +21,15 @@ import {
 import { CategoryService } from '../category/category.service';
 import { Category } from '../category/schemas/category.schema';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { BROKER_SERVICE } from 'src/broker/broker.provider';
+import { ClientKafka } from '@nestjs/microservices';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectModel(Product.name) private readonly productModel: Model<Product>,
     @InjectConnection() private readonly dbConnection: mongoose.Connection,
+    @Inject(BROKER_SERVICE) private readonly brokerClient: ClientKafka,
     @Inject(forwardRef(() => CategoryService))
     private readonly categoryService: CategoryService,
   ) {}
@@ -171,5 +174,36 @@ export class ProductService {
       { categoryId: category.id },
       { session },
     );
+  }
+
+  async decreaseStockQuantity(items: any[]): Promise<void> {
+    await this.productModel.bulkWrite(
+      items.map((item) => ({
+        updateOne: {
+          filter: { _id: item.productId },
+          update: { $inc: { stockQuantity: -Math.abs(item.quantity) } },
+        },
+      })),
+    );
+  }
+
+  async increaseStockQuantity(items: any[]): Promise<void> {
+    await this.productModel.bulkWrite(
+      items.map((item) => ({
+        updateOne: {
+          filter: { _id: item.productId },
+          update: { $inc: { stockQuantity: Math.abs(item.quantity) } },
+        },
+      })),
+    );
+  }
+
+  async handleOrderCreated(orderId, items: any[]): Promise<void> {
+    try {
+      await this.decreaseStockQuantity(items);
+    } catch (error) {
+      await this.brokerClient.emit('orderCreation-stockUpdateERR', { orderId });
+    }
+    await this.brokerClient.emit('orderCreation-OK', { orderId });
   }
 }
