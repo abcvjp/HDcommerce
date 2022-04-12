@@ -16,11 +16,14 @@ import * as shortid from 'shortid';
 import mongoose from 'mongoose';
 import { ClientKafka } from '@nestjs/microservices';
 import { BORKER_PROVIDER } from 'src/broker/broker.provider';
+import { OrderItem } from './schemas/order-item.schema';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectModel(Order.name) private readonly orderModel: Model<Order>,
+    @InjectModel(OrderItem.name)
+    private readonly orderItemModel: Model<OrderItem>,
     @InjectConnection() private readonly dbConnection: mongoose.Connection,
     @Inject(BORKER_PROVIDER) private readonly brokerClient: ClientKafka,
     private readonly catalogService: CatalogService,
@@ -39,7 +42,7 @@ export class OrderService {
   }
 
   async create(userId: string, dto: CreateOrderDto): Promise<IOrder> {
-    const { isValid, subTotal } = (
+    const { isValid, subTotal, items } = (
       await this.catalogService.checkItemsValid(dto.items)
     ).data;
     if (!isValid)
@@ -60,11 +63,19 @@ export class OrderService {
               itemTotal: subTotal,
               orderTotal: subTotal,
               userId,
+              items,
             },
           ],
           { session },
         )
       )[0];
+      await this.orderItemModel.bulkWrite(
+        items.map((item) => ({
+          insertOne: {
+            document: { ...item, orderId: createdOrder._id, userId },
+          },
+        })),
+      );
       await this.brokerClient.emit('orderCreation-orderCreated', {
         orderId: createdOrder._id,
         items: dto.items,

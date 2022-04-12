@@ -24,6 +24,45 @@ export enum DeliveryStatus {
 }
 
 @Schema()
+class OrderItem extends Document {
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    required: true,
+  })
+  productId: string;
+
+  @Prop({
+    type: String,
+    required: true,
+  })
+  productName: string;
+
+  @Prop({
+    type: String,
+    required: false,
+    default: null,
+  })
+  productThumbnail: string;
+
+  @Prop({
+    type: Number,
+    required: true,
+  })
+  price: number;
+
+  @Prop({
+    type: Number,
+    required: true,
+  })
+  quantity: number;
+}
+
+const OrderItemSchema = SchemaFactory.createForClass(OrderItem);
+
+@Schema({
+  versionKey: false,
+  timestamps: true,
+})
 export class Order extends Document implements IOrder {
   @Prop({
     type: String,
@@ -111,9 +150,15 @@ export class Order extends Document implements IOrder {
 
   @Prop({
     type: SchemaTypes.ObjectId,
-    required: false,
+    required: true,
   })
   userId: string;
+
+  @Prop({
+    type: [OrderItemSchema],
+    required: true,
+  })
+  items: OrderItem[];
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

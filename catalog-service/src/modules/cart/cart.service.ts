@@ -108,10 +108,20 @@ export class CartService {
     });
 
     let subTotal = 0;
+    const orderItems = [];
 
     const isValid = items.every((item) => {
       const productFromDb = producsFromDbDict[item.productId];
+
       subTotal += productFromDb.price * item.quantity;
+      orderItems.push({
+        productId: productFromDb._id.toString(),
+        productName: productFromDb.name,
+        productThumbnail: productFromDb.thumbnail,
+        price: productFromDb.price,
+        quantity: item.quantity,
+      });
+
       if (
         !productFromDb.isEnabled ||
         productFromDb.stockQuantity === 0 ||
@@ -121,6 +131,6 @@ export class CartService {
       return true;
     });
 
-    return isValid ? { isValid, subTotal } : { isValid };
+    return isValid ? { isValid, subTotal, items: orderItems } : { isValid };
   }
 }
