@@ -7,9 +7,9 @@ export interface IOrder {
   itemTotal: number;
   deliveryFee: number;
   deliveryStatus: string;
-  deliveryMethod: string;
+  deliveryMethodId: string;
   paymentStatus: string;
-  paymentMethod: string;
+  paymentMethodId: string;
   customerInfo: Record<string, any>;
   userId?: string;
 }

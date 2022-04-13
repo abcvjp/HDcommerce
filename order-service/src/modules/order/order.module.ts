@@ -6,6 +6,8 @@ import { OrderService } from './order.service';
 import { BrokerModule } from 'src/broker/broker.module';
 import { CatalogModule } from 'src/clients/catalog/catalog.module';
 import { OrderItem, OrderItemSchema } from './schemas/order-item.schema';
+import { DeliveryMethodModule } from '../delivery-method/delivery-method.module';
+import { PaymentMethodModule } from '../payment-method/payment-method.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { OrderItem, OrderItemSchema } from './schemas/order-item.schema';
     ]),
     forwardRef(() => BrokerModule),
     CatalogModule,
+    DeliveryMethodModule,
+    PaymentMethodModule,
   ],
   providers: [OrderService],
   controllers: [OrderController],

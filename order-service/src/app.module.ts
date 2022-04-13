@@ -19,6 +19,8 @@ import { RPCExceptionFilter } from './common/filters/rpc-exception.filter';
 import brokerConfig from './config/broker.config';
 import { UserModule } from './clients/user/user.module';
 import { UserMiddleware } from './common/middlewares/user.middleware';
+import { DeliveryMethodModule } from './modules/delivery-method/delivery-method.module';
+import { PaymentMethodModule } from './modules/payment-method/payment-method.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { UserMiddleware } from './common/middlewares/user.middleware';
     }),
     DatabaseModule,
     OrderModule,
+    DeliveryMethodModule,
+    PaymentMethodModule,
     UserModule,
   ],
   controllers: [AppController],

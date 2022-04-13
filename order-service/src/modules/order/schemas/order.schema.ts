@@ -1,6 +1,8 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, SchemaTypes } from 'mongoose';
 import { IOrder } from '../interfaces/order.interface';
+import { DeliveryMethod } from '../../delivery-method/schemas/delivery-method.schema';
+import { PaymentMethod } from '../../payment-method/schemas/payment-method.schema';
 
 export enum OrderStatus {
   CREATING = 'Creating',
@@ -23,7 +25,10 @@ export enum DeliveryStatus {
   FAILED = 'Failed',
 }
 
-@Schema()
+@Schema({
+  versionKey: false,
+  timestamps: true,
+})
 class OrderItem extends Document {
   @Prop({
     type: SchemaTypes.ObjectId,
@@ -137,20 +142,23 @@ export class Order extends Document implements IOrder {
   customerInfo: Record<string, any>;
 
   @Prop({
-    type: String,
+    type: SchemaTypes.ObjectId,
     required: true,
+    ref: DeliveryMethod.name,
   })
-  deliveryMethod: string;
-
-  @Prop({
-    type: String,
-    required: true,
-  })
-  paymentMethod: string;
+  deliveryMethodId: string;
 
   @Prop({
     type: SchemaTypes.ObjectId,
     required: true,
+    ref: PaymentMethod.name,
+  })
+  paymentMethodId: string;
+
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    required: true,
+    ref: 'User',
   })
   userId: string;
 

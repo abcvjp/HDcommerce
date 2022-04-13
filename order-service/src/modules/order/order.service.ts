@@ -8,7 +8,12 @@ import {
 import { Model } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { IOrder } from './interfaces/order.interface';
-import { Order, OrderStatus } from './schemas/order.schema';
+import {
+  DeliveryStatus,
+  Order,
+  OrderStatus,
+  PaymentStatus,
+} from './schemas/order.schema';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CatalogService } from 'src/clients/catalog/catalog.service';
 
@@ -144,7 +149,11 @@ export class OrderService {
       throw new ConflictException('Order is canceled');
     }
 
-    await foundOrder.update({ status: OrderStatus.COMPLETED });
+    await foundOrder.update({
+      status: OrderStatus.COMPLETED,
+      deliveryStatus: DeliveryStatus.SUCCESS,
+      paymentStatus: PaymentStatus.PAID,
+    });
   }
 
   async cancelOrder(id: string): Promise<void> {
