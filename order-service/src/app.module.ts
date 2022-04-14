@@ -10,7 +10,7 @@ import dbConfig from './config/db.config';
 
 import { DatabaseModule } from './database';
 import { OrderModule } from './modules/order/order.module';
-import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { SortQueryParamPipe } from './common/pipes/sort-query-param.pipe';
 import { ExceptionInterceptor } from './common/interceptors/exception.interceptor';
 import { ResponseSerializator } from './common/interceptors/transform.interceptor';
@@ -21,6 +21,7 @@ import { UserModule } from './clients/user/user.module';
 import { UserMiddleware } from './common/middlewares/user.middleware';
 import { DeliveryMethodModule } from './modules/delivery-method/delivery-method.module';
 import { PaymentMethodModule } from './modules/payment-method/payment-method.module';
+import { RolesGuards } from './common/guards/roles.guard';
 
 @Module({
   imports: [
@@ -36,6 +37,10 @@ import { PaymentMethodModule } from './modules/payment-method/payment-method.mod
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuards,
+    },
     {
       provide: APP_PIPE,
       useClass: SortQueryParamPipe,
