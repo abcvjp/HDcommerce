@@ -22,6 +22,8 @@ import mongoose from 'mongoose';
 import { ClientKafka } from '@nestjs/microservices';
 import { BORKER_PROVIDER } from 'src/broker/broker.provider';
 import { OrderItem } from './schemas/order-item.schema';
+import { PaymentMethodService } from '../payment-method/payment-method.service';
+import { DeliveryMethodService } from '../delivery-method/delivery-method.service';
 
 @Injectable()
 export class OrderService {
@@ -32,6 +34,8 @@ export class OrderService {
     @InjectConnection() private readonly dbConnection: mongoose.Connection,
     @Inject(BORKER_PROVIDER) private readonly brokerClient: ClientKafka,
     private readonly catalogService: CatalogService,
+    private readonly paymentMethodService: PaymentMethodService,
+    private readonly deliveryMethodService: DeliveryMethodService,
   ) {}
 
   async findOne(id: string): Promise<IOrder> {
@@ -47,9 +51,12 @@ export class OrderService {
   }
 
   async create(userId: string, dto: CreateOrderDto): Promise<IOrder> {
-    const { isValid, subTotal, items } = (
-      await this.catalogService.checkItemsValid(dto.items)
-    ).data;
+    const [itemsCheckResult, deliveryMethod] = await Promise.all([
+      this.catalogService.checkItemsValid(dto.items),
+      this.deliveryMethodService.findOne(dto.deliveryMethodId),
+      this.paymentMethodService.findOne(dto.paymentMethodId),
+    ]);
+    const { isValid, subTotal, items } = itemsCheckResult;
     if (!isValid)
       throw new NotAcceptableException('Items are not valid to order');
 
@@ -67,6 +74,9 @@ export class OrderService {
               code,
               itemTotal: subTotal,
               orderTotal: subTotal,
+              deliveryFee: deliveryMethod.fixedFee
+                ? deliveryMethod.fixedFee
+                : 0,
               userId,
               items,
             },
@@ -74,7 +84,7 @@ export class OrderService {
           { session },
         )
       )[0];
-      await this.orderItemModel.bulkWrite(
+      this.orderItemModel.bulkWrite(
         items.map((item) => ({
           insertOne: {
             document: { ...item, orderId: createdOrder._id, userId },

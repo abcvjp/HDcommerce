@@ -14,11 +14,13 @@ export class DeliveryMethodService {
   ) {}
 
   async findOne(id: string): Promise<IDeliveryMethod> {
-    const foundOrder = await this.deliveryMethodModel.findById(id).lean();
-    if (!foundOrder) {
-      throw new NotFoundException('Order not found');
+    const foundDeliveryMethod = await this.deliveryMethodModel
+      .findById(id)
+      .lean();
+    if (!foundDeliveryMethod) {
+      throw new NotFoundException('Delivery method not found');
     }
-    return foundOrder;
+    return foundDeliveryMethod;
   }
 
   async findAll(): Promise<IDeliveryMethod[]> {
@@ -33,20 +35,24 @@ export class DeliveryMethodService {
     id: string,
     dto: UpdateDeliveryMethodDto,
   ): Promise<IDeliveryMethod> {
-    const existingOrder = this.deliveryMethodModel.findByIdAndUpdate(id, dto, {
-      new: true,
-    });
-    if (!existingOrder) {
-      throw new NotFoundException('Order not found');
+    const existingDeliveryMethod = this.deliveryMethodModel.findByIdAndUpdate(
+      id,
+      dto,
+      {
+        new: true,
+      },
+    );
+    if (!existingDeliveryMethod) {
+      throw new NotFoundException('DeliveryMethod not found');
     }
-    return existingOrder;
+    return existingDeliveryMethod;
   }
 
   async deleteOne(id: string): Promise<void> {
-    const foundOrder = await this.deliveryMethodModel.findById(id);
-    if (!foundOrder) {
-      throw new NotFoundException('Order not found');
+    const foundDeliveryMethod = await this.deliveryMethodModel.findById(id);
+    if (!foundDeliveryMethod) {
+      throw new NotFoundException('DeliveryMethod not found');
     }
-    await foundOrder.delete();
+    await foundDeliveryMethod.delete();
   }
 }

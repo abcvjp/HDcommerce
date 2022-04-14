@@ -14,11 +14,13 @@ export class PaymentMethodService {
   ) {}
 
   async findOne(id: string): Promise<IPaymentMethod> {
-    const foundOrder = await this.paymentMethodModel.findById(id).lean();
-    if (!foundOrder) {
-      throw new NotFoundException('Order not found');
+    const foundPaymentMethod = await this.paymentMethodModel
+      .findById(id)
+      .lean();
+    if (!foundPaymentMethod) {
+      throw new NotFoundException('PaymentMethod not found');
     }
-    return foundOrder;
+    return foundPaymentMethod;
   }
 
   async findAll(): Promise<IPaymentMethod[]> {
@@ -33,20 +35,24 @@ export class PaymentMethodService {
     id: string,
     dto: UpdatePaymentMethodDto,
   ): Promise<IPaymentMethod> {
-    const existingOrder = this.paymentMethodModel.findByIdAndUpdate(id, dto, {
-      new: true,
-    });
-    if (!existingOrder) {
-      throw new NotFoundException('Order not found');
+    const existingPaymentMethod = this.paymentMethodModel.findByIdAndUpdate(
+      id,
+      dto,
+      {
+        new: true,
+      },
+    );
+    if (!existingPaymentMethod) {
+      throw new NotFoundException('PaymentMethod not found');
     }
-    return existingOrder;
+    return existingPaymentMethod;
   }
 
   async deleteOne(id: string): Promise<void> {
-    const foundOrder = await this.paymentMethodModel.findById(id);
-    if (!foundOrder) {
-      throw new NotFoundException('Order not found');
+    const foundPaymentMethod = await this.paymentMethodModel.findById(id);
+    if (!foundPaymentMethod) {
+      throw new NotFoundException('PaymentMethod not found');
     }
-    await foundOrder.delete();
+    await foundPaymentMethod.delete();
   }
 }

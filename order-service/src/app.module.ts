@@ -18,7 +18,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { RPCExceptionFilter } from './common/filters/rpc-exception.filter';
 import brokerConfig from './config/broker.config';
 import { UserModule } from './clients/user/user.module';
-import { UserMiddleware } from './common/middlewares/user.middleware';
+import { UserIdMiddleware } from './common/middlewares/userId.middleware';
 import { DeliveryMethodModule } from './modules/delivery-method/delivery-method.module';
 import { PaymentMethodModule } from './modules/payment-method/payment-method.module';
 import { RolesGuards } from './common/guards/roles.guard';
@@ -29,9 +29,9 @@ import { RolesGuards } from './common/guards/roles.guard';
       load: [appConfig, dbConfig, brokerConfig],
     }),
     DatabaseModule,
-    OrderModule,
     DeliveryMethodModule,
     PaymentMethodModule,
+    OrderModule,
     UserModule,
   ],
   controllers: [AppController],
@@ -65,7 +65,7 @@ import { RolesGuards } from './common/guards/roles.guard';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(UserMiddleware).forRoutes({
+    consumer.apply(UserIdMiddleware).forRoutes({
       path: '*',
       method: RequestMethod.ALL,
     });

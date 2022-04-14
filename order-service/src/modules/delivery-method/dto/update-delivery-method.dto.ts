@@ -15,7 +15,7 @@ export class UpdateDeliveryMethodDto {
   @IsString()
   detail: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   fixedFee?: number;
 

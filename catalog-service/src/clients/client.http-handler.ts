@@ -8,7 +8,7 @@ export function httpCallHandler(
   return firstValueFrom(
     axiosCall.pipe(
       catchError((error) => throwError(error)),
-      map((res) => res.data?.data),
+      map((res) => (res.data.data ? res.data.data : res.data)),
     ),
   );
 }

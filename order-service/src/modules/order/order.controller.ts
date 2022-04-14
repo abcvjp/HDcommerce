@@ -17,15 +17,15 @@ import { UserRole } from 'src/common/constants';
 export class OrderController {
   constructor(private orderService: OrderService) {}
 
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.orderService.findOne(id);
+  }
+
   @Get()
   @Roles(UserRole.ADMIN)
   findAll() {
     return this.orderService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOne(id);
   }
 
   @Post()
@@ -34,6 +34,7 @@ export class OrderController {
   }
 
   @Put(':id')
+  @Roles(UserRole.ADMIN)
   update(@Param('id') id: string, @Body() updateOrderDto: CreateOrderDto) {
     return this.orderService.update(id, updateOrderDto);
   }

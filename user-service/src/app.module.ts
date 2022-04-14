@@ -9,7 +9,7 @@ import appConfig from './config/app.config';
 import dbConfig from './config/db.config';
 
 import { DatabaseModule } from './database';
-import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ExceptionInterceptor } from './common/interceptors/exception.interceptor';
 import { ResponseSerializator } from './common/interceptors/transform.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -18,7 +18,8 @@ import { SortQueryParamPipe } from './common/pipes/sort-query-param.pipe';
 import brokerConfig from './config/broker.config';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { UserMiddleware } from './common/middlewares/user.middleware';
+import { RolesGuards } from './modules/auth/guards/roles.auth.guard';
+import { UserIdMiddleware } from './common/middlewares/userId.middleware';
 
 @Module({
   imports: [
@@ -32,6 +33,10 @@ import { UserMiddleware } from './common/middlewares/user.middleware';
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuards,
+    },
     {
       provide: APP_PIPE,
       useClass: SortQueryParamPipe,
@@ -56,7 +61,7 @@ import { UserMiddleware } from './common/middlewares/user.middleware';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(UserMiddleware).forRoutes({
+    consumer.apply(UserIdMiddleware).forRoutes({
       path: '*',
       method: RequestMethod.ALL,
     });
