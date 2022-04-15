@@ -61,6 +61,20 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: 3000
+  mailer-service:
+    profiles:
+      - litedev
+      - dev
+    build:
+      context: ./workers/mailer
+      dockerfile: Dockerfile
+    networks:
+      - service-net
+    volumes:
+      - ./workers/mailer:/workdir
+      - /workdir/node_modules
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
   
   #--------------------- GATEWAY ---------------------#
   kongdb:

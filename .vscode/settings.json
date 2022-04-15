@@ -1,0 +1,8 @@
+{
+  "eslint.workingDirectories": [
+    "./catalog-service",
+		"./order-service",
+		"./user-service",
+    "./workers/mailer"
+  ]
+}
