@@ -17,6 +17,7 @@ import { MongoIdPipe } from 'src/common/pipes/mongo-id.pipe';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/common/constants';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { GetRelatedProductsDto } from './dto/ get-related-product.dto';
 
 @Controller('product')
 @UseInterceptors(
@@ -31,6 +32,14 @@ export class ProductController {
   @Get(':id')
   findOne(@Param('id', MongoIdPipe) id: string) {
     return this.productService.findOne(id);
+  }
+
+  @Get(':id/relate')
+  getRelated(
+    @Param('id', MongoIdPipe) id: string,
+    @Query() dto: GetRelatedProductsDto,
+  ) {
+    return this.productService.getRelated(id, dto);
   }
 
   @Get()

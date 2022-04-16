@@ -21,6 +21,7 @@ import {
 import { CategoryService } from '../category/category.service';
 import { Category } from '../category/schemas/category.schema';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { GetRelatedProductsDto } from './dto/ get-related-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -204,5 +205,29 @@ export class ProductService {
         },
       })),
     );
+  }
+
+  async getRelated(
+    id: string,
+    dto: GetRelatedProductsDto,
+  ): Promise<IProduct[]> {
+    const originalProduct = await this.productModel.findById(id).lean();
+    if (!originalProduct) throw new NotFoundException('Product not found');
+    const { name, tags, metaKeywords, categoryId, _id } = originalProduct;
+    const filters: FilterQuery<Product> = {
+      $text: {
+        $search: `${name} ${metaKeywords?.split(',')} ${tags.join(' ')}`,
+      },
+      categoryId,
+      _id: { $ne: _id },
+    };
+    const { startId, skip, limit } = dto;
+    startId && filters.push({ _id: { gt: startId } });
+    const result = await this.productModel
+      .find(filters)
+      .skip(skip ? skip : 0)
+      .limit(limit ? limit : DEFAULT_DBQUERY_LIMIT)
+      .sort({ relevance: { $meta: 'textScore' } });
+    return result;
   }
 }
