@@ -24,6 +24,12 @@ import { BORKER_PROVIDER } from 'src/broker/broker.provider';
 import { OrderItem } from './schemas/order-item.schema';
 import { PaymentMethodService } from '../payment-method/payment-method.service';
 import { DeliveryMethodService } from '../delivery-method/delivery-method.service';
+import { FindAllOrderDto } from './dto/find-all-order.dto';
+import {
+  DEFAULT_DBQUERY_LIMIT,
+  DEFAULT_DBQUERY_SORT,
+} from 'src/common/constants';
+import { mapKeys } from 'lodash';
 
 @Injectable()
 export class OrderService {
@@ -46,8 +52,70 @@ export class OrderService {
     return foundOrder;
   }
 
-  async findAll(): Promise<IOrder[]> {
-    return await this.orderModel.find().exec();
+  async findAll(dto: FindAllOrderDto): Promise<IOrder[]> {
+    const {
+      startId,
+      skip,
+      limit,
+      sort,
+      id,
+      code,
+      userId,
+      deliveryMethodId,
+      paymentMethodId,
+      status,
+      paymentStatus,
+      deliveryStatus,
+      itemTotal,
+      orderTotal,
+      deliveryFee,
+      customerInfo,
+    } = dto;
+
+    const filters = [];
+    startId && filters.push({ _id: { $gt: startId } });
+    id && filters.push({ id: new mongoose.Types.ObjectId(id) });
+    code && filters.push({ code });
+    userId && filters.push({ userId: new mongoose.Types.ObjectId(userId) });
+    deliveryMethodId &&
+      filters.push({
+        deliveryMethodId: new mongoose.Types.ObjectId(deliveryMethodId),
+      });
+    paymentMethodId &&
+      filters.push({
+        deliveryMethodId: new mongoose.Types.ObjectId(paymentMethodId),
+      });
+    status && filters.push({ status });
+    paymentStatus && filters.push({ paymentStatus });
+    deliveryStatus && filters.push({ deliveryStatus });
+    itemTotal && filters.push({ itemTotal: itemTotal.toMongooseFormat() });
+    orderTotal && filters.push({ orderTotal: orderTotal.toMongooseFormat() });
+    deliveryFee &&
+      filters.push({ deliveryFee: deliveryFee.toMongooseFormat() });
+    customerInfo &&
+      filters.push(
+        mapKeys(customerInfo, (value, key) => `customerInfo.${key}`),
+      );
+
+    const dbQuery = this.orderModel.aggregate();
+
+    filters.length !== 0 && dbQuery.match({ $and: filters });
+
+    dbQuery
+      .skip(skip ? skip : 0)
+      .limit(limit ? limit : DEFAULT_DBQUERY_LIMIT)
+      .append({
+        $set: {
+          _id: { $toString: '$_id' },
+          userId: { $toString: '$userId' },
+          deliveryMethodId: { $toString: '$deliveryMethodId' },
+          paymentMethodId: { $toString: '$paymentMethodId' },
+        },
+      })
+      .append({
+        $sort: sort ? sort : DEFAULT_DBQUERY_SORT,
+      });
+    return await dbQuery.exec();
   }
 
   async create(userId: string, dto: CreateOrderDto): Promise<IOrder> {
@@ -80,6 +148,8 @@ export class OrderService {
                 ? deliveryMethod.fixedFee
                 : 0,
               userId,
+              deliveryMethodId: deliveryMethod._id,
+              paymentMethodId: paymentMethod._id,
               items,
             },
           ],
