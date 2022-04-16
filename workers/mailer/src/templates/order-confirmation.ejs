@@ -616,7 +616,7 @@
                                       >
                                         Hey
                                       </span>
-                                      <%= order.customer_name %>,
+                                      <%= customerInfo.name %>,
                                     </p>
 
                                     <p
@@ -700,9 +700,9 @@
                                       align="center"
                                     >
                                       <span data-key="1468270_order_number"
-                                        >Order ID.</span
+                                        >Order CODE.</span
                                       >
-                                      <%= order.id %>
+                                      <%= code %>
                                     </h2>
                                     <p
                                       class="muted"
@@ -719,7 +719,7 @@
                                       "
                                       align="center"
                                     >
-                                      <%= (new Date(order.createdAt)).toDateString(); %>
+                                      <%= (new Date(createdAt)).toDateString(); %>
                                     </p>
                                   </th>
                                 </tr>
@@ -806,7 +806,7 @@
 
                                                 <!-- Bold 2 -->
 
-                                                <% order.order_items.forEach(item => {
+                                                <% items.forEach(item => {
                                                 %>
 
                                                 <tr class="row-border-bottom">
@@ -830,7 +830,7 @@
                                                     <img
                                                       width="140"
                                                       class="product-image"
-                                                      src="<%= item.product_thumbnail %>"
+                                                      src="<%= item.productThumbnail %>"
                                                       alt="Product Image"
                                                       style="
                                                         vertical-align: middle;
@@ -916,7 +916,7 @@
                                                                   font-weight: bold;
                                                                 "
                                                               >
-                                                                <%= item.product_name %>
+                                                                <%= item.productName %>
                                                               </p>
                                                               <br />
                                                             </p>
@@ -1138,7 +1138,7 @@
                                                     bgcolor="#ffffff"
                                                     valign="middle"
                                                   >
-                                                    $<%= order.item_total %>
+                                                    $<%= itemTotal %>
                                                   </th>
                                                 </tr>
 
@@ -1183,7 +1183,7 @@
                                                     bgcolor="#ffffff"
                                                     valign="middle"
                                                   >
-                                                    $<%= order.shipping_fee %>
+                                                    $<%= deliveryFee %>
                                                   </th>
                                                 </tr>
 
@@ -1233,7 +1233,7 @@
                                                     bgcolor="#ffffff"
                                                     valign="middle"
                                                   >
-                                                    $<%= order.order_total %>
+                                                    $<%= orderTotal %>
                                                   </th>
                                                 </tr>
                                               </tbody>
@@ -1377,7 +1377,7 @@
                                             bgcolor="#ffffff"
                                             valign="middle"
                                           >
-                                            <%= order.payment_method.name %>
+                                            <%= paymentMethod.name %>
                                           </th>
                                         </tr>
 
@@ -1454,7 +1454,7 @@
                                             bgcolor="#ffffff"
                                             valign="middle"
                                           >
-                                            <%= order.shipping_method.name %>
+                                            <%= deliveryMethod.name %>
                                           </th>
                                         </tr>
                                       </tbody>
@@ -1564,8 +1564,8 @@
                                                       "
                                                       align="left"
                                                     >
-                                                      <%= order.customer_name %><br />
-                                                      <%= order.phone_number %><br />
+                                                      <%= customerInfo.name %><br />
+                                                      <%= customerInfo.phoneNumber %><br />
                                                       <a
                                                         href="mailto:"
                                                         style="
@@ -1575,7 +1575,7 @@
                                                           word-wrap: break-word;
                                                         "
                                                         target="_blank"
-                                                        ><%= order.email %></a
+                                                        ><%= customerInfo.email %></a
                                                       >
                                                     </p>
                                                   </th>
@@ -1663,7 +1663,7 @@
                                                       "
                                                       align="right"
                                                     >
-                                                      <%= order.address %>
+                                                      <%= customerInfo.address %>
                                                     </p>
                                                   </th>
                                                 </tr>

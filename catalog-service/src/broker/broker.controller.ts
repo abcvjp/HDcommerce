@@ -8,7 +8,6 @@ export class BrokerController {
 
   @EventPattern('orderCreation-orderCreated', Transport.KAFKA)
   async handleOrderCreated(message: any) {
-    const { items, orderId } = message.value;
-    await this.brokerService.handleOrderCreated(orderId, items);
+    await this.brokerService.handleOrderCreated(message.value);
   }
 }
