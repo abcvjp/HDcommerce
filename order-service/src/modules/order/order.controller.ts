@@ -6,12 +6,14 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UserId } from 'src/common/decorators/user-id.decorator';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/common/constants';
+import { FindAllOrderDto } from './dto/find-all-order.dto';
 
 @Controller('')
 export class OrderController {
@@ -24,8 +26,8 @@ export class OrderController {
 
   @Get()
   @Roles(UserRole.ADMIN)
-  findAll() {
-    return this.orderService.findAll();
+  findAll(@Query() dto: FindAllOrderDto) {
+    return this.orderService.findAll(dto);
   }
 
   @Post()
