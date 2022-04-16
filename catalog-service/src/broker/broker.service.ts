@@ -10,12 +10,12 @@ export class BrokerService {
     private readonly productService: ProductService,
   ) {}
 
-  async handleOrderCreated(orderId, items: any[]): Promise<void> {
+  async handleOrderCreated(orderInfo: any): Promise<void> {
     try {
-      await this.productService.decreaseStockQuantity(items);
+      await this.productService.decreaseStockQuantity(orderInfo.items);
     } catch (error) {
-      await this.brokerClient.emit('orderCreation-stockUpdateERR', { orderId });
+      await this.brokerClient.emit('orderCreation-stockUpdateERR', orderInfo);
     }
-    await this.brokerClient.emit('orderCreation-OK', { orderId });
+    await this.brokerClient.emit('orderCreation-stockUpdateOK', orderInfo);
   }
 }

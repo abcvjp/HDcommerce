@@ -23,11 +23,11 @@ export class AppController {
 
   @EventPattern('orderCreation-OK')
   async handleOrderCreated(message: any) {
-    console.log(message.value);
-    // await this.appService.sendMail(
-    // 'test@example.com',
-    // 'order created',
-    // await generateMailContent(message.value, 'order-confirmation'),
-    // );
+    const orderInfo = message.value;
+    await this.appService.sendMail(
+      'test@example.com',
+      'Your order has been created successfully',
+      await generateMailContent(orderInfo, 'order-confirmation'),
+    );
   }
 }

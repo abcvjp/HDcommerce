@@ -51,18 +51,20 @@ export class OrderService {
   }
 
   async create(userId: string, dto: CreateOrderDto): Promise<IOrder> {
-    const [itemsCheckResult, deliveryMethod] = await Promise.all([
-      this.catalogService.checkItemsValid(dto.items),
-      this.deliveryMethodService.findOne(dto.deliveryMethodId),
-      this.paymentMethodService.findOne(dto.paymentMethodId),
-    ]);
+    const [itemsCheckResult, deliveryMethod, paymentMethod] = await Promise.all(
+      [
+        this.catalogService.checkItemsValid(dto.items),
+        this.deliveryMethodService.findOne(dto.deliveryMethodId),
+        this.paymentMethodService.findOne(dto.paymentMethodId),
+      ],
+    );
     const { isValid, subTotal, items } = itemsCheckResult;
     if (!isValid)
       throw new NotAcceptableException('Items are not valid to order');
 
     const code = shortid.generate();
 
-    let createdOrder;
+    let createdOrder: Order;
     const session = await this.dbConnection.startSession();
     session.startTransaction();
     try {
@@ -92,8 +94,17 @@ export class OrderService {
         })),
       );
       await this.brokerClient.emit('orderCreation-orderCreated', {
-        orderId: createdOrder._id,
-        items: dto.items,
+        orderId: createdOrder._id.toString(),
+        code: createdOrder.code,
+        items: createdOrder.items,
+        userId: createdOrder.userId,
+        deliveryMethod,
+        paymentMethod,
+        customerInfo: createdOrder.customerInfo,
+        deliveryFee: createdOrder.deliveryFee,
+        itemTotal: createdOrder.itemTotal,
+        orderTotal: createdOrder.orderTotal,
+        createdAt: createdOrder.createdAt,
       });
       await session.commitTransaction();
     } catch (error) {
@@ -188,6 +199,13 @@ export class OrderService {
     await this.orderModel.updateOne(
       { _id: id },
       { status: OrderStatus.FAILED },
+    );
+  }
+
+  async pendingOrder(id: string): Promise<void> {
+    await this.orderModel.updateOne(
+      { _id: id },
+      { status: OrderStatus.PENDING },
     );
   }
 }

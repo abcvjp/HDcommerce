@@ -14,7 +14,8 @@ export class BrokerService {
     this.orderService.failOrder(orderId);
   }
 
-  async handleOrderCreationSucceed(orderId: string): Promise<void> {
-    console.log(`order ${orderId} created`);
+  async handleOrderCreationSucceed(orderInfo: any): Promise<void> {
+    this.orderService.pendingOrder(orderInfo.orderId);
+    this.brokerClient.emit('orderCreation-OK', orderInfo);
   }
 }

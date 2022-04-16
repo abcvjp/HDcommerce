@@ -2,12 +2,11 @@ import { registerAs } from '@nestjs/config';
 // import * as Joi from 'joi';
 
 export default registerAs('broker', () => {
-  const { BROKER_HOST, BROKER_PORT, BROKER_API_KEY, BROKER_API_SECRET } =
-    process.env;
+  const { BROKER_URI, BROKER_API_KEY, BROKER_API_SECRET } = process.env;
   const config = {
     client: {
       clientId: 'order',
-      brokers: [`${BROKER_HOST}:${BROKER_PORT}`],
+      brokers: [BROKER_URI],
       ssl: true,
       sasl: {
         mechanism: 'plain', // scram-sha-256 or scram-sha-512

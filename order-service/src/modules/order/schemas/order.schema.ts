@@ -167,6 +167,9 @@ export class Order extends Document implements IOrder {
     required: true,
   })
   items: OrderItem[];
+
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

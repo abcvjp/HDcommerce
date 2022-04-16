@@ -6,10 +6,10 @@ import { BrokerService } from './broker.service';
 export class BrokerController {
   constructor(private readonly brokerService: BrokerService) {}
 
-  @EventPattern('orderCreation-OK')
+  @EventPattern('orderCreation-stockUpdateOK')
   async handleOrderCreationSucceed(message: any) {
-    const { orderId } = message.value;
-    await this.brokerService.handleOrderCreationSucceed(orderId);
+    const orderInfo = message.value;
+    await this.brokerService.handleOrderCreationSucceed(orderInfo);
   }
 
   @EventPattern('orderCreation-stockUpdateERR')
