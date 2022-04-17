@@ -23,6 +23,7 @@ import { RolesGuards } from './common/guards/roles.guard';
 import { UserModule } from './clients/user/user.module';
 import { UserMiddleware } from './common/middlewares/user.middleware';
 import { BrokerModule } from './broker/broker.module';
+import { HttpLoggerMiddleware } from './common/middlewares/http-logger.middleware';
 
 @Module({
   imports: [
@@ -67,7 +68,7 @@ import { BrokerModule } from './broker/broker.module';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(UserMiddleware).forRoutes({
+    consumer.apply(UserMiddleware, HttpLoggerMiddleware).forRoutes({
       path: '*',
       method: RequestMethod.ALL,
     });
