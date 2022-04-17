@@ -16,7 +16,8 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<IUser | null> {
     const user = await this.userService.findByEmail(email);
     if (await comparePassword(password, user.passwordHash)) {
-      return user;
+      const { passwordHash, ...temp } = user;
+      return temp;
     }
     return null;
   }
@@ -24,12 +25,12 @@ export class AuthService {
   async login(user: IUser) {
     const { _id, email, role } = user;
     const { key } = await this.gatewayService.createConsumerJWT(_id);
-    console.log(key);
     const payload = { _id, email, role, iss: key };
     return {
       accessToken: this.jwtService.sign(payload, {
         privateKey: key,
       }),
+      user,
     };
   }
 
