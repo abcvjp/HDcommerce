@@ -20,6 +20,7 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RolesGuards } from './modules/auth/guards/roles.auth.guard';
 import { UserIdMiddleware } from './common/middlewares/userId.middleware';
+import { HttpLoggerMiddleware } from './common/middlewares/http-logger.middleware';
 
 @Module({
   imports: [
@@ -61,7 +62,7 @@ import { UserIdMiddleware } from './common/middlewares/userId.middleware';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(UserIdMiddleware).forRoutes({
+    consumer.apply(UserIdMiddleware, HttpLoggerMiddleware).forRoutes({
       path: '*',
       method: RequestMethod.ALL,
     });
