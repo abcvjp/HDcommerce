@@ -18,7 +18,7 @@ async function bootstrap() {
     options: config.get('broker'),
   });
 
-  app.enableCors();
+  app.enableCors({ origin: true, credentials: true });
   app.useGlobalPipes(
     new ValidationPipe({
       forbidUnknownValues: true,
