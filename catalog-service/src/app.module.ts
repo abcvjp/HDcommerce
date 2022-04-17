@@ -24,6 +24,7 @@ import { UserModule } from './clients/user/user.module';
 import { UserMiddleware } from './common/middlewares/user.middleware';
 import { BrokerModule } from './broker/broker.module';
 import { HttpLoggerMiddleware } from './common/middlewares/http-logger.middleware';
+import { ReviewModule } from './modules/review/review.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { HttpLoggerMiddleware } from './common/middlewares/http-logger.middlewar
     CategoryModule,
     ProductModule,
     CartModule,
+    ReviewModule,
     UserModule,
     BrokerModule,
   ],
