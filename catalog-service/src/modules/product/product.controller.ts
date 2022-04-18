@@ -18,6 +18,8 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/common/constants';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { GetRelatedProductsDto } from './dto/ get-related-product.dto';
+import { UserId } from 'src/common/decorators/user-id.decorator';
+import { ReviewProductDto } from './dto/review-product.dto';
 
 @Controller('product')
 @UseInterceptors(
@@ -42,9 +44,23 @@ export class ProductController {
     return this.productService.getRelated(id, dto);
   }
 
+  @Get(':id/review')
+  getReviews(@Param('id', MongoIdPipe) id: string) {
+    return this.productService.getReviews(id);
+  }
+
   @Get()
   findAll(@Query() query: FindAllProductDto) {
     return this.productService.findAll(query);
+  }
+
+  @Post(':id/review')
+  review(
+    @Param('id', MongoIdPipe) id: string,
+    @UserId() userId: string,
+    @Body() dto: ReviewProductDto,
+  ) {
+    return this.productService.createReview(userId, id, dto);
   }
 
   @Post()
