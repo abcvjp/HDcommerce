@@ -22,6 +22,9 @@ import { CategoryService } from '../category/category.service';
 import { Category } from '../category/schemas/category.schema';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { GetRelatedProductsDto } from './dto/ get-related-product.dto';
+import { ReviewProductDto } from './dto/review-product.dto';
+import { IReview } from '../review/interfaces/review.interface';
+import { ReviewService } from '../review/review.service';
 
 @Injectable()
 export class ProductService {
@@ -30,6 +33,7 @@ export class ProductService {
     @InjectConnection() private readonly dbConnection: mongoose.Connection,
     @Inject(forwardRef(() => CategoryService))
     private readonly categoryService: CategoryService,
+    private readonly reviewService: ReviewService,
   ) {}
 
   async findOne(id: string): Promise<IProduct> {
@@ -229,5 +233,17 @@ export class ProductService {
       .limit(limit ? limit : DEFAULT_DBQUERY_LIMIT)
       .sort({ relevance: { $meta: 'textScore' } });
     return result;
+  }
+
+  async createReview(
+    userId: string,
+    productId: string,
+    dto: ReviewProductDto,
+  ): Promise<IReview> {
+    return this.reviewService.create(userId, { productId, ...dto });
+  }
+
+  async getReviews(id: string): Promise<IReview[]> {
+    return await this.reviewService.findByProductId(id);
   }
 }

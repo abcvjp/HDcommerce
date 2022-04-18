@@ -33,7 +33,8 @@ export class Review extends Document implements IReview {
 
   @Prop({
     type: Number,
-    required: true,
+    required: false,
+    default: null,
   })
   star: number;
 }
