@@ -15,9 +15,27 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/common/constants';
 import { FindAllOrderDto } from './dto/find-all-order.dto';
 
-@Controller('')
+@Controller('/order')
 export class OrderController {
   constructor(private orderService: OrderService) {}
+
+  @Get(':id/confirm')
+  @Roles(UserRole.ADMIN)
+  confirm(@Param('id') id: string) {
+    return this.orderService.confirm(id);
+  }
+
+  @Get(':id/complete')
+  @Roles(UserRole.ADMIN)
+  complete(@Param('id') id: string) {
+    return this.orderService.complete(id);
+  }
+
+  @Get(':id/cancel')
+  @Roles(UserRole.ADMIN)
+  cancel(@Param('id') id: string) {
+    return this.orderService.cancel(id);
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
