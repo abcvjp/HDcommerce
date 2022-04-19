@@ -205,7 +205,7 @@ export class OrderService {
     await foundOrder.delete();
   }
 
-  async confirmOrder(id: string): Promise<void> {
+  async confirm(id: string): Promise<void> {
     const foundOrder = await this.orderModel.findById(id);
     if (!foundOrder) {
       throw new NotFoundException('Order not found');
@@ -222,7 +222,7 @@ export class OrderService {
     await foundOrder.update({ status: OrderStatus.HANDLING });
   }
 
-  async completeOrder(id: string): Promise<void> {
+  async complete(id: string): Promise<void> {
     const foundOrder = await this.orderModel.findById(id);
     if (!foundOrder) {
       throw new NotFoundException('Order not found');
@@ -247,7 +247,7 @@ export class OrderService {
     });
   }
 
-  async cancelOrder(id: string): Promise<void> {
+  async cancel(id: string): Promise<void> {
     const foundOrder = await this.orderModel.findById(id);
     if (!foundOrder) {
       throw new NotFoundException('Order not found');
