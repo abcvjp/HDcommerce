@@ -11,6 +11,10 @@ export class FindAllProductDto extends FindAllDto {
   readonly categoryId: string;
 
   @IsOptional()
+  @BooleanQuery()
+  readonly includeCategory: boolean;
+
+  @IsOptional()
   @IsString()
   readonly name: string;
 

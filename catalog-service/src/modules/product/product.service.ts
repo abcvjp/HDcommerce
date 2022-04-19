@@ -54,6 +54,7 @@ export class ProductService {
       limit,
       sort,
       categoryId,
+      includeCategory,
       price,
       name,
       isEnabled,
@@ -88,6 +89,24 @@ export class ProductService {
     conditions.length !== 0 && (filters = { $and: conditions });
     dbQuery.match(filters);
 
+    if (includeCategory === true) {
+      dbQuery
+        .lookup({
+          from: 'categories',
+          let: { categoryId: '$categoryId' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$_id', '$$categoryId'] } } },
+            { $project: { _id: 1, name: 1, slug: 1 } },
+            { $set: { _id: { $toString: '$_id' } } },
+          ],
+          as: 'category',
+        })
+        .project({ categoryId: 0 })
+        .unwind('$category');
+    } else {
+      dbQuery.append({ $set: { categoryId: { $toString: '$categoryId' } } });
+    }
+
     const [records, count] = await Promise.all([
       dbQuery
         .skip(skip ? skip : DEFAULT_DBQUERY_SKIP)
@@ -95,7 +114,7 @@ export class ProductService {
         .append({
           $set: {
             _id: { $toString: '$_id' },
-            categoryId: { $toString: '$categoryId' },
+            // categoryId: { $toString: '$categoryId' },
             // relevance: { $meta: 'textScore' },
           },
         })
