@@ -17,6 +17,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import mongoose from 'mongoose';
 import { ProductService } from '../product/product.service';
 import { ICategory } from './interfaces/category.interface';
+import { FindAllResult } from 'src/common/classes/find-all.result';
 
 @Injectable()
 export class CategoryService {
@@ -47,7 +48,7 @@ export class CategoryService {
     return foundCategory;
   }
 
-  async findAll(query: FindAllCategoryDto): Promise<ICategory[]> {
+  async findAll(query: FindAllCategoryDto): Promise<FindAllResult<ICategory>> {
     const { startId, skip, limit, sort, slug, includeChildren } = query;
 
     const filters: FilterQuery<Category> = startId
@@ -70,8 +71,12 @@ export class CategoryService {
       dbQuery.select('-children');
     }
 
-    const foundCategories = await dbQuery;
-    foundCategories.forEach((category) => {
+    const [records, count] = [
+      await dbQuery,
+      await this.categoryModel.countDocuments(filters),
+    ];
+
+    records.forEach((category) => {
       category._id = category._id.toString();
       if (category.children) {
         category.children.forEach((x) => {
@@ -79,7 +84,7 @@ export class CategoryService {
         });
       }
     });
-    return foundCategories;
+    return new FindAllResult(records, count);
   }
 
   async create(dto: CreateCategoryDto): Promise<Category> {

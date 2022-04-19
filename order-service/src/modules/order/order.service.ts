@@ -30,6 +30,7 @@ import {
   DEFAULT_DBQUERY_SORT,
 } from 'src/common/constants';
 import { mapKeys } from 'lodash';
+import { FindAllResult } from 'src/common/classes/find-all.result';
 
 @Injectable()
 export class OrderService {
@@ -52,7 +53,7 @@ export class OrderService {
     return foundOrder;
   }
 
-  async findAll(dto: FindAllOrderDto): Promise<IOrder[]> {
+  async findAll(dto: FindAllOrderDto): Promise<FindAllResult<IOrder>> {
     const {
       startId,
       skip,
@@ -101,21 +102,25 @@ export class OrderService {
 
     filters.length !== 0 && dbQuery.match({ $and: filters });
 
-    dbQuery
-      .skip(skip ? skip : 0)
-      .limit(limit ? limit : DEFAULT_DBQUERY_LIMIT)
-      .append({
-        $set: {
-          _id: { $toString: '$_id' },
-          userId: { $toString: '$userId' },
-          deliveryMethodId: { $toString: '$deliveryMethodId' },
-          paymentMethodId: { $toString: '$paymentMethodId' },
-        },
-      })
-      .append({
-        $sort: sort ? sort : DEFAULT_DBQUERY_SORT,
-      });
-    return await dbQuery.exec();
+    const [records, count] = await Promise.all([
+      dbQuery
+        .skip(skip ? skip : 0)
+        .limit(limit ? limit : DEFAULT_DBQUERY_LIMIT)
+        .append({
+          $set: {
+            _id: { $toString: '$_id' },
+            userId: { $toString: '$userId' },
+            deliveryMethodId: { $toString: '$deliveryMethodId' },
+            paymentMethodId: { $toString: '$paymentMethodId' },
+          },
+        })
+        .append({
+          $sort: sort ? sort : DEFAULT_DBQUERY_SORT,
+        })
+        .exec(),
+      this.orderModel.countDocuments(filters),
+    ]);
+    return new FindAllResult(records, count);
   }
 
   async create(userId: string, dto: CreateOrderDto): Promise<IOrder> {
