@@ -25,6 +25,7 @@ import { GetRelatedProductsDto } from './dto/ get-related-product.dto';
 import { ReviewProductDto } from './dto/review-product.dto';
 import { IReview } from '../review/interfaces/review.interface';
 import { ReviewService } from '../review/review.service';
+import { FindAllResult } from 'src/common/classes/find-all.result';
 
 @Injectable()
 export class ProductService {
@@ -46,7 +47,7 @@ export class ProductService {
     return foundProduct;
   }
 
-  async findAll(query: FindAllProductDto): Promise<IProduct[]> {
+  async findAll(query: FindAllProductDto): Promise<FindAllResult<IProduct>> {
     const {
       startId,
       skip,
@@ -64,45 +65,51 @@ export class ProductService {
       keyword,
     } = query;
 
-    const filters = [];
-    startId && filters.push({ _id: { $gt: startId } });
+    const conditions = [];
+    startId && conditions.push({ _id: { $gt: startId } });
     categoryId &&
-      filters.push({ categoryId: new mongoose.Types.ObjectId(categoryId) });
-    name && filters.push({ name });
-    isEnabled !== undefined && filters.push({ isEnabled });
-    isPublic !== undefined && filters.push({ isPublic });
-    keyword && filters.push({ $text: { $search: keyword } });
-    tags && filters.push({ tags: { $all: tags } });
-    price && filters.push({ price: price.toMongooseFormat() });
+      conditions.push({ categoryId: new mongoose.Types.ObjectId(categoryId) });
+    name && conditions.push({ name });
+    isEnabled !== undefined && conditions.push({ isEnabled });
+    isPublic !== undefined && conditions.push({ isPublic });
+    keyword && conditions.push({ $text: { $search: keyword } });
+    tags && conditions.push({ tags: { $all: tags } });
+    price && conditions.push({ price: price.toMongooseFormat() });
     originalPrice &&
-      filters.push({ originalPrice: originalPrice.toMongooseFormat() });
+      conditions.push({ originalPrice: originalPrice.toMongooseFormat() });
     stockQuantity &&
-      filters.push({ stockQuantity: stockQuantity.toMongooseFormat() });
+      conditions.push({ stockQuantity: stockQuantity.toMongooseFormat() });
     soldQuantity &&
-      filters.push({ soldQuantity: soldQuantity.toMongooseFormat() });
+      conditions.push({ soldQuantity: soldQuantity.toMongooseFormat() });
 
     const dbQuery = this.productModel.aggregate();
 
-    filters.length !== 0 && dbQuery.match({ $and: filters });
+    let filters = {};
+    conditions.length !== 0 && (filters = { $and: conditions });
+    dbQuery.match(filters);
 
-    dbQuery
-      .skip(skip ? skip : DEFAULT_DBQUERY_SKIP)
-      .limit(limit ? limit : DEFAULT_DBQUERY_LIMIT)
-      .append({
-        $set: {
-          _id: { $toString: '$_id' },
-          categoryId: { $toString: '$categoryId' },
-          // relevance: { $meta: 'textScore' },
-        },
-      })
-      .append({
-        $sort: sort
-          ? sort
-          : keyword
-          ? { relevance: { $meta: 'textScore' } }
-          : DEFAULT_DBQUERY_SORT,
-      });
-    return await dbQuery.exec();
+    const [records, count] = await Promise.all([
+      dbQuery
+        .skip(skip ? skip : DEFAULT_DBQUERY_SKIP)
+        .limit(limit ? limit : DEFAULT_DBQUERY_LIMIT)
+        .append({
+          $set: {
+            _id: { $toString: '$_id' },
+            categoryId: { $toString: '$categoryId' },
+            // relevance: { $meta: 'textScore' },
+          },
+        })
+        .append({
+          $sort: sort
+            ? sort
+            : keyword
+            ? { relevance: { $meta: 'textScore' } }
+            : DEFAULT_DBQUERY_SORT,
+        })
+        .exec(),
+      this.productModel.countDocuments(filters),
+    ]);
+    return new FindAllResult(records, count);
   }
 
   async findByIds(ids: string[]): Promise<Product[]> {

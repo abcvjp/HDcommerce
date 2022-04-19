@@ -21,6 +21,7 @@ import { GatewayService } from 'src/clients/gateway/gateway.service';
 import { hashPassword } from 'src/utils/password';
 import mongoose from 'mongoose';
 import { BORKER_PROVIDER } from 'src/broker/broker.provider';
+import { FindAllResult } from 'src/common/classes/find-all.result';
 // import * as moment from 'moment';
 
 @Injectable()
@@ -42,7 +43,7 @@ export class UserService {
     return foundUser;
   }
 
-  async findAll(query: FindAllUserDto): Promise<User[]> {
+  async findAll(query: FindAllUserDto): Promise<FindAllResult<IUser>> {
     const { startId, skip, limit, sort, isEnabled, role, gender, birthDay } =
       query;
 
@@ -52,12 +53,16 @@ export class UserService {
     role && (filter.role = role);
     gender && (filter.gender = gender);
 
-    return await this.userModel
-      .find(filter, { passwordHash: 0 })
-      .sort(sort ? sort : { _id: 1 })
-      .skip(skip ? skip : DEFAULT_DBQUERY_SKIP)
-      .limit(limit ? limit : DEFAULT_DBQUERY_LIMIT)
-      .lean();
+    const [records, count] = await Promise.all([
+      this.userModel
+        .find(filter, { passwordHash: 0 })
+        .sort(sort ? sort : { _id: 1 })
+        .skip(skip ? skip : DEFAULT_DBQUERY_SKIP)
+        .limit(limit ? limit : DEFAULT_DBQUERY_LIMIT)
+        .lean(),
+      this.userModel.countDocuments(filter),
+    ]);
+    return new FindAllResult(records, count);
   }
 
   async findByEmail(email: string): Promise<IUser> {
