@@ -38,10 +38,10 @@ import { HttpLoggerMiddleware } from './common/middlewares/http-logger.middlewar
       provide: APP_GUARD,
       useClass: RolesGuards,
     },
-    {
-      provide: APP_PIPE,
-      useClass: SortQueryParamPipe,
-    },
+    // {
+    // provide: APP_PIPE,
+    // useClass: SortQueryParamPipe,
+    // },
     {
       provide: APP_INTERCEPTOR,
       useClass: ExceptionInterceptor,
