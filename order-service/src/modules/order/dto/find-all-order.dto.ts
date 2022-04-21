@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  IsDate,
   IsEmail,
   IsEnum,
   IsMongoId,
@@ -79,4 +80,12 @@ export class FindAllOrderDto extends FindAllDto {
   @IsOptional()
   @Type(() => CustomerInfoDto)
   customerInfo: CustomerInfoDto;
+
+  @IsOptional()
+  @IsDate()
+  startDate: Date;
+
+  @IsOptional()
+  @IsDate()
+  endDate: Date;
 }
