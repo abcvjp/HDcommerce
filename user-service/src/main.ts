@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { Transport } from '@nestjs/microservices';
+import { SortQueryParamPipe } from './common/pipes/sort-query-param.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -41,6 +42,7 @@ async function bootstrap() {
       enableDebugMessages:
         config.get('app.environment') === 'development' ? true : false,
     }),
+    new SortQueryParamPipe(),
   );
 
   const environment = config.get('app.environment');
