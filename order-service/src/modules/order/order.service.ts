@@ -32,6 +32,10 @@ import {
 import { mapKeys } from 'lodash';
 import { FindAllResult } from 'src/common/classes/find-all.result';
 
+import { InjectStripe } from 'nestjs-stripe';
+import Stripe from 'stripe';
+import { PayWithStripeDto } from './dto/pay-with-stripe.dto';
+
 @Injectable()
 export class OrderService {
   constructor(
@@ -40,6 +44,7 @@ export class OrderService {
     private readonly orderItemModel: Model<OrderItem>,
     @InjectConnection() private readonly dbConnection: mongoose.Connection,
     @Inject(BORKER_PROVIDER) private readonly brokerClient: ClientKafka,
+    @InjectStripe() private readonly stripeClient: Stripe,
     private readonly catalogService: CatalogService,
     private readonly paymentMethodService: PaymentMethodService,
     private readonly deliveryMethodService: DeliveryMethodService,
@@ -286,5 +291,73 @@ export class OrderService {
       { _id: id },
       { status: OrderStatus.PENDING },
     );
+  }
+
+  async payWithStripe(id: string, dto: PayWithStripeDto): Promise<any> {
+    console.log(dto);
+    const orderToPay = await this.orderModel.findById(id);
+    if (!orderToPay) throw new NotFoundException('Order not found');
+    if (
+      [
+        OrderStatus.CANCELED,
+        OrderStatus.COMPLETED,
+        OrderStatus.FAILED,
+      ].includes(orderToPay.status)
+    )
+      throw new ConflictException('Order can not be paid');
+
+    const { tokenId } = dto;
+    const { orderTotal, itemTotal, deliveryFee, userId } = orderToPay;
+    const { email, name, phoneNumber, address } = orderToPay.customerInfo;
+    const charge = {
+      amount: orderTotal * 100,
+      currency: 'usd',
+      source: tokenId,
+      receipt_email: email,
+      shipping: {
+        address: {
+          line1: address,
+        },
+        name: name,
+        phone: phoneNumber,
+      },
+      metadata: {
+        orderId: id,
+        userId,
+        itemTotal,
+        deliveryFee,
+      },
+    };
+
+    let paymentResult;
+    const session = await this.dbConnection.startSession();
+    session.startTransaction();
+    try {
+      paymentResult = await this.stripeClient.charges.create(charge);
+      await orderToPay.update(
+        { paymentStatus: PaymentStatus.PAID },
+        { session },
+      );
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+
+    return paymentResult;
+  }
+
+  async createCardToken(): Promise<any> {
+    const token = await this.stripeClient.tokens.create({
+      card: {
+        number: '4242424242424242',
+        exp_month: '4',
+        exp_year: '2023',
+        cvc: '314',
+      },
+    } as Stripe.TokenCreateParams);
+    return token;
   }
 }

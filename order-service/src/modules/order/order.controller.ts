@@ -14,6 +14,8 @@ import { UserId } from 'src/common/decorators/user-id.decorator';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/common/constants';
 import { FindAllOrderDto } from './dto/find-all-order.dto';
+import { MongoIdPipe } from 'src/common/pipes/mongo-id.pipe';
+import { PayWithStripeDto } from './dto/pay-with-stripe.dto';
 
 @Controller('/order')
 export class OrderController {
@@ -37,6 +39,11 @@ export class OrderController {
     return this.orderService.cancel(id);
   }
 
+  @Get('/card-token')
+  createCardToken() {
+    return this.orderService.createCardToken();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.orderService.findOne(id);
@@ -46,6 +53,11 @@ export class OrderController {
   @Roles(UserRole.ADMIN)
   findAll(@Query() dto: FindAllOrderDto) {
     return this.orderService.findAll(dto);
+  }
+
+  @Post(':id/payment')
+  payWithStripe(@Param('id') id: string, @Body() dto: PayWithStripeDto) {
+    return this.orderService.payWithStripe(id, dto);
   }
 
   @Post()

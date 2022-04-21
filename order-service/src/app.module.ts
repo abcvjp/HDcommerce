@@ -10,7 +10,7 @@ import dbConfig from './config/db.config';
 
 import { DatabaseModule } from './database';
 import { OrderModule } from './modules/order/order.module';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ExceptionInterceptor } from './common/interceptors/exception.interceptor';
 import { ResponseSerializator } from './common/interceptors/transform.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
