@@ -71,6 +71,8 @@ export class OrderService {
       orderTotal,
       deliveryFee,
       customerInfo,
+      startDate,
+      endDate,
     } = dto;
 
     const filters = [];
@@ -97,6 +99,8 @@ export class OrderService {
       filters.push(
         mapKeys(customerInfo, (value, key) => `customerInfo.${key}`),
       );
+    startDate && filters.push({ createdAt: { $gte: startDate } });
+    endDate && filters.push({ createdAt: { $lte: endDate } });
 
     const dbQuery = this.orderModel.aggregate();
 

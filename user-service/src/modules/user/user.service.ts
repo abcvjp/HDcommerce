@@ -23,6 +23,7 @@ import mongoose from 'mongoose';
 import { BORKER_PROVIDER } from 'src/broker/broker.provider';
 import { FindAllResult } from 'src/common/classes/find-all.result';
 // import * as moment from 'moment';
+import { merge } from 'lodash';
 
 @Injectable()
 export class UserService {
@@ -44,14 +45,27 @@ export class UserService {
   }
 
   async findAll(query: FindAllUserDto): Promise<FindAllResult<IUser>> {
-    const { startId, skip, limit, sort, isEnabled, role, gender, birthDay } =
-      query;
+    const {
+      startId,
+      skip,
+      limit,
+      sort,
+      isEnabled,
+      role,
+      gender,
+      birthDay,
+      startDate,
+      endDate,
+    } = query;
 
     const filter: FilterQuery<User> = {};
     startId && (filter._id = { $gt: startId });
     isEnabled !== undefined && (filter.isEnabled = isEnabled);
     role && (filter.role = role);
     gender && (filter.gender = gender);
+    birthDay && (filter.birthDay = birthDay);
+    startDate && (filter.createdAt = { $gte: startDate });
+    endDate && (filter.createdAt = merge(filter.createdAt, { $lte: endDate }));
 
     const [records, count] = await Promise.all([
       this.userModel
