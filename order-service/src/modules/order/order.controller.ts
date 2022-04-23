@@ -23,19 +23,19 @@ export class OrderController {
 
   @Get(':id/confirm')
   @Roles(UserRole.ADMIN)
-  confirm(@Param('id') id: string) {
+  confirm(@Param('id', MongoIdPipe) id: string) {
     return this.orderService.confirm(id);
   }
 
   @Get(':id/complete')
   @Roles(UserRole.ADMIN)
-  complete(@Param('id') id: string) {
+  complete(@Param('id', MongoIdPipe) id: string) {
     return this.orderService.complete(id);
   }
 
   @Get(':id/cancel')
   @Roles(UserRole.ADMIN)
-  cancel(@Param('id') id: string) {
+  cancel(@Param('id', MongoIdPipe) id: string) {
     return this.orderService.cancel(id);
   }
 
@@ -45,7 +45,7 @@ export class OrderController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', MongoIdPipe) id: string) {
     return this.orderService.findOne(id);
   }
 
@@ -56,7 +56,10 @@ export class OrderController {
   }
 
   @Post(':id/payment')
-  payWithStripe(@Param('id') id: string, @Body() dto: PayWithStripeDto) {
+  payWithStripe(
+    @Param('id', MongoIdPipe) id: string,
+    @Body() dto: PayWithStripeDto,
+  ) {
     return this.orderService.payWithStripe(id, dto);
   }
 
@@ -67,13 +70,16 @@ export class OrderController {
 
   @Put(':id')
   @Roles(UserRole.ADMIN)
-  update(@Param('id') id: string, @Body() updateOrderDto: CreateOrderDto) {
+  update(
+    @Param('id', MongoIdPipe) id: string,
+    @Body() updateOrderDto: CreateOrderDto,
+  ) {
     return this.orderService.update(id, updateOrderDto);
   }
 
   @Delete(':id')
   @Roles(UserRole.ADMIN)
-  deleteOne(@Param('id') id: string) {
+  deleteOne(@Param('id', MongoIdPipe) id: string) {
     return this.orderService.deleteOne(id);
   }
 }
