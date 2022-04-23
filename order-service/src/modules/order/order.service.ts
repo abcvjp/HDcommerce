@@ -334,10 +334,17 @@ export class OrderService {
     session.startTransaction();
     try {
       paymentResult = await this.stripeClient.charges.create(charge);
-      await orderToPay.update(
-        { paymentStatus: PaymentStatus.PAID },
-        { session },
-      );
+      if (orderToPay.deliveryStatus === DeliveryStatus.SUCCESS) {
+        await orderToPay.update(
+          { paymentStatus: PaymentStatus.PAID, status: OrderStatus.COMPLETED },
+          { session },
+        );
+      } else {
+        await orderToPay.update(
+          { paymentStatus: PaymentStatus.PAID },
+          { session },
+        );
+      }
       await session.commitTransaction();
     } catch (error) {
       await session.abortTransaction();
