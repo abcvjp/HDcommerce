@@ -20,6 +20,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { GetRelatedProductsDto } from './dto/ get-related-product.dto';
 import { UserId } from 'src/common/decorators/user-id.decorator';
 import { ReviewProductDto } from './dto/review-product.dto';
+import { DeleteMultiProductDto } from './dto/delete-multi-product.dto';
 
 @Controller('product')
 @UseInterceptors(
@@ -82,5 +83,11 @@ export class ProductController {
   @Roles(UserRole.ADMIN)
   deleteOne(@Param('id', MongoIdPipe) id: string) {
     return this.productService.deleteOne(id);
+  }
+
+  @Delete('')
+  @Roles(UserRole.ADMIN)
+  deleteMany(@Query() dto: DeleteMultiProductDto) {
+    return this.productService.deleteMany(dto);
   }
 }

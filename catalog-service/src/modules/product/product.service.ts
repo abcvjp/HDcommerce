@@ -26,6 +26,7 @@ import { ReviewProductDto } from './dto/review-product.dto';
 import { IReview } from '../review/interfaces/review.interface';
 import { ReviewService } from '../review/review.service';
 import { FindAllResult } from 'src/common/classes/find-all.result';
+import { DeleteMultiProductDto } from './dto/delete-multi-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -185,28 +186,35 @@ export class ProductService {
     await foundProduct.delete();
   }
 
-  async deleteMany(ids: string[]): Promise<void> {
-    const foundProducts = await this.productModel.find({
-      _id: { $in: ids },
+  async deleteMany(dto: DeleteMultiProductDto): Promise<any> {
+    const { deletedCount } = await this.productModel.deleteMany({
+      _id: { $in: dto.ids },
     });
-    if (foundProducts.length !== ids.length) {
-      throw new NotFoundException('One or several products do not exist');
-    }
-
-    const session = await this.dbConnection.startSession();
-    session.startTransaction();
-    try {
-      await Promise.all(
-        foundProducts.map((product) => product.delete({ session })),
-      );
-      await session.commitTransaction();
-    } catch (error) {
-      await session.abortTransaction();
-      throw error;
-    } finally {
-      session.endSession();
-    }
+    return { deletedCount };
   }
+
+  // async deleteMany(ids: string[]): Promise<void> {
+  // const foundProducts = await this.productModel.find({
+  // _id: { $in: ids },
+  // });
+  // if (foundProducts.length !== ids.length) {
+  // throw new NotFoundException('One or several products do not exist');
+  // }
+
+  // const session = await this.dbConnection.startSession();
+  // session.startTransaction();
+  // try {
+  // await Promise.all(
+  // foundProducts.map((product) => product.delete({ session })),
+  // );
+  // await session.commitTransaction();
+  // } catch (error) {
+  // await session.abortTransaction();
+  // throw error;
+  // } finally {
+  // session.endSession();
+  // }
+  // }
 
   async deleteByCategory(category: Category, session?: any): Promise<void> {
     await this.productModel.deleteMany(
