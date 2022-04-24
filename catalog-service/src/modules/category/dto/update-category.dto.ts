@@ -10,7 +10,7 @@ export class UpdateCategoryDto {
   @IsNotEmpty()
   readonly description: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   readonly thumbnail: string;
 
   @IsNotEmpty()

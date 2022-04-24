@@ -69,6 +69,14 @@ export class Category extends Document implements ICategory {
     default: [],
   })
   children: Category[];
+
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    ref: Category.name,
+    required: false,
+    default: null,
+  })
+  parentId: string;
 }
 
 const CategorySchema = SchemaFactory.createForClass(Category);
