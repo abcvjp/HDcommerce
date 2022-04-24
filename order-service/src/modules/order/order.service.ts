@@ -35,6 +35,7 @@ import { FindAllResult } from 'src/common/classes/find-all.result';
 import { InjectStripe } from 'nestjs-stripe';
 import Stripe from 'stripe';
 import { PayWithStripeDto } from './dto/pay-with-stripe.dto';
+import { omit } from 'lodash';
 
 @Injectable()
 export class OrderService {
@@ -51,11 +52,17 @@ export class OrderService {
   ) {}
 
   async findOne(id: string): Promise<IOrder> {
-    const foundOrder = await this.orderModel.findById(id).exec();
+    const foundOrder = await this.orderModel
+      .findById(id)
+      .populate('paymentMethodId', '_id, name')
+      .populate('deliveryMethodId', '_id name')
+      .lean();
     if (!foundOrder) {
       throw new NotFoundException('Order not found');
     }
-    return foundOrder;
+    foundOrder['paymentMethod'] = foundOrder['paymentMethodId'];
+    foundOrder['deliveryMethod'] = foundOrder['deliveryMethodId'];
+    return omit(foundOrder, ['paymentMethodId', 'deliveryMethodId']);
   }
 
   async findAll(dto: FindAllOrderDto): Promise<FindAllResult<IOrder>> {
