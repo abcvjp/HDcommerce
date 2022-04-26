@@ -1,56 +1,183 @@
 version: "3.9"
 services:
-  product-service:
-    depends_on:
-      - product-db
+  #---------------MAIN SERVICES--------------#
+  catalog-service:
+    profiles:
+      - litedev
+      - dev
     build:
-      context: ./product-service
+      context: ./catalog-service
       dockerfile: Dockerfile
     ports:
       - 3000:3000
+    expose:
+      - 3000
+    networks:
+      - kong-net
+      - service-net
     volumes:
-      - ./product-service:/workdir
+      - ./catalog-service:/workdir
       - /workdir/node_modules
-    networks:
-      - backend
     environment:
-      NODE_ENV: development
+      NODE_ENV: ${NODE_ENV:-development}
       PORT: 3000
-      DB_TYPE: 'mysql'
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_USER: hoaideptrai
-      DB_PWD: 123456
-      DB_NAME: abcshop
-  product-db:
-    image: mysql:8.0.26
+  order-service:
+    profiles:
+      - litedev
+      - dev
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    ports:
+      - 3001:3000
     expose:
-      - 3306
+      - 3000
+    networks:
+      - kong-net
+      - service-net
     volumes:
-      - product-db-data:/var/lib/mysql
-    networks:
-      - backend
+      - ./order-service:/workdir
+      - /workdir/node_modules
     environment:
-      - MYSQL_ROOT_PASSWORD=123456
-      - MYSQL_DATABASE=webshop_db
-      - MYSQL_USER=hoaideptrai
-      - MYSQL_PASSWORD=123456
-    cap_add:
-      - CAP_SYS_NICE
-  phpmyadmin:
-    depends_on:
-      - product-db
-    image: phpmyadmin/phpmyadmin
-    networks:
-      - backend
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3000
+  user-service:
+    profiles:
+      - litedev
+      - dev
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    ports:
+      - 3002:3000
     expose:
-      - 80
+      - 3000
+    networks:
+      - kong-net
+      - service-net
+    volumes:
+      - ./user-service:/workdir
+      - /workdir/node_modules
     environment:
-      - PMA_HOST=product-db
-      - PMA_PORT=3306
-      - PMA_ARBITRARY=1
-volumes:
-  product-db-data:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3000
+  mailer-service:
+    profiles:
+      - litedev
+      - dev
+    build:
+      context: ./workers/mailer
+      dockerfile: Dockerfile
+    networks:
+      - service-net
+    volumes:
+      - ./workers/mailer:/workdir
+      - /workdir/node_modules
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+  
+  #--------------------- GATEWAY ---------------------#
+  kongdb:
+    profiles:
+      - litedev
+      - dev
+    image: docker.io/bitnami/postgresql:13
+    networks:
+      - kong-net
+    volumes:
+      - kongdb-data:/bitnami/postgresql
+    environment:
+      - POSTGRESQL_USERNAME=${KONG_DB_USER:-kong}
+      - POSTGRESQL_PASSWORD=${KONG_DB_PASSWORD:-123456}
+      - POSTGRESQL_DATABASE=${KONG_DB_DBNAME:-kong}
+  kong:
+    profiles:
+      - litedev
+      - dev
+    depends_on:
+      - kongdb
+    image: docker.io/bitnami/kong:2.8.1
+    ports:
+      - 8000:8000
+      - 8443:8443
+    expose:
+      - 8001
+    networks:
+      - kong-net
+    environment:
+      - KONG_MIGRATE=yes
+      - KONG_DATABASE=postgres
+      - KONG_PG_HOST=${KONG_DB_HOST:-kongdb}
+      - KONG_PG_USER=${KONG_DB_USER:-kong}
+      - KONG_PG_PASSWORD=${KONG_DB_PASSWORD:-123456}
+  konga:
+    profiles:
+      - dev
+    depends_on:
+      - kong
+    image: pantsel/konga:latest
+    ports:
+      - 1337:1337
+    networks:
+      - kong-net
+    volumes:
+      - konga-data:/app/kongadata
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      KONGA_LOG_LEVEL: ${KONGA_LOG_LEVEL:-warn}
+      NO_AUTH: ${KONGA_NO_AUTH:-true}
+  
+  #------------------------ KAFKA --------------------------#
+  kafka-zookeeper:
+    profiles:
+      - fulldev
+    image: confluentinc/cp-zookeeper:latest
+    expose:
+      - 2181
+    networks:
+      - service-net
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+  kafka:
+    profiles:
+      - fulldev
+    depends_on: 
+      - kafka-zookeeper
+    image: confluentinc/cp-kafka:latest
+    expose:
+      - 29092
+    networks:
+      - service-net
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: kafka-zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  kafka-ui:
+    profiles:
+      - fulldev
+    image: provectuslabs/kafka-ui
+    depends_on:
+      - kafka
+      - kafka-zookeeper
+    ports:
+      - 9000:8080
+    networks:
+      - service-net
+    environment:
+      # - KAFKA_CLUSTERS_0_NAME=local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: kafka-zookeeper:2181
+
 networks:
-  backend:
+  kong-net:
+    external: false
     driver: bridge
+  service-net:
+    external: false
+    driver: bridge
+
+volumes:
+  kongdb-data:
+    driver: local
+  konga-data:
+    driver: local
