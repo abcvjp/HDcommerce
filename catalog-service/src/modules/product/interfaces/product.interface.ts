@@ -13,7 +13,7 @@ export interface IProduct {
   shortDescription: string;
   slug: string;
   thumbnail: string;
-  images: string[];
+  images: any[];
   metaTitle: string;
   metaDescription: string;
   metaKeywords?: string;
