@@ -7,6 +7,6 @@ export class UserService {
   constructor(private httpService: HttpService) {}
 
   findOne(id: string): Promise<any> {
-    return httpCallHandler(this.httpService.get(`${id}`));
+    return httpCallHandler(this.httpService.get(`/user/${id}`));
   }
 }
