@@ -18,7 +18,7 @@ import { IUser } from './interfaces/user.interface';
 import { UserRole } from './schemas/user.schema';
 import { UserService } from './user.service';
 
-@Controller('')
+@Controller('/user')
 export class UserController {
   constructor(private userService: UserService) {}
 
