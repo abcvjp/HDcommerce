@@ -86,11 +86,11 @@ export class Product extends Document implements IProduct {
   thumbnail: string;
 
   @Prop({
-    type: [String],
+    type: [Object],
     required: true,
     default: [],
   })
-  images: string[];
+  images: Record<string, any>[];
 
   @Prop({
     type: String,
@@ -100,7 +100,7 @@ export class Product extends Document implements IProduct {
 
   @Prop({
     type: String,
-    required: true,
+    required: false,
   })
   metaDescription: string;
 
