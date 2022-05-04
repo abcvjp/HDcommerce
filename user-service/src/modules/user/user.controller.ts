@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { User } from 'src/common/decorators/user.decorator';
@@ -58,5 +59,17 @@ export class UserController {
   @Roles(UserRole.ADMIN)
   deleteOne(@Param('id') id: string) {
     return this.userService.deleteOne(id);
+  }
+
+  @Patch(':id/enable')
+  @Roles(UserRole.ADMIN)
+  enable(@Param('id') id: string) {
+    return this.userService.enable(id);
+  }
+
+  @Patch(':id/disable')
+  @Roles(UserRole.ADMIN)
+  disable(@Param('id') id: string) {
+    return this.userService.disable(id);
   }
 }
