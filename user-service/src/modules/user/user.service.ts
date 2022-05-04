@@ -170,4 +170,36 @@ export class UserService {
     }
     await existingUser.delete();
   }
+
+  async enable(id: string): Promise<void> {
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(
+        id,
+        { isEnabled: true },
+        {
+          new: true,
+          passwordHash: 0,
+        },
+      )
+      .lean();
+    if (!updatedUser) {
+      throw new NotFoundException('User not found');
+    }
+  }
+
+  async disable(id: string): Promise<void> {
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(
+        id,
+        { isEnabled: false },
+        {
+          new: true,
+          passwordHash: 0,
+        },
+      )
+      .lean();
+    if (!updatedUser) {
+      throw new NotFoundException('User not found');
+    }
+  }
 }
