@@ -7,8 +7,6 @@ export class SortQueryParamPipe implements PipeTransform {
     sortString.split(',').forEach((sortElement) => {
       if (sortElement.startsWith('-')) {
         object[sortElement.substring(1)] = -1;
-      } else if (sortElement.startsWith('+')) {
-        object[sortElement.substring(1)] = 1;
       } else {
         object[sortElement] = 1;
       }
