@@ -10,6 +10,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { UserId } from 'src/common/decorators/user-id.decorator';
 import { User } from 'src/common/decorators/user.decorator';
 import { CreateUserDto } from './dto/createUser.dto';
 import { FindAllUserDto } from './dto/findAllUser.dto';
@@ -44,9 +45,9 @@ export class UserController {
     return this.userService.create(dto);
   }
 
-  @Put(':id/info')
-  updateInfo(@Param('id') id: string, @Body() dto: UpdateUserInfoDto) {
-    return this.userService.updateInfo(id, dto);
+  @Put('me')
+  updateInfo(@UserId() userId, @Body() dto: UpdateUserInfoDto) {
+    return this.userService.updateInfo(userId, dto);
   }
 
   @Put(':id')
