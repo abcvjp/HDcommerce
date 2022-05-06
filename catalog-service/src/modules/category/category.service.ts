@@ -18,6 +18,7 @@ import mongoose from 'mongoose';
 import { ProductService } from '../product/product.service';
 import { ICategory } from './interfaces/category.interface';
 import { FindAllResult } from 'src/common/classes/find-all.result';
+import { DEFAULT_DBQUERY_SORT } from 'src/common/constants';
 
 @Injectable()
 export class CategoryService {
@@ -49,8 +50,16 @@ export class CategoryService {
   }
 
   async findAll(query: FindAllCategoryDto): Promise<FindAllResult<ICategory>> {
-    const { startId, skip, limit, sort, slug, includeChildren, isPublic } =
-      query;
+    const {
+      startId,
+      skip,
+      limit,
+      sort,
+      slug,
+      includeChildren,
+      isPublic,
+      keyword,
+    } = query;
 
     const filters: FilterQuery<Category> = startId
       ? {
@@ -59,11 +68,18 @@ export class CategoryService {
       : {};
     slug && (filters.slug = slug);
     isPublic !== undefined && (filters.isPublic = isPublic);
+    keyword && (filters['$text'] = { $search: keyword });
 
     const dbQuery = this.categoryModel
       .find(filters)
       .lean()
-      .sort(sort ? sort : { _id: 1 })
+      .sort(
+        sort
+          ? sort
+          : keyword
+          ? { relevance: { $meta: 'textScore' } }
+          : DEFAULT_DBQUERY_SORT,
+      )
       .skip(skip)
       .limit(limit);
 

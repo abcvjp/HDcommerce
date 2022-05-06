@@ -82,5 +82,9 @@ export class Category extends Document implements ICategory {
 const CategorySchema = SchemaFactory.createForClass(Category);
 
 CategorySchema.index({ children: 1 });
+CategorySchema.index({
+  name: 'text',
+  metaKeywords: 'text',
+});
 
 export { CategorySchema };
