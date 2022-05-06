@@ -49,7 +49,8 @@ export class CategoryService {
   }
 
   async findAll(query: FindAllCategoryDto): Promise<FindAllResult<ICategory>> {
-    const { startId, skip, limit, sort, slug, includeChildren } = query;
+    const { startId, skip, limit, sort, slug, includeChildren, isPublic } =
+      query;
 
     const filters: FilterQuery<Category> = startId
       ? {
@@ -57,6 +58,7 @@ export class CategoryService {
         }
       : {};
     slug && (filters.slug = slug);
+    isPublic !== undefined && (filters.isPublic = isPublic);
 
     const dbQuery = this.categoryModel
       .find(filters)
@@ -65,7 +67,7 @@ export class CategoryService {
       .skip(skip)
       .limit(limit);
 
-    if (includeChildren) {
+    if (includeChildren === true) {
       dbQuery.populate('children', { children: 0 });
     } else {
       dbQuery.select('-children');

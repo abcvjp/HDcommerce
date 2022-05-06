@@ -1,4 +1,5 @@
-import { IsMongoId, IsOptional } from 'class-validator';
+import { IsBoolean, IsMongoId, IsOptional } from 'class-validator';
+import { BooleanQuery } from 'src/common/decorators/boolean-query.decorator';
 import { FindAllDto } from 'src/common/dto/find-all.dto';
 
 export class FindAllCategoryDto extends FindAllDto {
@@ -9,6 +10,13 @@ export class FindAllCategoryDto extends FindAllDto {
   @IsOptional()
   readonly slug: string;
 
+  @BooleanQuery()
   @IsOptional()
+  @IsBoolean()
   readonly includeChildren: boolean;
+
+  @BooleanQuery()
+  @IsOptional()
+  @IsBoolean()
+  readonly isPublic: boolean;
 }
