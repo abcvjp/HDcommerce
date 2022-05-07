@@ -61,6 +61,24 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: 3000
+  report-service:
+    profiles:
+      - litedev
+      - dev
+    build:
+      context: ./report-service
+      dockerfile: Dockerfile
+    expose:
+      - 3000
+    networks:
+      - kong-net
+      - service-net
+    volumes:
+      - ./report-service:/workdir
+      - /workdir/node_modules
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3000
   mailer-service:
     profiles:
       - litedev
