@@ -266,6 +266,17 @@ export class OrderService {
       deliveryStatus: DeliveryStatus.SUCCESS,
       paymentStatus: PaymentStatus.PAID,
     });
+    await this.brokerClient.emit('orderProcessing-orderCompleted', {
+      orderId: foundOrder._id.toString(),
+      code: foundOrder.code,
+      items: foundOrder.items,
+      userId: foundOrder.userId,
+      customerInfo: foundOrder.customerInfo,
+      deliveryFee: foundOrder.deliveryFee,
+      itemTotal: foundOrder.itemTotal,
+      orderTotal: foundOrder.orderTotal,
+      createdAt: foundOrder.createdAt,
+    });
   }
 
   async cancel(id: string): Promise<void> {
