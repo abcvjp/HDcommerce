@@ -32,12 +32,13 @@ export class SaleReportService {
     const dbQuery = this.saleReportModel.aggregate();
 
     const filter: FilterQuery<SaleReport> = {};
-    startDate && (filter.createdAt = { $gte: startDate });
-    endDate && (filter.createdAt = merge(filter.createdAt, { $lte: endDate }));
+    startDate && (filter.day = { $gte: startDate });
+    endDate && (filter.day = merge(filter.day, { $lte: endDate }));
+    dbQuery.match(filter);
 
     let groupId;
     type === 'month' && (groupId = { $month: '$day' });
-    type === 'week' && (groupId = { $month: '$day' });
+    type === 'week' && (groupId = { $week: '$day' });
     type === 'year' && (groupId = { $year: '$day' });
 
     if (type !== 'day') {
@@ -74,7 +75,7 @@ export class SaleReportService {
       .exec();
 
     const { records } = dataQuery;
-    const count = dataQuery.count[0].count;
+    const count = dataQuery.count[0] ? dataQuery.count[0].count : 0;
 
     return new FindAllResult(records, count);
   }
