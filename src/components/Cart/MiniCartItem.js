@@ -32,7 +32,7 @@ const MiniCartItem = ({ item, deleteItem }) => {
         <ListItemAvatar>
           <Avatar
             variant="square"
-            src={item.product_thumbnail.url}
+            src={item.product_thumbnail}
           />
         </ListItemAvatar>
         <ListItemText

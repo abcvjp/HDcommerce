@@ -76,21 +76,21 @@ export const checkAndAddToCart = ({
   if (!quantity || Number.isNaN(quantity)) {
     dispatch(showAlertMessage({ type: 'error', content: 'Quantity is invalid' }));
   } else {
-    productApi.getProduct({
-      id: product_id
-    }).then((response) => response.data.data).then((productFromServer) => {
-      if (productFromServer.enable === false) {
+    productApi.getProductById(
+      product_id
+    ).then((response) => response.data.data).then((productFromServer) => {
+      if (productFromServer.isEnabled === false) {
         dispatch(showAlertMessage({ type: 'error', content: 'This product has been disabled' }));
-      } else if (productFromServer.quantity === 0) {
+      } else if (productFromServer.stockQuantity === 0) {
         dispatch(showAlertMessage({ type: 'error', content: 'This product has sold out' }));
-      } else if (productFromServer.quantity < quantity) {
+      } else if (productFromServer.stockQuantity < quantity) {
         dispatch(showAlertMessage({ type: 'error', content: 'Quantity of this product is not enough' }));
       } else if (productFromServer.price !== price || productFromServer.name !== product_name) {
         dispatch(addToCart({
           product_id,
           product_name: productFromServer.name,
           product_slug: productFromServer.slug,
-          product_thumbnail: productFromServer.images[0],
+          product_thumbnail: productFromServer.thumbnail,
           price: productFromServer.price,
           quantity,
           buy_able: true,
@@ -102,7 +102,7 @@ export const checkAndAddToCart = ({
           product_id,
           product_name: productFromServer.name,
           product_slug: productFromServer.slug,
-          product_thumbnail: productFromServer.images[0],
+          product_thumbnail: productFromServer.thumbnail,
           price: productFromServer.price,
           quantity,
           buy_able: true,
