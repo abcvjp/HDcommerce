@@ -69,7 +69,7 @@ const ProductCard = ({ product }) => {
   const handleAddToCart = () => {
     setIsAdding(true);
     dispatch(checkAndAddToCart({
-      product_id: product.id,
+      product_id: product._id,
       product_name: product.name,
       product_slug: product.slug,
       price: product.price,
@@ -78,7 +78,7 @@ const ProductCard = ({ product }) => {
     setIsAdding(false);
   };
 
-  const discount = 100 - Math.round((product.price / product.root_price) * 100);
+  const discount = 100 - Math.round((product.price / product.originalPrice) * 100);
 
   return (
     <Card className={classes.root}>
@@ -86,9 +86,9 @@ const ProductCard = ({ product }) => {
         <CardMedia
           className={classes.media}
           component="img"
-          image={product.images ? product.images[0].url : null}
-          alt={product.images ? product.images[0].alt : null}
-          title={product.images ? product.images[0].title : null}
+          image={product.thumbnail ? product.thumbnail : null}
+          alt={product.name}
+          title={product.title}
         />
       </RouterLink>
       <CardContent className={classes.content}>
@@ -107,7 +107,7 @@ const ProductCard = ({ product }) => {
           <Typography variant="body2" className={classes.sold}>
             | Sold
             {' '}
-            {product.sold}
+            {product.soldQuantity}
           </Typography>
         </Box>
         <Box
