@@ -3,7 +3,7 @@ import API from './apiClient';
 
 const productApi = {
   getAll: (query) => {
-    const url = '/product/all';
+    const url = '/product';
     return API.get(url + convertObjToQuery(cleanObj(query)));
   },
   getProduct: (query) => {

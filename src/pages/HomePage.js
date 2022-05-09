@@ -53,8 +53,8 @@ const HomePage = () => {
 
   useEffect(() => {
     const fetchNewProducts = async () => {
-      const response = await productApi.getAll({ sort: 'createdAt.desc', page_size: NEW_PRODUCT_QUANTITY });
-      data.current.newProducts = response.data.data;
+      const response = await productApi.getAll({ sort: '-createdAt', limit: NEW_PRODUCT_QUANTITY });
+      data.current.newProducts = response.data.data.records;
     };
     const fetchHotProducts = async () => {
       const response = await productApi.getAll({ sort: 'sold.desc', page_size: HOT_PRODUCT_QUANTITY });
