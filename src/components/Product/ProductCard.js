@@ -82,7 +82,7 @@ const ProductCard = ({ product }) => {
 
   return (
     <Card className={classes.root}>
-      <RouterLink to={`/product/${product.slug}`}>
+      <RouterLink to={`/product/${product._id}`}>
         <CardMedia
           className={classes.media}
           component="img"
@@ -92,7 +92,7 @@ const ProductCard = ({ product }) => {
         />
       </RouterLink>
       <CardContent className={classes.content}>
-        <Link component={RouterLink} to={`/product/${product.slug}`} color="inherit">
+        <Link component={RouterLink} to={`/product/${product._id}`} color="inherit">
           <Typography variant="subtitle1">
             {product.name}
           </Typography>

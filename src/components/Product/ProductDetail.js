@@ -57,16 +57,16 @@ const ProductDetail = ({ product }) => {
         </Grid>
         <Divider flexItem orientation="vertical" variant="middle" />
         <Grid item>
-          <Typography sx={{ fontSize: 24 }} className={classes.sold}>
+          <Typography sx={{ fontSize: 24 }} className={classes.soldQuantity}>
             Sold
             {' '}
-            {product.sold}
+            {product.soldQuantity}
           </Typography>
         </Grid>
         <Divider flexItem orientation="vertical" variant="middle" />
         <Grid item>
-          <Typography sx={{ fontSize: 24 }} className={classes.sold}>
-            {`${product.quantity} product left`}
+          <Typography sx={{ fontSize: 24 }} className={classes.soldQuantity}>
+            {`${product.stockQuantity} product left`}
           </Typography>
         </Grid>
       </Grid>
@@ -78,12 +78,12 @@ const ProductDetail = ({ product }) => {
         </div>
         <div className={classes.root_price}>
           $
-          {product.root_price}
+          {product.originalPrice}
         </div>
       </Box>
 
       <Box className={`${classes.margin} ${classes.shortDes}`}>
-        <Typography variant="body2">{product.short_description}</Typography>
+        <Typography variant="body2">{product.shortDescription}</Typography>
       </Box>
     </Box>
   );

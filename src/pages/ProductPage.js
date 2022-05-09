@@ -10,7 +10,7 @@ import { Helmet } from 'react-helmet';
 import {
   Grid, makeStyles, Box, Paper, Divider, Button
 } from '@material-ui/core';
-import { generateBreadCrumbs, isArrayEmpty, isObjectEmpty } from 'src/utils/utilFuncs';
+import { isArrayEmpty, isObjectEmpty } from 'src/utils/utilFuncs';
 import { checkAndAddToCart } from 'src/actions/cartActions';
 import { showAlertMessage } from 'src/actions/alertMessageActions';
 
@@ -65,7 +65,7 @@ const ProductPage = () => {
 
   const mapCategoryNameSlug = useSelector((state) => state.categories.map_name_slug);
 
-  const { productSlug } = useParams();
+  const { productId } = useParams();
   const data = useRef({
     product: null,
     related_products: [],
@@ -79,14 +79,14 @@ const ProductPage = () => {
 
   const handleQtyChange = useCallback((event) => {
     const newQty = parseInt(event.target.value, 10);
-    if (newQty > product.quantity) {
+    if (newQty > product.stockQuantity) {
       dispatch(showAlertMessage({ type: 'error', content: `You can only buy ${product.quantity} product` }));
     } else setQty(newQty);
   });
 
   const handleAddtoCart = useCallback(() => {
     dispatch(checkAndAddToCart({
-      product_id: product.id,
+      product_id: product._id,
       product_name: product.name,
       product_slug: product.slug,
       price: product.price,
@@ -104,10 +104,10 @@ const ProductPage = () => {
         state: {
           pathname: '/checkout',
           orderItems: [{
-            product_id: product.id,
+            product_id: product._id,
             product_name: product.name,
             product_slug: product.slug,
-            product_thumbnail: product.images[0],
+            product_thumbnail: product.thumbnail ? product.thumbnail : null,
             price: product.price,
             quantity: qty
           }]
@@ -117,22 +117,20 @@ const ProductPage = () => {
   });
 
   useEffect(() => {
-    productApi.getProduct({
-      slug: productSlug
-    }).then((response) => response.data.data).then((fproduct) => {
+    productApi.getProductById(productId).then((response) => response.data.data).then((fproduct) => {
       data.current.product = fproduct;
       forceRerender(Date.now());
     }).catch((err) => {
       console.log(err);
     });
-  }, [productSlug]);
+  }, [productId]);
 
   useEffect(() => {
     if (product && !isObjectEmpty(mapCategoryNameSlug)) {
       data.current = {
         ...data.current,
         product,
-        breadcrumbs: generateBreadCrumbs(`${product.category.path} - ${product.name}`, mapCategoryNameSlug)
+        // breadcrumbs: generateBreadCrumbs(`${product.category.path} - ${product.name}`, mapCategoryNameSlug)
       };
       forceRerender(Date.now());
     }
@@ -145,10 +143,10 @@ const ProductPage = () => {
       <>
         <Helmet>
           <title>
-            {`${product.meta_title} | ${APP_TITLE}`}
+            {`${product.metaTitle} | ${APP_TITLE}`}
           </title>
-          <meta name="description" content={product.meta_description} />
-          <meta name="keywords" content={product.meta_keywords} />
+          <meta name="description" content={product.metaDescription} />
+          <meta name="keywords" content={product.metaKeywords} />
         </Helmet>
 
         <Paper className={classes.detail} elevation={0}>

@@ -8,7 +8,7 @@ import SearchPage from 'src/pages/SearchPage';
 import CheckoutPage from 'src/pages/CheckoutPage';
 
 const routes = [
-  { path: '/product/:productSlug', element: <ProductPage /> },
+  { path: '/product/:productId', element: <ProductPage /> },
   { path: '/search', element: <SearchPage /> },
   { path: '/cart', element: <CartPage /> },
   { path: '/checkout', element: <CheckoutPage /> },
