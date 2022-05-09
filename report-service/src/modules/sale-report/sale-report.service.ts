@@ -67,7 +67,7 @@ export class SaleReportService {
           { $skip: skip ? skip : 0 },
           { $limit: limit ? limit : DEFAULT_DBQUERY_LIMIT },
           {
-            $sort: sort ? (sort as any) : DEFAULT_DBQUERY_SORT,
+            $sort: sort ? (sort as any) : groupId ? { _id: -1 } : { day: -1 },
           },
         ],
         count: [{ $count: 'count' }],
