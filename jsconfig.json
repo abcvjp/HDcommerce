@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": "."
+  },
+  "include": [
+    "."
+  ],
+  "typeAcquisition": {
+    "exclude": [
+      "dotenv",
+      "node_modules"
+    ]
+  }
+}
