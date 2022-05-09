@@ -30,7 +30,8 @@
     "react/react-in-jsx-scope": "off",
     "react/require-default-props": "off",
     "camelcase": "off",
-    "import/no-unresolved": "off"
+    "import/no-unresolved": "off",
+    "no-underscore-dangle": "off"
   },
   "ignorePatterns": ["cypress/**"]
 }

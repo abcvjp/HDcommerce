@@ -19,9 +19,9 @@ export default function categoryReducer(state = initialState, action) {
       const map_name_id = {};
       action.categories.forEach((category) => {
         // all[category.id] = category;
-        map_slug_id[category.slug] = category.id;
+        map_slug_id[category.slug] = category._id;
         map_name_slug[category.name] = category.slug;
-        map_name_id[category.name] = category.id;
+        map_name_id[category.name] = category._id;
       });
 
       return {

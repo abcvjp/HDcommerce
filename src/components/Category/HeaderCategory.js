@@ -29,14 +29,14 @@ const HeaderCategory = ({ category }) => {
   const buildMenu = useCallback((category) => { // eslint-disable-line
     return isArrayEmpty(category.childs)
       ? (
-        <MenuItem key={category.id} onClick={popupState.close}>
+        <MenuItem key={category._id} onClick={popupState.close}>
           <Link underline="none" color="inherit" component={RouterLink} to={`${category.slug}`}>
             {category.name}
           </Link>
         </MenuItem>
       )
       : (
-        <Submenu key={category.id} popupId="evenMoreChoicesMenu" title={category.name} path={category.slug}>
+        <Submenu key={category._id} popupId="evenMoreChoicesMenu" title={category.name} path={category.slug}>
           {category.childs.map((c) => buildMenu(c))}
         </Submenu>
       );
@@ -50,7 +50,7 @@ const HeaderCategory = ({ category }) => {
           component={RouterLink}
           style={{ fontWeight: 600, color: '#595959' }}
           to={`/${category.slug}`}
-          key={category.id}
+          key={category._id}
         >
           {category.name}
         </Link>

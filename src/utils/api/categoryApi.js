@@ -2,7 +2,7 @@ import API from './apiClient';
 import { cleanObj } from '../utilFuncs';
 
 const categoryApi = {
-  getAll: (body) => API.get('/category/all', body),
+  getAll: (body) => API.get('/category', body),
   deleteCategory: (id) => API.delete(`/category/${id}`),
   deleteCategories: (categoryIds) => API.delete('/category', {
     data: { categoryIds }

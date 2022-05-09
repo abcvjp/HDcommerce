@@ -26,12 +26,13 @@ export const cleanObj = (obj) => {
 export const createDataTree = (dataset) => {
   const hashTable = Object.create(null);
   dataset.forEach((aData) => {
-    hashTable[aData.id] = { ...aData, childs: [] };
+    hashTable[aData._id] = { ...aData, childs: [] };
   });
   const dataTree = [];
   dataset.forEach((aData) => {
-    if (aData.parent_id) hashTable[aData.parent_id].childs.push(hashTable[aData.id]);
-    else dataTree.push(hashTable[aData.id]);
+    if (aData.parentId) {
+      hashTable[aData.parentId].childs.push(hashTable[aData._id]);
+    } else dataTree.push(hashTable[aData._id]);
   });
   return [dataTree, hashTable];
 };

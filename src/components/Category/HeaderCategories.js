@@ -19,7 +19,7 @@ const HeaderCategories = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       const response = await categoryApi.getAll();
-      dispatch(setCategories(response.data.data));
+      dispatch(setCategories(response.data.data.records));
     };
     fetchCategories();
   }, [dispatch]);
@@ -27,7 +27,7 @@ const HeaderCategories = () => {
   return (
     !isArrayEmpty(categories) && (
     <Box className={classes.root} display="flex" flexDirection="row" justifyContent="flex-start" alignItems="center">
-      {categories.map((category) => <HeaderCategory key={category.id} category={category} />)}
+      {categories.map((category) => <HeaderCategory key={category._id} category={category} />)}
     </Box>
     )
   );
