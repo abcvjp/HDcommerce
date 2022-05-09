@@ -1,27 +1,3 @@
-<!-- The core Firebase JS SDK is always required and must be listed first -->
-<script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-app.js"></script>
-
-<!-- TODO: Add SDKs for Firebase products that you want to use
-     https://firebase.google.com/docs/web/setup#available-libraries -->
-<script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-analytics.js"></script>
-
-<script>
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  var firebaseConfig = {
-    apiKey: "AIzaSyDqoLUYQhW7NlH57EfBO63D4KRqi3IgE78",
-    authDomain: "webshop-e2f76.firebaseapp.com",
-    projectId: "webshop-e2f76",
-    storageBucket: "webshop-e2f76.appspot.com",
-    messagingSenderId: "1057783220542",
-    appId: "1:1057783220542:web:14904508fb92f27adcc46f",
-    measurementId: "G-BC1C3M52TZ"
-  };
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  firebase.analytics();
-</script>
-
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
