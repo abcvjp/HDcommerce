@@ -11,6 +11,7 @@ const productApi = {
     return API.get(url + convertObjToQuery(cleanObj(query)));
   },
   getProductById: (id) => API.get(`/product/${id}`),
+  getRelatedProducts: (id) => API.get(`/product/${id}/relate`),
   deleteProduct: (id) => API.delete(`/product/${id}`),
   deleteProducts: (productIds) => API.delete('/product', {
     data: { productIds }

@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
 import {
-  Grid, makeStyles, Box, Paper, Divider, Button
+  Grid, makeStyles, Box, Paper, Divider, Button, Typography
 } from '@material-ui/core';
 import { generateBreadCrumbs, isArrayEmpty, isObjectEmpty } from 'src/utils/utilFuncs';
 import { checkAndAddToCart } from 'src/actions/cartActions';
@@ -22,6 +22,7 @@ import ProductDescription from 'src/components/Product/ProductDescription';
 import { productApi } from 'src/utils/api';
 
 import { APP_TITLE } from 'src/constants/appInfo';
+import Products from 'src/components/Product/Products';
 
 const useStyles = makeStyles((theme) => ({
   detail: {
@@ -55,6 +56,10 @@ const useStyles = makeStyles((theme) => ({
       background: 'transparent',
       color: 'red'
     }
+  },
+  title: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(2)
   }
 }));
 
@@ -117,11 +122,16 @@ const ProductPage = () => {
   });
 
   useEffect(() => {
-    productApi.getProductById(productId).then((response) => response.data.data).then((fproduct) => {
-      data.current.product = fproduct;
-      forceRerender(Date.now());
-    }).catch((err) => {
+    Promise.all([productApi.getProductById(productId).then((response) => response.data.data).catch((err) => {
       console.log(err);
+    }),
+    productApi.getRelatedProducts(productId).then((response) => response.data.data).catch((err) => {
+      console.log(err);
+    })
+    ]).then(([productData, relatedProducts]) => {
+      data.current.product = productData;
+      data.current.related_products = relatedProducts;
+      forceRerender(Date.now());
     });
   }, [productId]);
 
@@ -212,6 +222,17 @@ const ProductPage = () => {
           </div>
         </Box>
 
+        <Typography variant="h6" className={classes.title}>Related Products</Typography>
+        <Paper elevation={0}>
+          {
+            !isArrayEmpty(data.current.related_products) ? <Products products={data.current.related_products} />
+              : (
+                <Box m={2}>
+                  <Typography>There are no available related products now!</Typography>
+                </Box>
+              )
+        }
+        </Paper>
       </>
       )}
     </>
