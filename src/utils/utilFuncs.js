@@ -37,9 +37,9 @@ export const createDataTree = (dataset) => {
   return [dataTree, hashTable];
 };
 
-export const generateBreadCrumbs = (string, map_name_slug) => string.split(' - ').map((name) => ({
+export const generateBreadCrumbs = (path, map_name_id) => path.map((name) => ({
   name,
-  path: map_name_slug[name] ? map_name_slug[name] : ''
+  path: map_name_id[name] ? `category/${map_name_id[name]}` : ''
 }));
 
 export const roundPrice = (price) => (Math.round(price * 100) / 100);

@@ -10,7 +10,7 @@ import { Helmet } from 'react-helmet';
 import {
   Grid, makeStyles, Box, Paper, Divider, Button
 } from '@material-ui/core';
-import { isArrayEmpty, isObjectEmpty } from 'src/utils/utilFuncs';
+import { generateBreadCrumbs, isArrayEmpty, isObjectEmpty } from 'src/utils/utilFuncs';
 import { checkAndAddToCart } from 'src/actions/cartActions';
 import { showAlertMessage } from 'src/actions/alertMessageActions';
 
@@ -63,7 +63,7 @@ const ProductPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const mapCategoryNameSlug = useSelector((state) => state.categories.map_name_slug);
+  const mapCategoryNameId = useSelector((state) => state.categories.map_name_id);
 
   const { productId } = useParams();
   const data = useRef({
@@ -126,15 +126,15 @@ const ProductPage = () => {
   }, [productId]);
 
   useEffect(() => {
-    if (product && !isObjectEmpty(mapCategoryNameSlug)) {
+    if (product && !isObjectEmpty(mapCategoryNameId)) {
       data.current = {
         ...data.current,
         product,
-        // breadcrumbs: generateBreadCrumbs(`${product.category.path} - ${product.name}`, mapCategoryNameSlug)
+        breadcrumbs: generateBreadCrumbs(product.category.path.concat(product.name), mapCategoryNameId)
       };
       forceRerender(Date.now());
     }
-  }, [product, mapCategoryNameSlug]);
+  }, [product, mapCategoryNameId]);
 
   return (
     <>
