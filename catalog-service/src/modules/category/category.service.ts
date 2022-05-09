@@ -96,6 +96,7 @@ export class CategoryService {
 
     records.forEach((category) => {
       category._id = category._id.toString();
+      category.parentId && (category.parentId = category.parentId.toString());
       if (category.children) {
         category.children.forEach((x) => {
           x._id = x._id.toString();

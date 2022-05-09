@@ -23,6 +23,7 @@ export class BrokerService {
   }
 
   async handleOrderCompleted(orderInfo: any): Promise<void> {
+    await this.productService.increaseSoldQuantity(orderInfo.items);
     await this.reviewService.initMultiple(
       orderInfo.userId,
       orderInfo.items.map((item) => item.productId),
