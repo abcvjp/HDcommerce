@@ -13,6 +13,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import * as slug from 'slug';
 import { FindAllProductDto } from './dto/find-all-product.dto';
 import mongoose from 'mongoose';
+import { ObjectId } from 'mongodb';
 import {
   DEFAULT_DBQUERY_LIMIT,
   DEFAULT_DBQUERY_SKIP,
@@ -39,12 +40,29 @@ export class ProductService {
   ) {}
 
   async findOne(id: string): Promise<IProduct> {
-    const foundProduct = await this.productModel.findById(id).lean();
+    const [foundProduct] = await this.productModel.aggregate([
+      { $match: { _id: new ObjectId(id) } },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'categoryId',
+          foreignField: '_id',
+          as: 'category',
+        },
+      },
+      {
+        $set: {
+          category: { $arrayElemAt: ['$category', 0] },
+        },
+      },
+      { $project: { 'category.children': 0 } },
+    ]);
     if (!foundProduct) {
       throw new NotFoundException('Product not found');
     }
     foundProduct._id = foundProduct._id.toString();
     foundProduct.categoryId = foundProduct.categoryId.toString();
+    foundProduct.category._id = foundProduct.category._id.toString();
     return foundProduct;
   }
 
@@ -110,6 +128,13 @@ export class ProductService {
 
     const [records, count] = await Promise.all([
       dbQuery
+        .append({
+          $sort: sort
+            ? sort
+            : keyword
+            ? { relevance: { $meta: 'textScore' } }
+            : DEFAULT_DBQUERY_SORT,
+        })
         .skip(skip ? skip : DEFAULT_DBQUERY_SKIP)
         .limit(limit ? limit : DEFAULT_DBQUERY_LIMIT)
         .append({
@@ -118,13 +143,6 @@ export class ProductService {
             // categoryId: { $toString: '$categoryId' },
             // relevance: { $meta: 'textScore' },
           },
-        })
-        .append({
-          $sort: sort
-            ? sort
-            : keyword
-            ? { relevance: { $meta: 'textScore' } }
-            : DEFAULT_DBQUERY_SORT,
         })
         .exec(),
       this.productModel.countDocuments(filters),
@@ -240,6 +258,17 @@ export class ProductService {
         updateOne: {
           filter: { _id: item.productId },
           update: { $inc: { stockQuantity: Math.abs(item.quantity) } },
+        },
+      })),
+    );
+  }
+
+  async increaseSoldQuantity(items: any[]): Promise<void> {
+    await this.productModel.bulkWrite(
+      items.map((item) => ({
+        updateOne: {
+          filter: { _id: item.productId },
+          update: { $inc: { soldQuantity: Math.abs(item.quantity) } },
         },
       })),
     );
