@@ -45,7 +45,7 @@ export class SaleReportService {
       dbQuery.group({
         _id: groupId,
         orderNumber: { $sum: '$orderNumber' },
-        completedOrder: { $sum: '$completeOrder' },
+        completedOrder: { $sum: '$completedOrder' },
         failedOrder: { $sum: '$failedOrder' },
         productNumber: { $sum: '$productNumber' },
         itemNumber: { $sum: '$itemNumber' },
