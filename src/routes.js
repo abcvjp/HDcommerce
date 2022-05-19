@@ -13,7 +13,7 @@ const routes = [
   { path: '/cart', element: <CartPage /> },
   { path: '/checkout', element: <CheckoutPage /> },
   { path: '/', element: <HomePage /> },
-  { path: '/:categoryId', element: <CategoryPage /> },
+  { path: '/category/:categoryId', element: <CategoryPage /> },
   { path: '*', element: <Navigate to="/" /> }
 ];
 

@@ -14,7 +14,7 @@ const CategorychildsTree = ({ childs }) => {
 
   const handleCategoryClick = (_id) => (e) => {
     e.preventDefault();
-    navigate(`/${_id}`, { replace: false });
+    navigate(`/category/${_id}`, { replace: false });
   };
 
   const categoryTree = ((category) => (isArrayEmpty(category.childs)

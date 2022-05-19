@@ -67,7 +67,7 @@ const CategoryPage = () => {
         <>
           <Helmet>
             <title>
-              {`${data.current.category.meta_title} | ${APP_TITLE}`}
+              {`${data.current.category.metaTitle} | ${APP_TITLE}`}
             </title>
             <meta name="description" content={data.current.category.meta_description} />
             <meta name="keywords" content={data.current.category.meta_keywords} />
