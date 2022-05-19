@@ -37,11 +37,12 @@ const SearchPage = () => {
   const keyword = useQuery().get('q');
 
   const [filters, setFilters] = useState({
-    price: null
+    'price[gte]': null,
+    'price[lte]': null
   });
 
   const handeApplyPriceRange = (priceRange) => {
-    setFilters((prev) => ({ ...prev, price: priceRange }));
+    setFilters((prev) => ({ ...prev, 'price[gte]': priceRange.start, 'price[lte]': priceRange.end }));
   };
 
   return (
@@ -78,7 +79,7 @@ const SearchPage = () => {
               {' '}
               {`"${keyword}"`}
             </Typography>
-            <ProductList filters={{ q: keyword, ...filters }} />
+            <ProductList filters={{ keyword, ...filters }} />
           </Grid>
         </Grid>
       </Paper>

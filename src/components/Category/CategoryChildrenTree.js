@@ -12,34 +12,34 @@ import { grey } from 'src/utils/colors';
 const CategorychildsTree = ({ childs }) => {
   const navigate = useNavigate();
 
-  const handleCategoryClick = (slug) => (e) => {
+  const handleCategoryClick = (_id) => (e) => {
     e.preventDefault();
-    navigate(`/${slug}`, { replace: true });
+    navigate(`/${_id}`, { replace: false });
   };
 
   const categoryTree = ((category) => (isArrayEmpty(category.childs)
     ? (
       <TreeItem
-        nodeId={category.id}
-        key={category.id}
+        nodeId={category._id}
+        key={category._id}
         label={(
           <Typography variant="subtitle1" style={{ color: grey.main }}>
             {category.name}
           </Typography>
       )}
-        onLabelClick={handleCategoryClick(category.slug)}
+        onLabelClick={handleCategoryClick(category._id)}
       />
     )
     : (
       <TreeItem
-        nodeId={category.id}
-        key={category.id}
+        nodeId={category._id}
+        key={category._id}
         label={(
           <Typography variant="subtitle1" style={{ color: grey.main }}>
             {category.name}
           </Typography>
         )}
-        onLabelClick={handleCategoryClick(category.slug)}
+        onLabelClick={handleCategoryClick(category._id)}
       >
         {category.childs.map((c) => categoryTree(c))}
       </TreeItem>

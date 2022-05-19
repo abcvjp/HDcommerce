@@ -76,21 +76,16 @@ const ProductList = ({ filters, sortElemnents }) => {
         const { currentPage, pageSize, sort } = state;
         const queryParams = {
           ...filters,
-          current_page: currentPage,
-          page_size: pageSize,
+          skip: (currentPage - 1) * pageSize,
+          limit: pageSize,
           sort
         };
-        let response;
-        if (filters && filters.q) {
-          response = await productApi.searchProducts(queryParams);
-        } else {
-          response = await productApi.getAll(queryParams);
-        }
-        products.current = response.data.data;
+        const response = await productApi.getAll(queryParams);
+        products.current = response.data.data.records;
         setState((prevState) => ({
           ...prevState,
-          pageCount: response.data.pagination.pageCount,
-          itemCount: response.data.pagination.count
+          pageCount: parseInt(response.data.data.count / pageSize, 10) + 1,
+          itemCount: response.data.data.count
         }));
       } catch (error) {
         products.current = [];
@@ -168,12 +163,12 @@ ProductList.propTypes = {
 };
 ProductList.defaultProps = {
   sortElemnents: [
-    { name: 'Newest', value: 'createdAt.desc' },
-    { name: 'Oldest', value: 'createdAt.asc' },
-    { name: 'Price (Low to High)', value: 'price.asc' },
-    { name: 'Price (High to Low)', value: 'price.desc' },
-    { name: 'Discount', value: 'discount.desc' },
-    { name: 'Best Selling', value: 'sold.desc' }]
+    { name: 'Newest', value: '-createdAt' },
+    { name: 'Oldest', value: 'createdAt' },
+    { name: 'Price (Low to High)', value: 'price' },
+    { name: 'Price (High to Low)', value: '-price' },
+    { name: 'Discount', value: '-discount' },
+    { name: 'Best Selling', value: '-sold' }]
 };
 
 export default ProductList;

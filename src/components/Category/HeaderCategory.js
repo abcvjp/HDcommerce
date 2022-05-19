@@ -30,13 +30,13 @@ const HeaderCategory = ({ category }) => {
     return isArrayEmpty(category.childs)
       ? (
         <MenuItem key={category._id} onClick={popupState.close}>
-          <Link underline="none" color="inherit" component={RouterLink} to={`${category.slug}`}>
+          <Link underline="none" color="inherit" component={RouterLink} to={`${category._id}`}>
             {category.name}
           </Link>
         </MenuItem>
       )
       : (
-        <Submenu key={category._id} popupId="evenMoreChoicesMenu" title={category.name} path={category.slug}>
+        <Submenu key={category._id} popupId="evenMoreChoicesMenu" title={category.name} path={category._id}>
           {category.childs.map((c) => buildMenu(c))}
         </Submenu>
       );
@@ -49,7 +49,7 @@ const HeaderCategory = ({ category }) => {
           underline="none"
           component={RouterLink}
           style={{ fontWeight: 600, color: '#595959' }}
-          to={`/${category.slug}`}
+          to={`/${category._id}`}
           key={category._id}
         >
           {category.name}

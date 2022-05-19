@@ -15,7 +15,7 @@ const PriceRangeFilter = ({ initialValues, onApply }) => (
       start: Yup.number().min(0).max(9999999999),
       end: Yup.number().min(0).max(9999999999)
     })}
-    onSubmit={(values) => onApply(`${values.start},${values.end}`)}
+    onSubmit={(values) => onApply({ start: values.start, end: values.end })}
   >
     {({
       handleBlur,

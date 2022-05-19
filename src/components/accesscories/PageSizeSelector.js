@@ -58,6 +58,7 @@ const PageSizeSelector = ({ handlePageSizeChange, pageSize }) => {
         onChange={handlePageSizeChange}
         input={<BootstrapInput />}
       >
+        <option value="5">5</option>
         <option value="8">8</option>
         <option value="16">16</option>
         <option value="24">24</option>

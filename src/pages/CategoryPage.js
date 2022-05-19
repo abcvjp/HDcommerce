@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 
 const CategoryPage = () => {
   const classes = useStyles();
-  const { categorySlug } = useParams();
+  const { categoryId } = useParams();
 
   const data = useRef({
     category: null,
@@ -34,7 +34,8 @@ const CategoryPage = () => {
   });
 
   const [filters, setFilters] = useState({
-    price: null
+    'price[gte]': null,
+    'price[lte]': null
   });
 
   const [, forceRerender] = useState(Date.now());
@@ -42,21 +43,20 @@ const CategoryPage = () => {
   const categoriesStore = useSelector((state) => state.categories);
 
   const handeApplyPriceRange = (priceRange) => {
-    setFilters((prev) => ({ ...prev, price: priceRange }));
+    setFilters((prev) => ({ ...prev, 'price[gte]': priceRange.start, 'price[lte]': priceRange.end }));
   };
 
   useEffect(() => {
-    // CHECK CATEGORY IN STORE OTHERWISE FETCH CATEGORY BY SLUG
-    if (!isObjectEmpty(categoriesStore.map_slug_id)) {
-      const categoryId = categoriesStore.map_slug_id[categorySlug];
+    // CHECK CATEGORY IN STORE OTHERWISE FETCH CATEGORY BY ID
+    if (!isObjectEmpty(categoriesStore.map_name_id)) {
       const category = categoriesStore.all[categoryId];
       data.current = {
         category,
-        breadcrumbs: generateBreadCrumbs(category.path, categoriesStore.map_name_slug)
+        breadcrumbs: generateBreadCrumbs(category.path, categoriesStore.map_name_id)
       };
       forceRerender(Date.now());
     }
-  }, [categorySlug, categoriesStore]);
+  }, [categoryId, categoriesStore]);
 
   return (
     <>
@@ -106,7 +106,7 @@ const CategoryPage = () => {
                   </Typography>
                 </Box>
                 <ProductList
-                  filters={{ category_slug: categorySlug, ...filters }}
+                  filters={{ categoryId, ...filters }}
                 />
               </Grid>
 
