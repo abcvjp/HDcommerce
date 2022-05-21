@@ -1,0 +1,122 @@
+version: "3.9"
+services:
+  #---------------MAIN SERVICES--------------#
+  catalog-service:
+    build:
+      context: ./catalog-service
+      dockerfile: Dockerfile.prod
+    expose:
+      - 3000
+    networks:
+      - kong-net
+      - service-net
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3000
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile.prod
+    expose:
+      - 3000
+    networks:
+      - kong-net
+      - service-net
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3000
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile.prod
+    expose:
+      - 3000
+    networks:
+      - kong-net
+      - service-net
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3000
+  report-service:
+    build:
+      context: ./report-service
+      dockerfile: Dockerfile.prod
+    expose:
+      - 3000
+    networks:
+      - kong-net
+      - service-net
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3000
+  mailer-service:
+    build:
+      context: ./workers/mailer
+      dockerfile: Dockerfile.prod
+    networks:
+      - service-net
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+  
+  #--------------------- GATEWAY ---------------------#
+  # kongdb:
+    # image: docker.io/bitnami/postgresql:13
+    # networks:
+      # - kong-net
+    # volumes:
+      # - kongdb-data:/bitnami/postgresql
+    # environment:
+      # - POSTGRESQL_USERNAME=${KONG_DB_USER:-kong}
+      # - POSTGRESQL_PASSWORD=${KONG_DB_PASSWORD:-123456}
+      # - POSTGRESQL_DATABASE=${KONG_DB_DBNAME:-kong}
+  kong:
+    image: docker.io/bitnami/kong:2.8.1
+    ports:
+      - 80:8000
+      - 443:8443
+    expose:
+      - 8001
+    networks:
+      - kong-net
+    environment:
+      KONG_MIGRATE: ${KONG_MIGRATE:-yes}
+      KONG_DATABASE: ${KONG_DATABASE:-postgres}
+      KONG_PG_HOST: ${KONG_DB_HOST:-kongdb}
+      KONG_PG_USER: ${KONG_DB_USER:-kong}
+      KONG_PG_PASSWORD: ${KONG_DB_PASSWORD:-123456}
+      BITNAMI_DEBUG: ${BITNAMI_DEBUG:-true}
+  konga:
+    depends_on:
+      - kong
+    image: pantsel/konga:0.14.9
+    ports:
+      - 1337:1337
+    networks:
+      - kong-net
+    volumes:
+      - konga-data:/app/kongadata
+      # - ./kongaUser.js:/app/konga.user.js:ro
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      KONGA_LOG_LEVEL: ${KONGA_LOG_LEVEL:-warn}
+      NO_AUTH: ${KONGA_NO_AUTH:-true}
+      # KONGA_SEED_USER_DATA_SOURCE_FILE: /app/konga.user.js
+      # DB_ADAPTER: mongo
+      # DB_HOST: cluster0.uh8yi.mongodb.net
+      # DB_PORT: 27017
+      # DB_USER: hoaideptrai
+      # DB_PASSWORD: 123Gjmptw
+      # DB_DATABASE: konga
+networks:
+  kong-net:
+    external: false
+    driver: bridge
+  service-net:
+    external: false
+    driver: bridge
+
+volumes:
+  kongdb-data:
+    driver: local
+  konga-data:
+    driver: local

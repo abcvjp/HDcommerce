@@ -34,6 +34,7 @@
     "joi": "^17.6.0",
     "kafkajs": "^1.16.0",
     "lodash": "^4.17.21",
+    "mongodb": "^4.6.0",
     "mongoose": "^6.2.4",
     "nestjs-stripe": "^1.0.0",
     "reflect-metadata": "^0.1.13",
