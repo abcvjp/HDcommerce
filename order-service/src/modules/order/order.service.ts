@@ -120,6 +120,9 @@ export class OrderService {
 
     const [records, count] = await Promise.all([
       dbQuery
+        .append({
+          $sort: sort ? sort : DEFAULT_DBQUERY_SORT,
+        })
         .skip(skip ? skip : 0)
         .limit(limit ? limit : DEFAULT_DBQUERY_LIMIT)
         .append({
@@ -129,9 +132,6 @@ export class OrderService {
             deliveryMethodId: { $toString: '$deliveryMethodId' },
             paymentMethodId: { $toString: '$paymentMethodId' },
           },
-        })
-        .append({
-          $sort: sort ? sort : DEFAULT_DBQUERY_SORT,
         })
         .exec(),
       this.orderModel.countDocuments(filters),
