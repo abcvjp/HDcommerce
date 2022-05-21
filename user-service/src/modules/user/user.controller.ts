@@ -12,6 +12,7 @@ import {
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserId } from 'src/common/decorators/user-id.decorator';
 import { User } from 'src/common/decorators/user.decorator';
+import { ChangePasswordDto } from './dto/changePassword.dto';
 import { CreateUserDto } from './dto/createUser.dto';
 import { FindAllUserDto } from './dto/findAllUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
@@ -48,6 +49,11 @@ export class UserController {
   @Put('me')
   updateInfo(@UserId() userId, @Body() dto: UpdateUserInfoDto) {
     return this.userService.updateInfo(userId, dto);
+  }
+
+  @Put('/me/password')
+  changePassword(@UserId() id: string, @Body() dto: ChangePasswordDto) {
+    return this.userService.changePassword(id, dto);
   }
 
   @Put(':id')
