@@ -130,7 +130,7 @@ export class ProductService {
       dbQuery
         .append({
           $sort: sort
-            ? sort
+            ? (sort as any)
             : keyword
             ? { relevance: { $meta: 'textScore' } }
             : DEFAULT_DBQUERY_SORT,

@@ -121,7 +121,7 @@ export class OrderService {
     const [records, count] = await Promise.all([
       dbQuery
         .append({
-          $sort: sort ? sort : DEFAULT_DBQUERY_SORT,
+          $sort: sort ? (sort as any) : DEFAULT_DBQUERY_SORT,
         })
         .skip(skip ? skip : 0)
         .limit(limit ? limit : DEFAULT_DBQUERY_LIMIT)
