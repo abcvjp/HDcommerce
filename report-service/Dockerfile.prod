@@ -7,7 +7,7 @@ RUN npm run build && npm prune --production
 
 FROM node:16-alpine3.11
 WORKDIR /workdir
-ENV NODE_ENV=production
+COPY .env .env
 COPY --from=builder /workdir/dist ./dist
 COPY --from=builder /workdir/node_modules ./node_modules
 CMD ["node", "dist/main.js"]
