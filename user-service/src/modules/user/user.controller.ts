@@ -7,9 +7,12 @@ import {
   Param,
   Body,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { UserId } from 'src/common/decorators/user-id.decorator';
 import { User } from 'src/common/decorators/user.decorator';
+import { ChangePasswordDto } from './dto/changePassword.dto';
 import { CreateUserDto } from './dto/createUser.dto';
 import { FindAllUserDto } from './dto/findAllUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
@@ -18,7 +21,7 @@ import { IUser } from './interfaces/user.interface';
 import { UserRole } from './schemas/user.schema';
 import { UserService } from './user.service';
 
-@Controller('')
+@Controller('/user')
 export class UserController {
   constructor(private userService: UserService) {}
 
@@ -43,9 +46,14 @@ export class UserController {
     return this.userService.create(dto);
   }
 
-  @Put(':id/info')
-  updateInfo(@Param('id') id: string, @Body() dto: UpdateUserInfoDto) {
-    return this.userService.updateInfo(id, dto);
+  @Put('me')
+  updateInfo(@UserId() userId, @Body() dto: UpdateUserInfoDto) {
+    return this.userService.updateInfo(userId, dto);
+  }
+
+  @Put('/me/password')
+  changePassword(@UserId() id: string, @Body() dto: ChangePasswordDto) {
+    return this.userService.changePassword(id, dto);
   }
 
   @Put(':id')
@@ -58,5 +66,17 @@ export class UserController {
   @Roles(UserRole.ADMIN)
   deleteOne(@Param('id') id: string) {
     return this.userService.deleteOne(id);
+  }
+
+  @Patch(':id/enable')
+  @Roles(UserRole.ADMIN)
+  enable(@Param('id') id: string) {
+    return this.userService.enable(id);
+  }
+
+  @Patch(':id/disable')
+  @Roles(UserRole.ADMIN)
+  disable(@Param('id') id: string) {
+    return this.userService.disable(id);
   }
 }

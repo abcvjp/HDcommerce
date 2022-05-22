@@ -21,19 +21,19 @@ import { PayWithStripeDto } from './dto/pay-with-stripe.dto';
 export class OrderController {
   constructor(private orderService: OrderService) {}
 
-  @Get(':id/confirm')
+  @Get('/:id/confirm')
   @Roles(UserRole.ADMIN)
   confirm(@Param('id', MongoIdPipe) id: string) {
     return this.orderService.confirm(id);
   }
 
-  @Get(':id/complete')
+  @Get('/:id/complete')
   @Roles(UserRole.ADMIN)
   complete(@Param('id', MongoIdPipe) id: string) {
     return this.orderService.complete(id);
   }
 
-  @Get(':id/cancel')
+  @Get('/:id/cancel')
   @Roles(UserRole.ADMIN)
   cancel(@Param('id', MongoIdPipe) id: string) {
     return this.orderService.cancel(id);
@@ -44,7 +44,7 @@ export class OrderController {
     return this.orderService.createCardToken();
   }
 
-  @Get(':id')
+  @Get('/:id')
   findOne(@Param('id', MongoIdPipe) id: string) {
     return this.orderService.findOne(id);
   }

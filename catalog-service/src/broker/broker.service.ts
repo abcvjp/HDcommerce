@@ -17,11 +17,13 @@ export class BrokerService {
       await this.productService.decreaseStockQuantity(orderInfo.items);
     } catch (error) {
       await this.brokerClient.emit('orderCreation-stockUpdateERR', orderInfo);
+      await this.brokerClient.emit('orderCreation-FAILED', orderInfo);
     }
     await this.brokerClient.emit('orderCreation-stockUpdateOK', orderInfo);
   }
 
   async handleOrderCompleted(orderInfo: any): Promise<void> {
+    await this.productService.increaseSoldQuantity(orderInfo.items);
     await this.reviewService.initMultiple(
       orderInfo.userId,
       orderInfo.items.map((item) => item.productId),

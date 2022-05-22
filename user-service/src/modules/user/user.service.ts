@@ -1,6 +1,7 @@
 import { Model, FilterQuery } from 'mongoose';
 import {
   ConflictException,
+  ForbiddenException,
   Inject,
   Injectable,
   NotFoundException,
@@ -18,12 +19,13 @@ import {
   DEFAULT_DBQUERY_SKIP,
 } from 'src/common/constants';
 import { GatewayService } from 'src/clients/gateway/gateway.service';
-import { hashPassword } from 'src/utils/password';
+import { comparePassword, hashPassword } from 'src/utils/password';
 import mongoose from 'mongoose';
 import { BORKER_PROVIDER } from 'src/broker/broker.provider';
 import { FindAllResult } from 'src/common/classes/find-all.result';
 // import * as moment from 'moment';
 import { merge } from 'lodash';
+import { ChangePasswordDto } from './dto/changePassword.dto';
 
 @Injectable()
 export class UserService {
@@ -169,5 +171,52 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
     await existingUser.delete();
+  }
+
+  async enable(id: string): Promise<void> {
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(
+        id,
+        { isEnabled: true },
+        {
+          new: true,
+          passwordHash: 0,
+        },
+      )
+      .lean();
+    if (!updatedUser) {
+      throw new NotFoundException('User not found');
+    }
+  }
+
+  async disable(id: string): Promise<void> {
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(
+        id,
+        { isEnabled: false },
+        {
+          new: true,
+          passwordHash: 0,
+        },
+      )
+      .lean();
+    if (!updatedUser) {
+      throw new NotFoundException('User not found');
+    }
+  }
+
+  async changePassword(id: string, dto: ChangePasswordDto): Promise<void> {
+    const userToChange = await this.userModel.findById(id);
+    if (!userToChange) {
+      throw new NotFoundException('User not found');
+    }
+    if (
+      !(await comparePassword(dto.currentPassword, userToChange.passwordHash))
+    ) {
+      throw new ForbiddenException('Current password is wrong');
+    }
+    await userToChange.update({
+      passwordHash: await hashPassword(dto.newPassword),
+    });
   }
 }

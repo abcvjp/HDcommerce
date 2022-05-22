@@ -18,6 +18,7 @@ import mongoose from 'mongoose';
 import { ProductService } from '../product/product.service';
 import { ICategory } from './interfaces/category.interface';
 import { FindAllResult } from 'src/common/classes/find-all.result';
+import { DEFAULT_DBQUERY_SORT } from 'src/common/constants';
 
 @Injectable()
 export class CategoryService {
@@ -49,7 +50,16 @@ export class CategoryService {
   }
 
   async findAll(query: FindAllCategoryDto): Promise<FindAllResult<ICategory>> {
-    const { startId, skip, limit, sort, slug, includeChildren } = query;
+    const {
+      startId,
+      skip,
+      limit,
+      sort,
+      slug,
+      includeChildren,
+      isPublic,
+      keyword,
+    } = query;
 
     const filters: FilterQuery<Category> = startId
       ? {
@@ -57,15 +67,23 @@ export class CategoryService {
         }
       : {};
     slug && (filters.slug = slug);
+    isPublic !== undefined && (filters.isPublic = isPublic);
+    keyword && (filters['$text'] = { $search: keyword });
 
     const dbQuery = this.categoryModel
       .find(filters)
       .lean()
-      .sort(sort ? sort : { _id: 1 })
+      .sort(
+        sort
+          ? sort
+          : keyword
+          ? { relevance: { $meta: 'textScore' } }
+          : DEFAULT_DBQUERY_SORT,
+      )
       .skip(skip)
       .limit(limit);
 
-    if (includeChildren) {
+    if (includeChildren === true) {
       dbQuery.populate('children', { children: 0 });
     } else {
       dbQuery.select('-children');
@@ -78,6 +96,7 @@ export class CategoryService {
 
     records.forEach((category) => {
       category._id = category._id.toString();
+      category.parentId && (category.parentId = category.parentId.toString());
       if (category.children) {
         category.children.forEach((x) => {
           x._id = x._id.toString();

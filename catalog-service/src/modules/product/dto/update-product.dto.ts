@@ -2,10 +2,23 @@ import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsMongoId,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
+
+class ProductImageDto {
+  @IsNotEmpty()
+  @IsString()
+  readonly url: string;
+
+  @IsOptional()
+  readonly alt: string;
+
+  @IsOptional()
+  readonly title: string;
+}
 
 export class UpdateProductDto {
   @IsOptional()
@@ -49,8 +62,8 @@ export class UpdateProductDto {
   readonly thumbnail: string;
 
   @IsOptional()
-  @IsString()
-  readonly images: string[];
+  @Type(() => ProductImageDto)
+  readonly images: ProductImageDto[];
 
   @IsOptional()
   @IsString()

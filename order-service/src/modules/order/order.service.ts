@@ -120,6 +120,9 @@ export class OrderService {
 
     const [records, count] = await Promise.all([
       dbQuery
+        .append({
+          $sort: sort ? (sort as any) : DEFAULT_DBQUERY_SORT,
+        })
         .skip(skip ? skip : 0)
         .limit(limit ? limit : DEFAULT_DBQUERY_LIMIT)
         .append({
@@ -129,9 +132,6 @@ export class OrderService {
             deliveryMethodId: { $toString: '$deliveryMethodId' },
             paymentMethodId: { $toString: '$paymentMethodId' },
           },
-        })
-        .append({
-          $sort: sort ? sort : DEFAULT_DBQUERY_SORT,
         })
         .exec(),
       this.orderModel.countDocuments(filters),
@@ -265,6 +265,17 @@ export class OrderService {
       status: OrderStatus.COMPLETED,
       deliveryStatus: DeliveryStatus.SUCCESS,
       paymentStatus: PaymentStatus.PAID,
+    });
+    await this.brokerClient.emit('orderProcessing-orderCompleted', {
+      orderId: foundOrder._id.toString(),
+      code: foundOrder.code,
+      items: foundOrder.items,
+      userId: foundOrder.userId,
+      customerInfo: foundOrder.customerInfo,
+      deliveryFee: foundOrder.deliveryFee,
+      itemTotal: foundOrder.itemTotal,
+      orderTotal: foundOrder.orderTotal,
+      createdAt: foundOrder.createdAt,
     });
   }
 

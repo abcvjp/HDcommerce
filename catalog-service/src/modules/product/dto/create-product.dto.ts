@@ -8,6 +8,18 @@ import {
   IsString,
 } from 'class-validator';
 
+class ProductImageDto {
+  @IsNotEmpty()
+  @IsString()
+  readonly url: string;
+
+  @IsOptional()
+  readonly alt: string;
+
+  @IsOptional()
+  readonly title: string;
+}
+
 export class CreateProductDto {
   @IsNotEmpty()
   @IsString()
@@ -45,19 +57,19 @@ export class CreateProductDto {
   @IsString()
   readonly shortDescription: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   readonly thumbnail: string;
 
   @IsOptional()
-  @IsString()
-  readonly images: string[];
+  @Type(() => ProductImageDto)
+  readonly images: ProductImageDto[];
 
   @IsNotEmpty()
   @IsString()
   readonly metaTitle: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   readonly metaDescription: string;
 
