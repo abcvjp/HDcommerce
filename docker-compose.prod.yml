@@ -10,9 +10,6 @@ services:
     networks:
       - kong-net
       - service-net
-    volumes:
-      - ./catalog-service:/workdir
-      - /workdir/node_modules
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: 3000
@@ -25,9 +22,6 @@ services:
     networks:
       - kong-net
       - service-net
-    volumes:
-      - ./order-service:/workdir
-      - /workdir/node_modules
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: 3000
@@ -40,9 +34,6 @@ services:
     networks:
       - kong-net
       - service-net
-    volumes:
-      - ./user-service:/workdir
-      - /workdir/node_modules
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: 3000
@@ -55,9 +46,6 @@ services:
     networks:
       - kong-net
       - service-net
-    volumes:
-      - ./report-service:/workdir
-      - /workdir/node_modules
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: 3000
@@ -67,9 +55,6 @@ services:
       dockerfile: Dockerfile.prod
     networks:
       - service-net
-    volumes:
-      - ./workers/mailer:/workdir
-      - /workdir/node_modules
     environment:
       NODE_ENV: ${NODE_ENV:-production}
   
