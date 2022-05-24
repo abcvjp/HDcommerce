@@ -155,7 +155,7 @@ export class ProductService {
   }
 
   async create(dto: CreateProductDto): Promise<IProduct> {
-    const { name, categoryId } = dto;
+    const { name, categoryId, thumbnail, images } = dto;
 
     // check uniqueness of name
     const productByName = await this.productModel
@@ -168,12 +168,18 @@ export class ProductService {
     }
 
     // check if category existed
-    await this.categoryService.findOne(categoryId);
+    if (!(await this.categoryService.findOne(categoryId))) {
+      throw new NotFoundException('Category is not exist');
+    }
 
-    const createdProduct = await this.productModel.create({
-      ...dto,
-      slug: slug(name),
-    });
+    const newProduct = { ...dto, slug: slug(name) };
+
+    // avatar is default the first image if not specified
+    if (!thumbnail && images && images.length) {
+      newProduct.thumbnail = images[0].url;
+    }
+
+    const createdProduct = await this.productModel.create(newProduct);
 
     return createdProduct;
   }
