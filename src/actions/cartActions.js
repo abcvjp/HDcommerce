@@ -140,15 +140,17 @@ export const checkAndChangeQuantity = ({ itemIndex, quantity }) => async (dispat
 };
 
 export const checkItemsValid = ({ items, onSuccess, onFailed }) => async () => {
-  cartApi.checkValid({
+  cartApi.updateCart({
     cart_items: items.map((item) => ({
-      product_id: item.product_id,
-      product_name: item.product_name,
+      productId: item.product_id,
+      // product_name: item.product_name,
       price: item.price,
       quantity: item.quantity,
+      selected: true
     })),
   }).then((response) => response.data).then((response) => {
-    if (response.success === true) {
+    const updatedItems = response.data.items;
+    if (updatedItems.every((item) => item.buy_able === true)) {
       if (onSuccess) onSuccess(response);
     } else if (onFailed) onFailed(response);
   }).catch(() => {

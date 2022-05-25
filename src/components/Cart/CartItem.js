@@ -80,7 +80,7 @@ const CartItem = ({
           <Grid item key="thumbnail">
             <Avatar
               className={classes.avatar}
-              src={item.product_thumbnail.url}
+              src={item.product_thumbnail}
               alt={item.product_name}
               variant="square"
             />
@@ -89,7 +89,7 @@ const CartItem = ({
           <Grid item key="item_name" className={classes.productName}>
             <Link
               component={RouterLink}
-              to={`/product/${item.product_slug}`}
+              to={`/product/${item.product_id}`}
             >
               {item.product_name}
             </Link>

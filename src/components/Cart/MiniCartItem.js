@@ -39,7 +39,7 @@ const MiniCartItem = ({ item, deleteItem }) => {
           className={classes.itemText}
           primary={(
             <Link
-              to={`/product/${item.product_slug}`}
+              to={`/product/${item.product_id}`}
               component={RouterLink}
             >
               {item.product_name}

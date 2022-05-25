@@ -3,8 +3,12 @@ import API from './apiClient';
 
 const cartApi = {
   checkValid: (data) => {
-    const url = '/cart/check_valid';
+    const url = '/cart/check-valid';
     return API.post(url, cleanObj(data));
+  },
+  updateCart: (data) => {
+    const url = '/cart';
+    return API.put(url, cleanObj(data));
   },
   searchProducts: (query) => {
     const url = '/search';
