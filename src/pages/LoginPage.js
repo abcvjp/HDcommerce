@@ -20,6 +20,7 @@ import { setUser } from 'src/actions/cartActions';
 import { showAlertMessage } from 'src/actions/alertMessageActions';
 import { userApi } from 'src/utils/api';
 import { Shop } from '@material-ui/icons';
+import { Link as RouterLink, Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -163,7 +164,7 @@ const LoginPage = () => {
                     value={values.password}
                     variant="outlined"
                   />
-                  <Box sx={{ py: 2 }}>
+                  <Box sx={{ py: 2, mb: 2 }}>
                     <Button
                       color="secondary"
                       disabled={isSubmitting}
@@ -174,6 +175,18 @@ const LoginPage = () => {
                     >
                       Sign in now
                     </Button>
+                  </Box>
+                  <Box sx={{ textAlign: 'center', fontSize: '1rem' }}>
+                    New to HDcommerce?
+                    {' '}
+                    <Link
+                      component={RouterLink}
+                      to="/register"
+                      underline="none"
+                      color="primary"
+                    >
+                      Register
+                    </Link>
                   </Box>
                 </form>
               )}
