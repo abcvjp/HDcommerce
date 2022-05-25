@@ -10,9 +10,17 @@ import {
   SELECT_ITEM_CART,
   SELECT_ALL_CART,
   UNSELECT_ITEM_CART,
-  UNSELECT_ALL_CART
+  UNSELECT_ALL_CART,
+  SET_USER
 } from '../constants/actionTypes';
 import { showAlertMessage } from './alertMessageActions';
+
+export const setUser = (user) => ({
+  type: SET_USER,
+  payload: {
+    user
+  }
+});
 
 export const setCart = ({ cart }) => ({
   type: SET_CART,

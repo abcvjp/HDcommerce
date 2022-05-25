@@ -3,7 +3,8 @@ import { Helmet } from 'react-helmet';
 import {
   Grid, makeStyles, Paper, Typography,
   Box,
-  Divider
+  Divider,
+  Container
 } from '@material-ui/core';
 
 import ProductList from 'src/components/Product/ProductList';
@@ -18,6 +19,9 @@ import PriceRangeFilter from 'src/components/accesscories/PriceRangeFilter';
 import { APP_TITLE } from 'src/constants/appInfo';
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    minHeight: '80%'
+  },
   bar: {
     padding: theme.spacing(2),
     borderRight: '1px solid #e6e6e6'
@@ -59,7 +63,7 @@ const CategoryPage = () => {
   }, [categoryId, categoriesStore]);
 
   return (
-    <>
+    <Container maxWidth="lg" className={classes.root}>
 
       {!isArrayEmpty(data.current.breadcrumbs) && <Breadcrumbs breadcrumbs={data.current.breadcrumbs} />}
 
@@ -115,7 +119,7 @@ const CategoryPage = () => {
         </>
       )}
 
-    </>
+    </Container>
   );
 };
 

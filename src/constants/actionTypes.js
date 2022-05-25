@@ -4,6 +4,9 @@ export const FETCH_PRODUCTS = 'FETCH_PRODUCT';
 // categories
 export const SET_CATEGORIES = 'SET_CATEGORIES';
 
+// user
+export const SET_USER = 'SET_USER';
+
 // cart
 export const SET_CART = 'SET_CART';
 export const ADD_TO_CART = 'ADD_TO_CART';

@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
 import {
-  Grid, makeStyles, Box, Paper, Divider, Button, Typography
+  Grid, makeStyles, Box, Paper, Divider, Button, Typography, Container
 } from '@material-ui/core';
 import { generateBreadCrumbs, isArrayEmpty, isObjectEmpty } from 'src/utils/utilFuncs';
 import { checkAndAddToCart } from 'src/actions/cartActions';
@@ -25,6 +25,9 @@ import { APP_TITLE } from 'src/constants/appInfo';
 import Products from 'src/components/Product/Products';
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    minHeight: '80%'
+  },
   detail: {
     padding: theme.spacing(2)
   },
@@ -147,7 +150,7 @@ const ProductPage = () => {
   }, [product, mapCategoryNameId]);
 
   return (
-    <>
+    <Container maxWidth="lg" className={classes.root}>
       {!isArrayEmpty(data.current.breadcrumbs) && <Breadcrumbs breadcrumbs={data.current.breadcrumbs} />}
       {product && (
       <>
@@ -235,7 +238,7 @@ const ProductPage = () => {
         </Paper>
       </>
       )}
-    </>
+    </Container>
   );
 };
 

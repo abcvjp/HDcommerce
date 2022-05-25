@@ -4,7 +4,7 @@ import { useLocation } from 'react-router';
 import { Helmet } from 'react-helmet';
 
 import {
-  Grid, makeStyles, Paper, Typography, Box
+  Grid, makeStyles, Paper, Typography, Box, Container
 } from '@material-ui/core';
 
 import { APP_TITLE } from 'src/constants/appInfo';
@@ -15,7 +15,7 @@ import Breadcrumbs from '../components/accesscories/Breadcrumbs';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-
+    minHeight: '80%'
   },
   main: {
   },
@@ -46,7 +46,7 @@ const SearchPage = () => {
   };
 
   return (
-    <>
+    <Container maxWidth="lg" className={classes.root}>
       <Helmet>
         <title>
           Search for
@@ -83,7 +83,7 @@ const SearchPage = () => {
           </Grid>
         </Grid>
       </Paper>
-    </>
+    </Container>
   );
 };
 

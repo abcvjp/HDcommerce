@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
 import {
+  Container,
   Grid, makeStyles, Typography,
 } from '@material-ui/core';
 
@@ -20,7 +21,7 @@ import { APP_TITLE } from 'src/constants/appInfo';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-
+    minHeight: '80%'
   },
   title: {
     marginBlock: theme.spacing(3),
@@ -78,7 +79,7 @@ const CartPage = () => {
   const subtotal = caculateTotalPrice(selectedItems);
 
   return (
-    <div className={classes.root}>
+    <Container maxWidth="lg" className={classes.root}>
 
       <Helmet>
         <title>
@@ -109,7 +110,7 @@ const CartPage = () => {
         )
         : <Typography>Your cart is empty, let buy some product!</Typography>}
 
-    </div>
+    </Container>
   );
 };
 

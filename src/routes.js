@@ -6,8 +6,10 @@ import CartPage from 'src/pages/CartPage';
 import ProductPage from 'src/pages/ProductPage';
 import SearchPage from 'src/pages/SearchPage';
 import CheckoutPage from 'src/pages/CheckoutPage';
+import LoginPage from 'src/pages/LoginPage';
 
 const routes = [
+  { path: '/login', element: <LoginPage /> },
   { path: '/product/:productId', element: <ProductPage /> },
   { path: '/search', element: <SearchPage /> },
   { path: '/cart', element: <CartPage /> },

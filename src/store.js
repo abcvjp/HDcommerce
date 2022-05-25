@@ -3,6 +3,7 @@ import thunkMiddleware from 'redux-thunk';
 import rootReducer from 'src/reducers';
 
 const initialState = {
+  user: null,
   cart: [],
   categories: {
     list_all: [],

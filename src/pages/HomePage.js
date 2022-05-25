@@ -33,6 +33,7 @@ export const slides = [
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    minHeight: '80%',
     marginBlock: theme.spacing(3)
   },
   title: {
@@ -66,7 +67,7 @@ const HomePage = () => {
   }, []);
 
   return (
-    <Container className={classes.root}>
+    <Container maxWidth="lg" className={classes.root}>
 
       <Helmet>
         <title>{APP_TITLE}</title>

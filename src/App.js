@@ -1,5 +1,5 @@
 import {
-  BrowserRouter
+  BrowserRouter,
 } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
@@ -8,7 +8,6 @@ import theme from 'src/theme';
 
 import { setCart } from 'src/actions/cartActions';
 
-import { Container } from '@material-ui/core';
 import HeaderBar from 'src/components/HeaderBar';
 import Footer from 'src/components/Footer';
 import Routing from 'src/components/Routing';
@@ -36,9 +35,7 @@ function App() {
         <GlobalStyles />
         <BrowserRouter>
           <HeaderBar />
-          <Container maxWidth="lg" style={{ minHeight: '80%' }}>
-            <Routing />
-          </Container>
+          <Routing />
         </BrowserRouter>
         <Footer />
         <GlobalComponents />

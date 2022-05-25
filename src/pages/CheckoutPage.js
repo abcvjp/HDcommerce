@@ -9,7 +9,8 @@ import {
   makeStyles,
   Typography,
   Paper,
-  Box
+  Box,
+  Container
 } from '@material-ui/core';
 
 import Stepper from '@material-ui/core/Stepper';
@@ -38,6 +39,9 @@ import ContainedButton from 'src/components/styled-material/ContainedButton';
 import { APP_TITLE } from 'src/constants/appInfo';
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    minHeight: '80%'
+  },
   paper: {
     padding: theme.spacing(2)
   },
@@ -209,7 +213,7 @@ const CheckoutPage = () => {
   }, [location]);
 
   return (
-    <>
+    <Container maxWidth="lg" className={classes.root}>
       <Helmet>
         <title>
           Checkout |
@@ -293,7 +297,7 @@ const CheckoutPage = () => {
           </Paper>
         </>
       )}
-    </>
+    </Container>
   );
 };
 
