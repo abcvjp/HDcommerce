@@ -60,7 +60,7 @@ const LoginPage = () => {
         navigate('/', { replace: true });
         dispatch(showAlertMessage({
           type: 'success',
-          content: 'Login successfully'
+          content: 'Login succeed'
         }));
       } else {
         setError('Your account does not have permission to access');

@@ -62,10 +62,7 @@ const MiniCart = () => {
           badgeContent={itemCount}
           color="error"
         >
-          <div style={{ fontSize: '2rem' }}>
-
-            <ShoppingCartIcon fontSize="inherit" />
-          </div>
+          <ShoppingCartIcon fontSize="large" />
         </Badge>
       </IconButton>
       <Popover
