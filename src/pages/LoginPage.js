@@ -16,11 +16,12 @@ import * as Yup from 'yup';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
-import { getCart, setUser } from 'src/actions/cartActions';
 import { showAlertMessage } from 'src/actions/alertMessageActions';
 import { userApi } from 'src/utils/api';
 import { Shop } from '@material-ui/icons';
 import { Link as RouterLink, Link } from 'react-router-dom';
+import { setUser } from 'src/actions/userActions';
+import { getCart } from 'src/actions/cartActions';
 
 const useStyles = makeStyles((theme) => ({
   root: {

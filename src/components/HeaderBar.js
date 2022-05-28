@@ -45,7 +45,6 @@ const HeaderBar = () => {
     dispatch(openFullScreenLoading());
     try {
       await dispatch(logout());
-      localStorage.removeItem('access_token');
       navigate('/');
       dispatch(showAlertMessage({
         type: 'success',

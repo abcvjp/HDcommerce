@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CartDetail = ({
-  cartItems
+  cartItems, messages
 }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -139,6 +139,7 @@ const CartDetail = ({
             <Divider />
             <CartItem
               item={item}
+              messages={messages && messages[index]}
               handleSelectItemChange={handleSelectItemChange(index)}
               handleDeleteItem={handleDeleteItem(index)}
               handleChangeQtyItem={handleChangeQtyItem(index)}

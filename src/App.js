@@ -1,7 +1,7 @@
 import {
   BrowserRouter,
 } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from 'src/theme';
@@ -13,16 +13,24 @@ import GlobalComponents from 'src/components/global';
 import GlobalStyles from 'src/components/GlobalStyles';
 import { Helmet } from 'react-helmet';
 
-import { setUser } from 'src/actions/cartActions';
+import { useEffect } from 'react';
 import { APP_TITLE, APP_AUTHOR, APP_DESCRIPTION } from './constants/appInfo';
+import { setUser } from './actions/userActions';
+import { getCart } from './actions/cartActions';
 
 function App() {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
   const savedUser = window.localStorage.getItem('user');
   const savedAccessToken = window.localStorage.getItem('access_token');
-  if (savedUser && savedAccessToken) {
-    dispatch(setUser(savedUser));
-  }
+
+  useEffect(() => {
+    if (savedUser && savedAccessToken && !user) {
+      dispatch(setUser(savedUser));
+      dispatch(getCart());
+    }
+  }, []);
+
   return (
     <>
       <Helmet>

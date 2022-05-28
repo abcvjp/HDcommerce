@@ -32,17 +32,17 @@ const MiniCartItem = ({ item, deleteItem }) => {
         <ListItemAvatar>
           <Avatar
             variant="square"
-            src={item.product_thumbnail}
+            src={item.thumbnail}
           />
         </ListItemAvatar>
         <ListItemText
           className={classes.itemText}
           primary={(
             <Link
-              to={`/product/${item.product_id}`}
+              to={`/product/${item.productId}`}
               component={RouterLink}
             >
-              {item.product_name}
+              {item.productName}
             </Link>
           )}
           secondary={`${item.price}$ - Qty: ${item.quantity}`}

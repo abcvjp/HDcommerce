@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,7 +8,7 @@ import {
   Grid, makeStyles, Typography,
 } from '@material-ui/core';
 
-import { checkItemsValid, updateCart } from 'src/actions/cartActions';
+import { checkItemsValid } from 'src/actions/cartActions';
 
 import { closeFullScreenLoading, openFullScreenLoading } from 'src/actions/fullscreenLoading';
 import { showAlertMessage } from 'src/actions/alertMessageActions';
@@ -17,6 +16,7 @@ import { showAlertMessage } from 'src/actions/alertMessageActions';
 import CartDetail from 'src/components/Cart/CartDetail';
 import CartSummary from 'src/components/Cart/CartSummary';
 import { APP_TITLE } from 'src/constants/appInfo';
+import { caculateCartPrice } from 'src/utils/utilFuncs';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,9 +43,9 @@ const CartPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const cart = useSelector((state) => state.cart); // eslint-disable-line
-  console.log(cart);
+  const cart = useSelector((state) => state.cart);
   const selectedItems = cart.items.filter((item) => item.selected === true);
+  const subTotal = caculateCartPrice(cart.items);
 
   const handleProceedToCheckout = () => {
     if (selectedItems.length > 0) {
@@ -70,12 +70,6 @@ const CartPage = () => {
     }
   };
 
-  useEffect(() => {
-    dispatch(openFullScreenLoading());
-    dispatch(updateCart());
-    dispatch(closeFullScreenLoading());
-  }, []);
-
   return (
     <Container maxWidth="lg" className={classes.root}>
 
@@ -95,11 +89,12 @@ const CartPage = () => {
               <Grid item xs={12} md={9} key="cart_detail" className={classes.detail}>
                 <CartDetail
                   cartItems={cart.items}
+                  messages={cart.messages}
                 />
               </Grid>
               <Grid item md={3} key="cart_summary" className={classes.summary}>
                 <CartSummary
-                  subtotal={cart.subTotal}
+                  subtotal={subTotal}
                   handleProceedToCheckout={handleProceedToCheckout}
                 />
               </Grid>

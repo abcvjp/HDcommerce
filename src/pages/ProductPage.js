@@ -94,9 +94,9 @@ const ProductPage = () => {
 
   const handleAddtoCart = useCallback(() => {
     dispatch(checkAndAddToCart({
-      product_id: product._id,
-      product_name: product.name,
-      product_slug: product.slug,
+      productId: product._id,
+      productName: product.name,
+      productSlug: product.slug,
       price: product.price,
       quantity: qty
     }));

@@ -60,9 +60,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CartItem = ({
-  item, handleChangeQtyItem, handleDeleteItem, handleSelectItemChange
+  item, messages, handleChangeQtyItem, handleDeleteItem, handleSelectItemChange
 }) => {
   const classes = useStyles();
+  console.log(messages);
   return (
     <>
       <Grid className={classes.root} container item>
@@ -80,8 +81,8 @@ const CartItem = ({
           <Grid item key="thumbnail">
             <Avatar
               className={classes.avatar}
-              src={item.product_thumbnail}
-              alt={item.product_name}
+              src={item.thumbnail}
+              alt={item.productName}
               variant="square"
             />
           </Grid>
@@ -89,9 +90,9 @@ const CartItem = ({
           <Grid item key="item_name" className={classes.productName}>
             <Link
               component={RouterLink}
-              to={`/product/${item.product_id}`}
+              to={`/product/${item.productId}`}
             >
-              {item.product_name}
+              {item.productName}
             </Link>
           </Grid>
         </Grid>
@@ -134,9 +135,9 @@ const CartItem = ({
           </Grid>
         </Grid>
       </Grid>
-      {item.errors && (
+      {messages && (
       <Box key="errors" className={classes.errors}>
-        {item.errors.map((err) => (
+        {messages.map((err) => (
           <Box key={shortid.generate()} m={1}>
             <Typography
               variant="caption"

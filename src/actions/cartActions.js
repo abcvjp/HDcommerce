@@ -12,16 +12,8 @@ import {
   SELECT_ALL_CART,
   UNSELECT_ITEM_CART,
   UNSELECT_ALL_CART,
-  SET_USER
 } from '../constants/actionTypes';
 import { showAlertMessage } from './alertMessageActions';
-
-export const setUser = (user) => ({
-  type: SET_USER,
-  payload: {
-    user
-  }
-});
 
 export const setCart = ({ cart }) => ({
   type: SET_CART,
@@ -29,22 +21,17 @@ export const setCart = ({ cart }) => ({
 });
 
 export const addToCart = ({
-  product_id, product_name, product_slug, product_thumbnail, price, quantity, isBuyable, selected
+  productId, productName, productSlug, thumbnail, price, quantity, isBuyable, selected
 }) => ({
   type: ADD_TO_CART,
   payload: {
     item: {
-      product_id, product_name, product_slug, product_thumbnail, price, quantity, isBuyable, selected
+      productId, productName, productSlug, thumbnail, price, quantity, isBuyable, selected
     }
   }
 });
 
-export const deleteItemCart = ({ itemIndex }) => ({
-  type: DELETE_ITEM_CART,
-  payload: { itemIndex }
-});
-
-export const changeQuantityItemCart = ({ itemIndex, quantity }) => ({
+export const changeQuantityItem = ({ itemIndex, quantity }) => ({
   type: CHANGE_QUANTITY_ITEM_CART,
   payload: { itemIndex, quantity }
 });
@@ -69,17 +56,33 @@ export const unselectAllCart = () => ({
   payload: null
 });
 
-export const deleteCart = () => ({
+export const deleteAll = () => ({
   type: DELETE_CART,
   payload: null
 });
+
+export const deleteItem = ({ itemIndex }) => ({
+  type: DELETE_ITEM_CART,
+  payload: { itemIndex }
+});
+
+export const getCart = () => async (dispatch) => {
+  try {
+    const cartResult = await cartApi.getCart().then((response) => response.data.data);
+    dispatch(setCart({
+      cart: cartResult || initialCartState
+    }));
+  } catch (error) {
+    dispatch(showAlertMessage({ type: 'error', content: 'Error while getting cart' }));
+  }
+};
 
 export const updateCart = () => async (dispatch, getState) => {
   try {
     const currentCart = getState().cart;
     const updateResult = await cartApi.updateCart({
       items: currentCart.items.map((item) => ({
-        productId: item.product_id,
+        productId: item.productId,
         quantity: item.quantity,
         price: item.price,
         selected: item.selected
@@ -93,25 +96,24 @@ export const updateCart = () => async (dispatch, getState) => {
   }
 };
 
-export const getCart = () => async (dispatch) => {
-  try {
-    const cartResult = await cartApi.getCart().then((response) => response.data.data);
-    dispatch(setCart({
-      cart: cartResult || initialCartState
-    }));
-  } catch (error) {
-    dispatch(showAlertMessage({ type: 'error', content: 'Error while getting cart' }));
-  }
+export const deleteItemCart = ({ itemIndex }) => async (dispatch) => {
+  dispatch(deleteItem({ itemIndex }));
+  dispatch(updateCart());
+};
+
+export const deleteCart = () => async (dispatch) => {
+  dispatch(deleteAll());
+  dispatch(updateCart());
 };
 
 export const checkAndAddToCart = ({
-  product_id, product_name, price, quantity
+  productId, productName, price, quantity
 }) => async (dispatch) => {
   if (!quantity || Number.isNaN(quantity)) {
     dispatch(showAlertMessage({ type: 'error', content: 'Quantity is invalid' }));
   } else {
     productApi.getProductById(
-      product_id
+      productId
     ).then((response) => response.data.data).then((productFromServer) => {
       if (productFromServer.isEnabled === false) {
         dispatch(showAlertMessage({ type: 'error', content: 'This product has been disabled' }));
@@ -119,12 +121,12 @@ export const checkAndAddToCart = ({
         dispatch(showAlertMessage({ type: 'error', content: 'This product has sold out' }));
       } else if (productFromServer.stockQuantity < quantity) {
         dispatch(showAlertMessage({ type: 'error', content: 'Quantity of this product is not enough' }));
-      } else if (productFromServer.price !== price || productFromServer.name !== product_name) {
+      } else if (productFromServer.price !== price || productFromServer.name !== productName) {
         dispatch(addToCart({
-          product_id,
-          product_name: productFromServer.name,
-          product_slug: productFromServer.slug,
-          product_thumbnail: productFromServer.thumbnail,
+          productId,
+          productName: productFromServer.name,
+          productSlug: productFromServer.slug,
+          thumbnail: productFromServer.thumbnail,
           price: productFromServer.price,
           quantity,
           isBuyable: true,
@@ -133,15 +135,16 @@ export const checkAndAddToCart = ({
         dispatch(showAlertMessage({ type: 'warning', content: 'Added successfully. But product info has been changed, you should check again' }));
       } else {
         dispatch(addToCart({
-          product_id,
-          product_name: productFromServer.name,
-          product_slug: productFromServer.slug,
-          product_thumbnail: productFromServer.thumbnail,
+          productId,
+          productName: productFromServer.name,
+          productSlug: productFromServer.slug,
+          thumbnail: productFromServer.thumbnail,
           price: productFromServer.price,
           quantity,
           isBuyable: true,
           selected: true
         }));
+        dispatch(updateCart());
         dispatch(showAlertMessage({ type: 'success', content: 'Added successfully' }));
       }
     }).catch((err) => {
@@ -151,45 +154,22 @@ export const checkAndAddToCart = ({
   }
 };
 
-// export const checkAndChangeQuantity = ({ itemIndex, quantity }) => async (dispatch, getState) => {
-// if (!quantity || Number.isNaN(quantity)) {
-// dispatch(showAlertMessage({ type: 'error', content: 'Product quantity is invalid' }));
-// } else if (quantity < 1) {
-// dispatch(showAlertMessage({ type: 'error', content: 'Product quantity can\'t be lower than 1' }));
-// dispatch(changeQuantityItemCart({ itemIndex, quantity: 1 }));
-// } else {
-// const cart_item = getState().cart[itemIndex];
-// productApi.getProductById(cart_item.product_id).then((response) => response.data.data).then((productFromServer) => {
-// if (productFromServer.stockQuantity === 0) {
-// dispatch(showAlertMessage({ type: 'error', content: 'This product has sold out' }));
-// } else if (productFromServer.stockQuantity < quantity) {
-// dispatch(showAlertMessage({ type: 'error', content: `You only can buy up to ${productFromServer.stockQuantity} products of ${cart_item.product_name}` }));
-// dispatch(changeQuantityItemCart({ itemIndex, quantity: productFromServer.stockQuantity }));
-// } else {
-// dispatch(changeQuantityItemCart({ itemIndex, quantity }));
-// }
-// }).catch(() => {
-// showAlertMessage({ type: 'error', content: 'Something wrong happend' });
-// });
-// }
-// };
-
 export const checkAndChangeQuantity = ({ itemIndex, quantity }) => async (dispatch, getState) => {
   if (!quantity || Number.isNaN(quantity)) {
     dispatch(showAlertMessage({ type: 'error', content: 'Product quantity is invalid' }));
   } else if (quantity < 1) {
     dispatch(showAlertMessage({ type: 'error', content: 'Product quantity can\'t be lower than 1' }));
-    dispatch(changeQuantityItemCart({ itemIndex, quantity: 1 }));
   } else {
     const cart_item = getState().cart.items[itemIndex];
-    productApi.getProductById(cart_item.product_id).then((response) => response.data.data).then((productFromServer) => {
+    productApi.getProductById(cart_item.productId).then((response) => response.data.data).then((productFromServer) => {
       if (productFromServer.stockQuantity === 0) {
         dispatch(showAlertMessage({ type: 'error', content: 'This product has sold out' }));
       } else if (productFromServer.stockQuantity < quantity) {
-        dispatch(showAlertMessage({ type: 'error', content: `You only can buy up to ${productFromServer.stockQuantity} products of ${cart_item.product_name}` }));
-        dispatch(changeQuantityItemCart({ itemIndex, quantity: productFromServer.stockQuantity }));
+        dispatch(showAlertMessage({ type: 'error', content: `You only can buy up to ${productFromServer.stockQuantity} products of ${cart_item.productName}` }));
+        dispatch(changeQuantityItem({ itemIndex, quantity: productFromServer.stockQuantity }));
+        dispatch(updateCart());
       } else {
-        dispatch(changeQuantityItemCart({ itemIndex, quantity }));
+        dispatch(changeQuantityItem({ itemIndex, quantity }));
         dispatch(updateCart());
       }
     }).catch(() => {
@@ -201,8 +181,8 @@ export const checkAndChangeQuantity = ({ itemIndex, quantity }) => async (dispat
 export const checkItemsValid = ({ items, onSuccess, onFailed }) => async () => {
   cartApi.updateCart({
     cart_items: items.map((item) => ({
-      productId: item.product_id,
-      // product_name: item.product_name,
+      productId: item.productId,
+      // productName: item.productName,
       price: item.price,
       quantity: item.quantity,
       selected: true
@@ -220,8 +200,8 @@ export const checkItemsValid = ({ items, onSuccess, onFailed }) => async () => {
 export const checkCartValid = ({ onSuccess, onFailed }) => async (dispatch, getState) => {
   cartApi.checkValid({
     cart_items: getState().cart.map((item) => ({
-      product_id: item.product_id,
-      product_name: item.product_name,
+      productId: item.productId,
+      productName: item.productName,
       price: item.price,
       quantity: item.quantity,
     })),
@@ -237,8 +217,8 @@ export const checkCartValid = ({ onSuccess, onFailed }) => async (dispatch, getS
 export const checkCartValidAndUpdate = () => async (dispatch, getState) => {
   cartApi.checkValid({
     cart_items: getState().cart.map((item) => ({
-      product_id: item.product_id,
-      product_name: item.product_name,
+      productId: item.productId,
+      productName: item.productName,
       price: item.price,
       quantity: item.quantity,
     })),

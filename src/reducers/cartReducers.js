@@ -35,7 +35,7 @@ export default function cartReducer(state = initialCartState, action) {
         });
       } else {
         new_cart = curCart.map((item) => {
-          const newItem = itemsToUpdate.find((i) => i.product_id === item.product_id) || item;
+          const newItem = itemsToUpdate.find((i) => i.productId === item.productId) || item;
           if (!newItem.isBuyable && newItem.selected) newItem.selected = false;
           return newItem;
         });
@@ -50,14 +50,13 @@ export default function cartReducer(state = initialCartState, action) {
     case ADD_TO_CART: {
       const cart_items = [...state.items];
       const { item } = action.payload;
-      const index = cart_items.findIndex((cartItem) => cartItem.product_id === item.product_id);
+      const index = cart_items.findIndex((cartItem) => cartItem.productId === item.productId);
       if (isArrayEmpty(cart_items) || index === -1) {
         cart_items.push(item);
       } else if (index !== -1) {
         const itemToUpdate = cart_items[index];
         cart_items[index] = { ...itemToUpdate, quantity: itemToUpdate.quantity + item.quantity };
       }
-      // window.localStorage.setItem('cart', JSON.stringify(cart_items));
       const subTotal = caculateCartPrice(cart_items);
       return _.merge({}, state, { items: cart_items, subTotal });
     }
@@ -108,17 +107,17 @@ export default function cartReducer(state = initialCartState, action) {
       const { itemIndex, quantity } = action.payload;
       cart_items[itemIndex].quantity = quantity;
       // window.localStorage.setItem('cart', JSON.stringify(cart_items));
-      const subTotal = caculateCartPrice(cart_items);
-      return _.merge({}, state, { items: cart_items, subTotal });
+      // const subTotal = caculateCartPrice(cart_items);
+      return _.merge({}, state, { items: cart_items });
     }
 
     case DELETE_ITEM_CART: {
-      let cart_items = [...state.items];
+      const tempState = { ...state };
       const iIndex = action.payload.itemIndex;
-      cart_items = cart_items.filter((item, index) => index !== iIndex);
+      tempState.items = tempState.items.filter((item, index) => index !== iIndex);
       // window.localStorage.setItem('cart', JSON.stringify(cart_items));
-      const subTotal = caculateCartPrice(cart_items);
-      return _.merge({}, state, { items: cart_items, subTotal });
+      tempState.subTotal = caculateCartPrice(tempState.items);
+      return tempState;
     }
 
     case DELETE_CART: {
