@@ -1,8 +1,6 @@
 import { SET_USER } from 'src/constants/actionTypes';
 
-const initialState = {
-
-};
+const initialState = null;
 
 export default function userReducer(state = initialState, action) {
   switch (action.type) {

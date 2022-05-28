@@ -28,9 +28,9 @@ const ShippingMethod = ({ fieldName, setShippingMethod }) => {
   const [field, meta, helpers] = useField(fieldName);
 
   const handleShippingMethodChange = (e) => {
-    const value = parseInt(e.target.value, 10);
+    const { value } = e.target;
     helpers.setValue(value);
-    setShippingMethod(shippingMethods.find((i) => i.id === value));
+    setShippingMethod(shippingMethods.find((i) => i._id === value));
   };
 
   useEffect(() => {
@@ -75,10 +75,10 @@ const ShippingMethod = ({ fieldName, setShippingMethod }) => {
           >
             <Grid container direction="column">
               {shippingMethods.map((shippingMethod) => (
-                <Grid key={`shipping_method_${shippingMethod.id}`} item container justifyContent="space-between" alignItems="center" spacing={8}>
+                <Grid key={`shipping_method_${shippingMethod._id}`} item container justifyContent="space-between" alignItems="center" spacing={8}>
                   <Grid key="shipping_name" item>
                     <FormControlLabel
-                      value={shippingMethod.id}
+                      value={shippingMethod._id}
                       control={<Radio />}
                       label={shippingMethod.name}
                     />
@@ -90,7 +90,7 @@ const ShippingMethod = ({ fieldName, setShippingMethod }) => {
                   </Grid>
                   <Grid key="shipping_fee" item className={classes.shipfee}>
                     $
-                    {shippingMethod.fee}
+                    {shippingMethod.fixedFee}
                   </Grid>
                 </Grid>
               ))}

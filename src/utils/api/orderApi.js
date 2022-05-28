@@ -6,8 +6,8 @@ const orderApi = {
     const url = '/order';
     return API.post(url, cleanObj(data));
   },
-  getShippingMethods: () => API.get('/shipping/shipping_method'),
-  getPaymentMethods: () => API.get('/payment/payment_method')
+  getShippingMethods: () => API.get('/delivery-method'),
+  getPaymentMethods: () => API.get('/payment-method')
 };
 
 export default orderApi;

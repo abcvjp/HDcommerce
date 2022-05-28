@@ -39,7 +39,7 @@ const OrderSummary = ({ orderItems = [], shippingMethod, paymentMethod }) => {
   const [openCartDetail, setOpenCartDetail] = useState(false);
 
   const subtotal = orderItems.length > 0 ? caculateTotalPrice(orderItems) : 0;
-  const shippingFee = shippingMethod ? shippingMethod.fee : 0;
+  const shippingFee = shippingMethod ? shippingMethod.fixedFee : 0;
 
   const handleClickCartDetail = () => {
     setOpenCartDetail(!openCartDetail);
@@ -82,7 +82,7 @@ const OrderSummary = ({ orderItems = [], shippingMethod, paymentMethod }) => {
           </Typography>
           <Typography>
             $
-            {shippingFee}
+            {shippingFee || 0}
           </Typography>
         </Box>
       </Grid>
@@ -123,9 +123,9 @@ const OrderSummary = ({ orderItems = [], shippingMethod, paymentMethod }) => {
               {orderItems.map((item) => (
                 <ListItem key={shortid.generate()} button>
                   <ListItemAvatar>
-                    <Avatar src={item.product_thumbnail.url} />
+                    <Avatar src={item.thumbnail} />
                   </ListItemAvatar>
-                  <ListItemText primary={item.product_name} secondary={`Price: ${item.price}\nQty: ${item.quantity}`} />
+                  <ListItemText primary={item.productName} secondary={`Price: ${item.price}\nQty: ${item.quantity}`} />
                 </ListItem>
               ))}
             </List>

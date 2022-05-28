@@ -23,9 +23,9 @@ const ReviewAndPayment = ({ fieldName, setPaymentMethod }) => {
   const [field, meta, helpers] = useField(fieldName);
 
   const handlePaymentMethodChange = (e) => {
-    const value = parseInt(e.target.value, 10);
+    const { value } = e.target;
     helpers.setValue(value);
-    setPaymentMethod(paymentMethods.find((i) => i.id === value));
+    setPaymentMethod(paymentMethods.find((i) => i._id === value));
   };
 
   useEffect(() => {
@@ -69,10 +69,10 @@ const ReviewAndPayment = ({ fieldName, setPaymentMethod }) => {
           >
             <Grid container direction="column">
               {paymentMethods.map((paymentMethod) => ( // eslint-disable-line
-                <Grid key={`shipping_method_${paymentMethod.id}`} item container justifyContent="space-between" alignItems="center" spacing={8}>
+                <Grid key={`shipping_method_${paymentMethod._id}`} item container justifyContent="space-between" alignItems="center" spacing={8}>
                   <Grid key="shipping_name" item>
                     <FormControlLabel
-                      value={paymentMethod.id}
+                      value={paymentMethod._id}
                       control={<Radio />}
                       label={paymentMethod.name}
                     />

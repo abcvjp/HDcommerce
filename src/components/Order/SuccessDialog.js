@@ -15,7 +15,7 @@ const SuccessDialog = ({ order }) => {
       <DialogContent>
         <DialogContentText style={{ fontWeight: 'bold', color: 'green' }}>Ordered successfully</DialogContentText>
         <DialogContentText>
-          {`Your order id is ${order.id}. We'll email you an order confirmation with details and tracking info.`}
+          {`Your order code is ${order.code}. We'll email you an order confirmation with details and tracking info.`}
         </DialogContentText>
         <DialogActions>
           <Button onClick={handleSuccessDialogClose} color="secondary" size="large" variant="contained">

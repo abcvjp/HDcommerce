@@ -108,20 +108,21 @@ const CheckoutPage = () => {
       customer_name,
       phone_number,
       address,
-      shipping_note,
+      // shipping_note,
       shipping_method_id,
       payment_method_id
     } = orderInfo;
 
     return orderApi.createOrder({
-      email,
-      customer_name,
-      phone_number,
-      address,
-      shipping_note,
-      shipping_method_id,
-      payment_method_id,
-      order_items
+      customerInfo: {
+        email,
+        name: customer_name,
+        phoneNumber: phone_number,
+        address
+      },
+      deliveryMethodId: shipping_method_id,
+      paymentMethodId: payment_method_id,
+      items: order_items
     });
   });
 
@@ -132,11 +133,11 @@ const CheckoutPage = () => {
         dispatch(openFullScreenLoading());
         try {
           const response = await callPlaceOrder(orderInfo);
-          setState((prevState) => ({ ...prevState, isOrderSuccess: true, placedOrder: response.data.result }));
+          setState((prevState) => ({ ...prevState, isOrderSuccess: true, placedOrder: response.data.data }));
           dispatch(deleteCart());
         } catch (error) {
           if (error.response) {
-            setState((prevState) => ({ ...prevState, isOrderSuccess: false, error: error.response.data.error.message }));
+            setState((prevState) => ({ ...prevState, isOrderSuccess: false, error: error.response.data.message }));
           }
         }
         dispatch(closeFullScreenLoading());
@@ -157,11 +158,11 @@ const CheckoutPage = () => {
     validationSchema: Yup.object().shape({
       customer_name: Yup.string().max(100).required('Full name is required'),
       email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-      phone_number: Yup.string().length(10).matches(/^[0-9]+$/, 'Phone number is not valid').required('Phone number is required'),
+      phone_number: Yup.string().min(7).required('Phone number is required'),
       address: Yup.string().min(10).max(255).required('Shipping address is required'),
       shipping_note: Yup.string().max(255),
-      shipping_method_id: Yup.number().required('Shipping method is required'),
-      payment_method_id: Yup.number().required('Payment method is required')
+      shipping_method_id: Yup.string().required('Shipping method is required'),
+      payment_method_id: Yup.string().required('Payment method is required')
     }),
     onSubmit: handlePlaceOrder,
     validateOnChange: true,

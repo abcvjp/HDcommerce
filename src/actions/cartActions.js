@@ -179,58 +179,36 @@ export const checkAndChangeQuantity = ({ itemIndex, quantity }) => async (dispat
 };
 
 export const checkItemsValid = ({ items, onSuccess, onFailed }) => async () => {
-  cartApi.updateCart({
-    cart_items: items.map((item) => ({
-      productId: item.productId,
-      // productName: item.productName,
-      price: item.price,
-      quantity: item.quantity,
-      selected: true
-    })),
-  }).then((response) => response.data).then((response) => {
-    const updatedItems = response.data.items;
-    if (updatedItems.every((item) => item.isBuyable === true)) {
-      if (onSuccess) onSuccess(response);
-    } else if (onFailed) onFailed(response);
-  }).catch(() => {
-    showAlertMessage({ type: 'error', content: 'Something wrong happend' });
-  });
-};
-
-export const checkCartValid = ({ onSuccess, onFailed }) => async (dispatch, getState) => {
   cartApi.checkValid({
-    cart_items: getState().cart.map((item) => ({
+    items: items.map((item) => ({
       productId: item.productId,
       productName: item.productName,
       price: item.price,
       quantity: item.quantity,
     })),
-  }).then((response) => response.data).then((response) => {
-    if (response.success === true) {
-      if (onSuccess) onSuccess(response);
-    } else if (onFailed) onFailed(response);
+  }).then((response) => response.data.data).then((data) => {
+    if (data.isValid) {
+      if (onSuccess) onSuccess();
+    } else if (onFailed) onFailed();
   }).catch(() => {
-    showAlertMessage({ type: 'error', content: 'Something wrong happend' });
+    showAlertMessage({ type: 'error', content: 'Error while checking cart' });
   });
 };
 
 export const checkCartValidAndUpdate = () => async (dispatch, getState) => {
   cartApi.checkValid({
-    cart_items: getState().cart.map((item) => ({
+    items: getState().cart.map((item) => ({
       productId: item.productId,
       productName: item.productName,
       price: item.price,
       quantity: item.quantity,
     })),
-  }).then((response) => response.data).then((response) => {
-    const { success, errors } = response;
-    if (success === false) {
+  }).then((response) => response.data.data).then((data) => {
+    if (data.isValid === false) {
       dispatch(showAlertMessage({ type: 'warning', content: 'Something wrong with your cart, you should check again' }));
-      dispatch(updateCart({
-        items: response.valid_items.map((item, i) => ({ ...item, errors: errors[i] }))
-      }));
+      dispatch(updateCart());
     }
   }).catch(() => {
-    showAlertMessage({ type: 'error', content: 'Something wrong happend' });
+    showAlertMessage({ type: 'error', content: 'Error while checking cart' });
   });
 };

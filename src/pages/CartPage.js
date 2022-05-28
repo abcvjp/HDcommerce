@@ -8,7 +8,7 @@ import {
   Grid, makeStyles, Typography,
 } from '@material-ui/core';
 
-import { checkItemsValid } from 'src/actions/cartActions';
+import { checkItemsValid, updateCart } from 'src/actions/cartActions';
 
 import { closeFullScreenLoading, openFullScreenLoading } from 'src/actions/fullscreenLoading';
 import { showAlertMessage } from 'src/actions/alertMessageActions';
@@ -62,6 +62,7 @@ const CartPage = () => {
         },
         onFailed: () => {
           dispatch(showAlertMessage({ type: 'warning', content: 'Something wrong with your cart, you should check again' }));
+          dispatch(updateCart());
         }
       }));
       dispatch(closeFullScreenLoading());
