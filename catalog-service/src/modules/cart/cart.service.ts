@@ -77,7 +77,7 @@ export class CartService {
       if (messageBuffer.length > 0) messages[i] = messageBuffer;
       if (!updatedItem.isBuyable && item.selected) updatedItem.selected = false;
       if (updatedItem.selected && updatedItem.isBuyable)
-        subTotal += updatedItem.price;
+        subTotal += updatedItem.price * updatedItem.quantity;
 
       return updatedItem;
     });
