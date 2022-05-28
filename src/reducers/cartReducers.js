@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {
   DELETE_CART,
   DELETE_ITEM_CART,
@@ -10,11 +11,16 @@ import {
   UNSELECT_ITEM_CART,
   UNSELECT_ALL_CART
 } from '../constants/actionTypes';
-import { isArrayEmpty } from '../utils/utilFuncs';
+import { caculateCartPrice, isArrayEmpty } from '../utils/utilFuncs';
 
-const initialState = [];
+export const initialCartState = {
+  items: [],
+  subTotal: null,
+  isValid: null,
+  messages: null
+};
 
-export default function cartReducer(state = initialState, action) {
+export default function cartReducer(state = initialCartState, action) {
   switch (action.type) {
     case UPDATE_CART: {
       const curCart = [...state];
@@ -24,23 +30,25 @@ export default function cartReducer(state = initialState, action) {
         new_cart = curCart.map((item, index) => {
           const itemToUpdate = itemsToUpdate[index];
           const newItem = { ...item, ...itemToUpdate };
-          if (!newItem.buy_able && newItem.isSelected) newItem.isSelected = false;
+          if (!newItem.isBuyable && newItem.selected) newItem.selected = false;
           return newItem;
         });
       } else {
         new_cart = curCart.map((item) => {
           const newItem = itemsToUpdate.find((i) => i.product_id === item.product_id) || item;
-          if (!newItem.buy_able && newItem.isSelected) newItem.isSelected = false;
+          if (!newItem.isBuyable && newItem.selected) newItem.selected = false;
           return newItem;
         });
       }
-      window.localStorage.setItem('cart', JSON.stringify(new_cart));
+      // window.localStorage.setItem('cart', JSON.stringify(new_cart));
       return new_cart;
     }
+
     case SET_CART:
       return action.payload.cart;
+
     case ADD_TO_CART: {
-      const cart_items = [...state];
+      const cart_items = [...state.items];
       const { item } = action.payload;
       const index = cart_items.findIndex((cartItem) => cartItem.product_id === item.product_id);
       if (isArrayEmpty(cart_items) || index === -1) {
@@ -49,66 +57,73 @@ export default function cartReducer(state = initialState, action) {
         const itemToUpdate = cart_items[index];
         cart_items[index] = { ...itemToUpdate, quantity: itemToUpdate.quantity + item.quantity };
       }
-      window.localStorage.setItem('cart', JSON.stringify(cart_items));
-      return cart_items;
+      // window.localStorage.setItem('cart', JSON.stringify(cart_items));
+      const subTotal = caculateCartPrice(cart_items);
+      return _.merge({}, state, { items: cart_items, subTotal });
     }
 
     case SELECT_ITEM_CART: {
-      const cart_items = [...state];
+      const cart_items = [...state.items];
       const itemToSelect = cart_items[action.payload.itemIndex];
-      if (itemToSelect.buy_able) {
-        itemToSelect.isSelected = true;
+      if (itemToSelect.isBuyable) {
+        itemToSelect.selected = true;
       }
-      window.localStorage.setItem('cart', JSON.stringify(cart_items));
-      return cart_items;
+      // window.localStorage.setItem('cart', JSON.stringify(cart_items));
+      const subTotal = caculateCartPrice(cart_items);
+      return _.merge({}, state, { items: cart_items, subTotal });
     }
 
     case UNSELECT_ITEM_CART: {
-      const cart_items = [...state];
-      cart_items[action.payload.itemIndex].isSelected = false;
-      window.localStorage.setItem('cart', JSON.stringify(cart_items));
-      return cart_items;
+      const cart_items = [...state.items];
+      cart_items[action.payload.itemIndex].selected = false;
+      // window.localStorage.setItem('cart', JSON.stringify(cart_items));
+      const subTotal = caculateCartPrice(cart_items);
+      return _.merge({}, state, { items: cart_items, subTotal });
     }
 
     case SELECT_ALL_CART: {
-      const cart_items = [...state].map((item) => {
-        if (item.buy_able) {
-          return { ...item, isSelected: true };
+      const cart_items = [...state.items].map((item) => {
+        if (item.isBuyable) {
+          return { ...item, selected: true };
         } return item;
       });
-      window.localStorage.setItem('cart', JSON.stringify(cart_items));
-      return cart_items;
+      // window.localStorage.setItem('cart', JSON.stringify(cart_items));
+      const subTotal = caculateCartPrice(cart_items);
+      return _.merge({}, state, { items: cart_items, subTotal });
     }
 
     case UNSELECT_ALL_CART: {
-      const cart_items = [...state].map((item) => {
-        if (item.buy_able) {
-          return { ...item, isSelected: false };
+      const cart_items = [...state.items].map((item) => {
+        if (item.isBuyable) {
+          return { ...item, selected: false };
         } return item;
       });
-      window.localStorage.setItem('cart', JSON.stringify(cart_items));
-      return cart_items;
+      // window.localStorage.setItem('cart', JSON.stringify(cart_items));
+      const subTotal = caculateCartPrice(cart_items);
+      return _.merge({}, state, { items: cart_items, subTotal });
     }
 
     case CHANGE_QUANTITY_ITEM_CART: {
-      const cart_items = [...state];
+      const cart_items = [...state.items];
       const { itemIndex, quantity } = action.payload;
       cart_items[itemIndex].quantity = quantity;
-      window.localStorage.setItem('cart', JSON.stringify(cart_items));
-      return cart_items;
+      // window.localStorage.setItem('cart', JSON.stringify(cart_items));
+      const subTotal = caculateCartPrice(cart_items);
+      return _.merge({}, state, { items: cart_items, subTotal });
     }
 
     case DELETE_ITEM_CART: {
-      let cart_items = [...state];
+      let cart_items = [...state.items];
       const iIndex = action.payload.itemIndex;
       cart_items = cart_items.filter((item, index) => index !== iIndex);
-      window.localStorage.setItem('cart', JSON.stringify(cart_items));
-      return cart_items;
+      // window.localStorage.setItem('cart', JSON.stringify(cart_items));
+      const subTotal = caculateCartPrice(cart_items);
+      return _.merge({}, state, { items: cart_items, subTotal });
     }
 
     case DELETE_CART: {
-      window.localStorage.removeItem('cart');
-      return [];
+      // window.localStorage.removeItem('cart');
+      return initialCartState;
     }
 
     default:

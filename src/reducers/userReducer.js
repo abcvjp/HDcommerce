@@ -8,7 +8,7 @@ export default function userReducer(state = initialState, action) {
   switch (action.type) {
     case SET_USER: {
       const { user } = action.payload;
-      sessionStorage.setItem('user', JSON.stringify(user));
+      window.localStorage.setItem('user', JSON.stringify(user));
       return user;
     }
     default:

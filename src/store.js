@@ -4,7 +4,12 @@ import rootReducer from 'src/reducers';
 
 const initialState = {
   user: null,
-  cart: [],
+  cart: {
+    items: [],
+    subTotal: null,
+    isValid: null,
+    messages: null
+  },
   categories: {
     list_all: [],
     all: {},

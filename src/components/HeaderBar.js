@@ -10,10 +10,9 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { ExitToApp, Person } from '@material-ui/icons';
-import { userApi } from 'src/utils/api';
-import { setUser } from 'src/actions/cartActions';
 import { closeFullScreenLoading, openFullScreenLoading } from 'src/actions/fullscreenLoading';
 import { showAlertMessage } from 'src/actions/alertMessageActions';
+import { logout } from 'src/actions/userActions';
 import MiniCart from './Cart/MiniCart';
 import HeaderCategories from './Category/HeaderCategories';
 import SearchBar from './SearchBar';
@@ -45,9 +44,7 @@ const HeaderBar = () => {
   const handleLogout = async () => {
     dispatch(openFullScreenLoading());
     try {
-      await userApi.logout();
-      dispatch(setUser(null));
-      sessionStorage.clear('user');
+      await dispatch(logout());
       localStorage.removeItem('access_token');
       navigate('/');
       dispatch(showAlertMessage({

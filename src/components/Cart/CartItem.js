@@ -71,9 +71,9 @@ const CartItem = ({
           <Grid key="select" item>
             <Checkbox
               disableRipple
-              checked={item.isSelected}
+              checked={item.selected}
               onChange={handleSelectItemChange}
-              disabled={!item.buy_able}
+              disabled={!item.isBuyable}
             />
           </Grid>
 

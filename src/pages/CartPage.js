@@ -9,10 +9,9 @@ import {
   Grid, makeStyles, Typography,
 } from '@material-ui/core';
 
-import { checkItemsValid, checkCartValidAndUpdate } from 'src/actions/cartActions';
+import { checkItemsValid, updateCart } from 'src/actions/cartActions';
 
 import { closeFullScreenLoading, openFullScreenLoading } from 'src/actions/fullscreenLoading';
-import { caculateTotalPrice } from 'src/utils/utilFuncs';
 import { showAlertMessage } from 'src/actions/alertMessageActions';
 
 import CartDetail from 'src/components/Cart/CartDetail';
@@ -44,8 +43,9 @@ const CartPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const cartItems = useSelector((state) => state.cart); // eslint-disable-line
-  const selectedItems = cartItems.filter((item) => item.isSelected === true);
+  const cart = useSelector((state) => state.cart); // eslint-disable-line
+  console.log(cart);
+  const selectedItems = cart.items.filter((item) => item.selected === true);
 
   const handleProceedToCheckout = () => {
     if (selectedItems.length > 0) {
@@ -72,11 +72,9 @@ const CartPage = () => {
 
   useEffect(() => {
     dispatch(openFullScreenLoading());
-    dispatch(checkCartValidAndUpdate());
+    dispatch(updateCart());
     dispatch(closeFullScreenLoading());
   }, []);
-
-  const subtotal = caculateTotalPrice(selectedItems);
 
   return (
     <Container maxWidth="lg" className={classes.root}>
@@ -90,18 +88,18 @@ const CartPage = () => {
       </Helmet>
 
       <Typography variant="h5" className={classes.title}>Shopping Cart</Typography>
-      {cartItems.length > 0
+      {cart.items.length > 0
         ? (
           <>
             <Grid container className={classes.main} alignItems="flex-start" justifyContent="space-between" spacing={2}>
               <Grid item xs={12} md={9} key="cart_detail" className={classes.detail}>
                 <CartDetail
-                  cartItems={cartItems}
+                  cartItems={cart.items}
                 />
               </Grid>
               <Grid item md={3} key="cart_summary" className={classes.summary}>
                 <CartSummary
-                  subtotal={subtotal}
+                  subtotal={cart.subTotal}
                   handleProceedToCheckout={handleProceedToCheckout}
                 />
               </Grid>

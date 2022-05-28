@@ -54,10 +54,10 @@ const CartDetail = ({
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const isSelectedAll = cartItems.filter((item) => item.buy_able === true).every((item) => item.isSelected === true);
+  const selectedAll = cartItems.filter((item) => item.isBuyable === true).every((item) => item.selected === true);
 
   const handleSelectAllChange = useCallback(() => {
-    if (!isSelectedAll) {
+    if (!selectedAll) {
       dispatch(selectAllCart());
     } else dispatch(unselectAllCart());
   });
@@ -101,7 +101,7 @@ const CartDetail = ({
           <Grid key="select" item>
             <Checkbox
               disableRipple
-              checked={isSelectedAll}
+              checked={selectedAll}
               onChange={handleSelectAllChange}
             />
           </Grid>

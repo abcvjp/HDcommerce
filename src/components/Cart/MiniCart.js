@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 const MiniCart = () => {
   const classes = useStyles();
-  const cart_items = useSelector((state) => state.cart);
+  const cart = useSelector((state) => state.cart);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handlePopoverOpen = (event) => {
@@ -44,7 +44,7 @@ const MiniCart = () => {
 
   const open = Boolean(anchorEl);
 
-  const itemCount = cart_items.reduce((accumul, cur) => (accumul + cur.quantity), 0);
+  const itemCount = cart.items.reduce((accumul, cur) => (accumul + cur.quantity), 0);
 
   return (
     <div
@@ -88,7 +88,7 @@ const MiniCart = () => {
         {itemCount > 0
           ? (
             <>
-              <MiniCartDetail cart_items={cart_items} />
+              <MiniCartDetail cart_items={cart.items} />
               <ContainedButton
                 href="/cart"
                 fullWidth

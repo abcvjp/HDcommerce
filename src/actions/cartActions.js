@@ -1,9 +1,10 @@
+import _ from 'lodash';
+import { initialCartState } from 'src/reducers/cartReducers';
 import { productApi } from 'src/utils/api';
 import cartApi from 'src/utils/api/cartApi';
 import {
   ADD_TO_CART,
   DELETE_CART,
-  UPDATE_CART,
   DELETE_ITEM_CART,
   CHANGE_QUANTITY_ITEM_CART,
   SET_CART,
@@ -28,12 +29,12 @@ export const setCart = ({ cart }) => ({
 });
 
 export const addToCart = ({
-  product_id, product_name, product_slug, product_thumbnail, price, quantity, buy_able, isSelected
+  product_id, product_name, product_slug, product_thumbnail, price, quantity, isBuyable, selected
 }) => ({
   type: ADD_TO_CART,
   payload: {
     item: {
-      product_id, product_name, product_slug, product_thumbnail, price, quantity, buy_able, isSelected
+      product_id, product_name, product_slug, product_thumbnail, price, quantity, isBuyable, selected
     }
   }
 });
@@ -73,10 +74,35 @@ export const deleteCart = () => ({
   payload: null
 });
 
-export const updateCart = ({ items }) => ({
-  type: UPDATE_CART,
-  payload: { items }
-});
+export const updateCart = () => async (dispatch, getState) => {
+  try {
+    const currentCart = getState().cart;
+    const updateResult = await cartApi.updateCart({
+      items: currentCart.items.map((item) => ({
+        productId: item.product_id,
+        quantity: item.quantity,
+        price: item.price,
+        selected: item.selected
+      }))
+    }).then((response) => response.data.data);
+    dispatch(setCart({
+      cart: _.merge(currentCart, updateResult)
+    }));
+  } catch (error) {
+    dispatch(showAlertMessage({ type: 'error', content: 'Error while update cart' }));
+  }
+};
+
+export const getCart = () => async (dispatch) => {
+  try {
+    const cartResult = await cartApi.getCart().then((response) => response.data.data);
+    dispatch(setCart({
+      cart: cartResult || initialCartState
+    }));
+  } catch (error) {
+    dispatch(showAlertMessage({ type: 'error', content: 'Error while getting cart' }));
+  }
+};
 
 export const checkAndAddToCart = ({
   product_id, product_name, price, quantity
@@ -101,8 +127,8 @@ export const checkAndAddToCart = ({
           product_thumbnail: productFromServer.thumbnail,
           price: productFromServer.price,
           quantity,
-          buy_able: true,
-          isSelected: true
+          isBuyable: true,
+          selected: true
         }));
         dispatch(showAlertMessage({ type: 'warning', content: 'Added successfully. But product info has been changed, you should check again' }));
       } else {
@@ -113,33 +139,58 @@ export const checkAndAddToCart = ({
           product_thumbnail: productFromServer.thumbnail,
           price: productFromServer.price,
           quantity,
-          buy_able: true,
-          isSelected: true
+          isBuyable: true,
+          selected: true
         }));
         dispatch(showAlertMessage({ type: 'success', content: 'Added successfully' }));
       }
-    }).catch(() => {
+    }).catch((err) => {
+      console.log(err);
       dispatch(showAlertMessage({ type: 'error', content: 'Something wrong happend' }));
     });
   }
 };
 
+// export const checkAndChangeQuantity = ({ itemIndex, quantity }) => async (dispatch, getState) => {
+// if (!quantity || Number.isNaN(quantity)) {
+// dispatch(showAlertMessage({ type: 'error', content: 'Product quantity is invalid' }));
+// } else if (quantity < 1) {
+// dispatch(showAlertMessage({ type: 'error', content: 'Product quantity can\'t be lower than 1' }));
+// dispatch(changeQuantityItemCart({ itemIndex, quantity: 1 }));
+// } else {
+// const cart_item = getState().cart[itemIndex];
+// productApi.getProductById(cart_item.product_id).then((response) => response.data.data).then((productFromServer) => {
+// if (productFromServer.stockQuantity === 0) {
+// dispatch(showAlertMessage({ type: 'error', content: 'This product has sold out' }));
+// } else if (productFromServer.stockQuantity < quantity) {
+// dispatch(showAlertMessage({ type: 'error', content: `You only can buy up to ${productFromServer.stockQuantity} products of ${cart_item.product_name}` }));
+// dispatch(changeQuantityItemCart({ itemIndex, quantity: productFromServer.stockQuantity }));
+// } else {
+// dispatch(changeQuantityItemCart({ itemIndex, quantity }));
+// }
+// }).catch(() => {
+// showAlertMessage({ type: 'error', content: 'Something wrong happend' });
+// });
+// }
+// };
+
 export const checkAndChangeQuantity = ({ itemIndex, quantity }) => async (dispatch, getState) => {
   if (!quantity || Number.isNaN(quantity)) {
     dispatch(showAlertMessage({ type: 'error', content: 'Product quantity is invalid' }));
   } else if (quantity < 1) {
-    dispatch(showAlertMessage({ type: 'error', content: 'Product quantity cann\'t be lower than 1' }));
+    dispatch(showAlertMessage({ type: 'error', content: 'Product quantity can\'t be lower than 1' }));
     dispatch(changeQuantityItemCart({ itemIndex, quantity: 1 }));
   } else {
-    const cart_item = getState().cart[itemIndex];
-    productApi.getProduct({ id: cart_item.product_id }).then((response) => response.data.data).then((productFromServer) => {
-      if (productFromServer.quantity === 0) {
+    const cart_item = getState().cart.items[itemIndex];
+    productApi.getProductById(cart_item.product_id).then((response) => response.data.data).then((productFromServer) => {
+      if (productFromServer.stockQuantity === 0) {
         dispatch(showAlertMessage({ type: 'error', content: 'This product has sold out' }));
-      } else if (productFromServer.quantity < quantity) {
-        dispatch(showAlertMessage({ type: 'error', content: `You only can buy up to ${productFromServer.quantity} products of ${cart_item.product_name}` }));
-        dispatch(changeQuantityItemCart({ itemIndex, quantity: productFromServer.quantity }));
+      } else if (productFromServer.stockQuantity < quantity) {
+        dispatch(showAlertMessage({ type: 'error', content: `You only can buy up to ${productFromServer.stockQuantity} products of ${cart_item.product_name}` }));
+        dispatch(changeQuantityItemCart({ itemIndex, quantity: productFromServer.stockQuantity }));
       } else {
         dispatch(changeQuantityItemCart({ itemIndex, quantity }));
+        dispatch(updateCart());
       }
     }).catch(() => {
       showAlertMessage({ type: 'error', content: 'Something wrong happend' });
@@ -158,7 +209,7 @@ export const checkItemsValid = ({ items, onSuccess, onFailed }) => async () => {
     })),
   }).then((response) => response.data).then((response) => {
     const updatedItems = response.data.items;
-    if (updatedItems.every((item) => item.buy_able === true)) {
+    if (updatedItems.every((item) => item.isBuyable === true)) {
       if (onSuccess) onSuccess(response);
     } else if (onFailed) onFailed(response);
   }).catch(() => {

@@ -2,6 +2,7 @@ import { cleanObj, convertObjToQuery } from '../utilFuncs';
 import API from './apiClient';
 
 const cartApi = {
+  getCart: () => API.get('/cart'),
   checkValid: (data) => {
     const url = '/cart/check-valid';
     return API.post(url, cleanObj(data));

@@ -6,8 +6,6 @@ import { useDispatch } from 'react-redux';
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from 'src/theme';
 
-import { setCart } from 'src/actions/cartActions';
-
 import HeaderBar from 'src/components/HeaderBar';
 import Footer from 'src/components/Footer';
 import Routing from 'src/components/Routing';
@@ -15,13 +13,15 @@ import GlobalComponents from 'src/components/global';
 import GlobalStyles from 'src/components/GlobalStyles';
 import { Helmet } from 'react-helmet';
 
+import { setUser } from 'src/actions/cartActions';
 import { APP_TITLE, APP_AUTHOR, APP_DESCRIPTION } from './constants/appInfo';
 
 function App() {
   const dispatch = useDispatch();
-  const cartData = window.localStorage.getItem('cart');
-  if (cartData) {
-    dispatch(setCart({ cart: JSON.parse(cartData) }));
+  const savedUser = window.localStorage.getItem('user');
+  const savedAccessToken = window.localStorage.getItem('access_token');
+  if (savedUser && savedAccessToken) {
+    dispatch(setUser(savedUser));
   }
   return (
     <>

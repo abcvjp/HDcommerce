@@ -45,3 +45,8 @@ export const generateBreadCrumbs = (path, map_name_id) => path.map((name) => ({
 export const roundPrice = (price) => (Math.round(price * 100) / 100);
 
 export const caculateTotalPrice = (items) => roundPrice(items.reduce((accumul, cur) => (accumul + cur.quantity * cur.price), 0));
+export const caculateCartPrice = (items) => roundPrice(
+  items
+    .filter((item) => item.isSelected === true)
+    .reduce((accumul, cur) => (accumul + cur.quantity * cur.price), 0)
+);
