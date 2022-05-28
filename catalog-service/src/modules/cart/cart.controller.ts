@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Put, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, UseInterceptors } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { SanitizeMongooseModelInterceptor } from 'nestjs-mongoose-exclude';
 import { ICart } from './interfaces/cart.interface';
@@ -21,7 +21,7 @@ export class CartController {
     return this.cartService.findByUserId(userId);
   }
 
-  @Get('check-valid')
+  @Post('check-valid')
   checkItemsValid(@Body() dto: CheckItemsValidDto): Promise<any> {
     return this.cartService.checkItemsValid(dto);
   }
