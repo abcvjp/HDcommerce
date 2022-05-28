@@ -87,7 +87,8 @@ export class CartService {
       items: updatedItems,
       subTotal,
     };
-    this.cartModel.updateOne({ userId }, newCart, { upsert: true });
+
+    this.cartModel.findOneAndUpdate({ userId }, { userId, ...newCart }, { upsert: true }).exec();
 
     return newCart;
   }
