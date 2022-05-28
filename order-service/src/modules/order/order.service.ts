@@ -4,6 +4,7 @@ import {
   Injectable,
   NotAcceptableException,
   NotFoundException,
+  InternalServerErrorException
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
@@ -146,7 +147,9 @@ export class OrderService {
         this.deliveryMethodService.findOne(dto.deliveryMethodId),
         this.paymentMethodService.findOne(dto.paymentMethodId),
       ],
-    );
+    ).catch(error => {
+      throw new InternalServerErrorException('Error while checking order');
+    });
     const { isValid, subTotal, items } = itemsCheckResult;
     if (!isValid)
       throw new NotAcceptableException('Items are not valid to order');
