@@ -8,10 +8,12 @@ import SearchPage from 'src/pages/SearchPage';
 import CheckoutPage from 'src/pages/CheckoutPage';
 import LoginPage from 'src/pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import AccountPage from './pages/AccountPage';
 
 const routes = [
   { path: '/login', element: <LoginPage /> },
   { path: '/register', element: <RegisterPage /> },
+  { path: '/account', element: <AccountPage /> },
   { path: '/product/:productId', element: <ProductPage /> },
   { path: '/search', element: <SearchPage /> },
   { path: '/cart', element: <CartPage /> },

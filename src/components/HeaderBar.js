@@ -5,7 +5,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   Button,
-  Container, CssBaseline, Divider, IconButton, Tooltip
+  Container, CssBaseline, IconButton, Tooltip
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -13,17 +13,25 @@ import { ExitToApp, Person } from '@material-ui/icons';
 import { closeFullScreenLoading, openFullScreenLoading } from 'src/actions/fullscreenLoading';
 import { showAlertMessage } from 'src/actions/alertMessageActions';
 import { logout } from 'src/actions/userActions';
+import { blue } from '@material-ui/core/colors';
 import MiniCart from './Cart/MiniCart';
 import HeaderCategories from './Category/HeaderCategories';
 import SearchBar from './SearchBar';
 
 const useStyles = makeStyles((theme) => ({
   headerbar: {
-    position: 'fixed'
+    backgroundColor: blue[500]
+  },
+  categories: {
+    backgroundColor: 'white',
   },
   toolbar: {
     margin: 0,
-    padding: 0
+    padding: 0,
+    // color: 'black'
+  },
+  search: {
+    color: 'black'
   },
   grow: {
     flexGrow: 1
@@ -62,7 +70,7 @@ const HeaderBar = () => {
   return (
     <>
       <CssBaseline />
-      <AppBar position="sticky" color="inherit" elevation={0}>
+      <AppBar position="sticky" elevation={0} className={classes.headerbar}>
         <Container maxWidth="lg">
           <Toolbar className={classes.toolbar}>
             <RouterLink to="/">
@@ -75,7 +83,10 @@ const HeaderBar = () => {
             </RouterLink>
             <div className={classes.grow} />
 
-            <SearchBar />
+            <div className={classes.search}>
+
+              <SearchBar />
+            </div>
 
             {user
               ? (
@@ -115,9 +126,12 @@ const HeaderBar = () => {
               </Tooltip>
             )}
           </Toolbar>
-          <HeaderCategories />
         </Container>
-        <Divider />
+        <div className={classes.categories}>
+          <Container maxWidth="lg">
+            <HeaderCategories />
+          </Container>
+        </div>
       </AppBar>
     </>
   );

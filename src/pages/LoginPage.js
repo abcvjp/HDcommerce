@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 
 import { APP_TITLE } from 'src/constants/appInfo';
-import { blue } from '@material-ui/core/colors';
+import { blueGrey } from '@material-ui/core/colors';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useState } from 'react';
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     paddingBlock: theme.spacing(10),
     paddingInline: theme.spacing(15),
-    backgroundColor: blue[300],
+    backgroundColor: blueGrey[300],
     minHeight: '85%'
   },
   title: {
