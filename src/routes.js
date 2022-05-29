@@ -9,6 +9,7 @@ import CheckoutPage from 'src/pages/CheckoutPage';
 import LoginPage from 'src/pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import AccountPage from './pages/AccountPage';
+import OrderDetailPage from './pages/OrderDetail';
 
 const routes = [
   { path: '/login', element: <LoginPage /> },
@@ -20,6 +21,7 @@ const routes = [
   { path: '/checkout', element: <CheckoutPage /> },
   { path: '/', element: <HomePage /> },
   { path: '/category/:categoryId', element: <CategoryPage /> },
+  { path: '/order/:orderId', element: <OrderDetailPage /> },
   { path: '*', element: <Navigate to="/" /> }
 ];
 

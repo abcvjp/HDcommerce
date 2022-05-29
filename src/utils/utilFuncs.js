@@ -50,3 +50,27 @@ export const caculateCartPrice = (items) => roundPrice(
     .filter((item) => item.selected === true)
     .reduce((accumul, cur) => (accumul + cur.quantity * cur.price), 0)
 );
+
+export const statusColors = {
+  Failed: 'red',
+  Creating: 'brown',
+  Completed: 'green',
+  Canceled: 'red',
+  Handling: 'DodgerBlue',
+  Pending: 'orange',
+  Paid: 'green',
+  Unpaid: 'brown',
+  'Successfully delivered': 'green',
+  'Delivery failed': 'red',
+  Undelivered: 'brown',
+  Delivering: 'DodgerBlue',
+  Success: 'green',
+  Disabled: 'red',
+  Enabled: 'green',
+  DISABLED: 'red',
+  ENABLED: 'green',
+  Published: 'green',
+  Unpublished: 'red',
+  PUBLISHED: 'green',
+  UNPUBLISHED: 'red'
+};

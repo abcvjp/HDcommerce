@@ -3,31 +3,33 @@ import { Helmet } from 'react-helmet';
 import {
   Box,
   Container,
+  Grid,
   makeStyles, Tab, Tabs, Typography,
 } from '@material-ui/core';
 
 import { APP_TITLE } from 'src/constants/appInfo';
 import { useState } from 'react';
 import { AccountCircle, EventNote } from '@material-ui/icons';
+import MyOrders from 'src/components/Account/MyOrders';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    minHeight: '80%'
+    minHeight: '80%',
   },
   title: {
     marginBlock: theme.spacing(3),
   },
   main: {
     flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
     display: 'flex',
     minHeight: '80%',
     width: '100%'
   },
   tabs: {
     borderRight: `1px solid ${theme.palette.divider}`,
-    width: '75%%'
   },
+  content: {
+  }
 }));
 
 function a11yProps(index) {
@@ -82,36 +84,41 @@ const AccountPage = () => {
       <Typography variant="h5" className={classes.title}>Account</Typography>
 
       <div className={classes.main}>
-        <Tabs
-          orientation="vertical"
-          variant="standard"
-          textColor="primary"
-          indicatorColor="secondary"
-          value={tab}
-          onChange={handleChangeTab}
-          aria-label="Vertical tabs example"
-          className={classes.tabs}
-        >
+        <Grid container>
+          <Grid item xs={12} md={4} lg={3}>
+            <Tabs
+              orientation="vertical"
+              variant="fullWidth"
+              textColor="primary"
+              indicatorColor="secondary"
+              value={tab}
+              onChange={handleChangeTab}
+              className={classes.tabs}
+            >
 
-          <Tab
-            label="My Profile"
-            icon={<AccountCircle />}
-            key={0}
-            {...a11yProps(0)}
-          />
-          <Tab
-            label="My Order"
-            icon={<EventNote />}
-            key={1}
-            {...a11yProps(1)}
-          />
-        </Tabs>
-        <TabPanel value={tab} index={0}>
-          Item One
-        </TabPanel>
-        <TabPanel value={tab} index={1}>
-          Item Two
-        </TabPanel>
+              <Tab
+                label="My Profile"
+                icon={<AccountCircle />}
+                key={0}
+                {...a11yProps(0)}
+              />
+              <Tab
+                label="My Order"
+                icon={<EventNote />}
+                key={1}
+                {...a11yProps(1)}
+              />
+            </Tabs>
+          </Grid>
+          <Grid item xs={12} md={8} lg={9} className={classes.content}>
+            <TabPanel value={tab} index={0}>
+              Item Two
+            </TabPanel>
+            <TabPanel value={tab} index={1}>
+              <MyOrders />
+            </TabPanel>
+          </Grid>
+        </Grid>
       </div>
 
     </Container>
