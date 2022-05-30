@@ -29,6 +29,7 @@ import { FindAllOrderDto } from './dto/find-all-order.dto';
 import {
   DEFAULT_DBQUERY_LIMIT,
   DEFAULT_DBQUERY_SORT,
+  UserRole,
 } from 'src/common/constants';
 import { mapKeys } from 'lodash';
 import { FindAllResult } from 'src/common/classes/find-all.result';
@@ -66,7 +67,7 @@ export class OrderService {
     return omit(foundOrder, ['paymentMethodId', 'deliveryMethodId']);
   }
 
-  async findAll(dto: FindAllOrderDto): Promise<FindAllResult<IOrder>> {
+  async findAll(user: any, dto: FindAllOrderDto): Promise<FindAllResult<IOrder>> {
     const {
       startId,
       skip,
@@ -89,10 +90,12 @@ export class OrderService {
     } = dto;
 
     const filters = [];
+
     startId && filters.push({ _id: { $gt: startId } });
+    (user.role === UserRole.USER) && filters.push({ userId: new mongoose.Types.ObjectId(user._id) });
     id && filters.push({ id: new mongoose.Types.ObjectId(id) });
     code && filters.push({ code });
-    userId && filters.push({ userId: new mongoose.Types.ObjectId(userId) });
+    (userId && user.role === UserRole.ADMIN) && filters.push({ userId: new mongoose.Types.ObjectId(userId) });
     deliveryMethodId &&
       filters.push({
         deliveryMethodId: new mongoose.Types.ObjectId(deliveryMethodId),

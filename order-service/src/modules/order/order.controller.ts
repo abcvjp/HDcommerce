@@ -16,6 +16,7 @@ import { UserRole } from 'src/common/constants';
 import { FindAllOrderDto } from './dto/find-all-order.dto';
 import { MongoIdPipe } from 'src/common/pipes/mongo-id.pipe';
 import { PayWithStripeDto } from './dto/pay-with-stripe.dto';
+import { User } from 'src/common/decorators/user.decorator';
 
 @Controller('/order')
 export class OrderController {
@@ -50,9 +51,9 @@ export class OrderController {
   }
 
   @Get()
-  @Roles(UserRole.ADMIN)
-  findAll(@Query() dto: FindAllOrderDto) {
-    return this.orderService.findAll(dto);
+  @Roles(UserRole.ADMIN, UserRole.USER)
+  findAll(@User() user, @Query() dto: FindAllOrderDto) {
+    return this.orderService.findAll(user, dto);
   }
 
   @Post(':id/payment')

@@ -22,6 +22,7 @@ import { DeliveryMethodModule } from './modules/delivery-method/delivery-method.
 import { PaymentMethodModule } from './modules/payment-method/payment-method.module';
 import { RolesGuards } from './common/guards/roles.guard';
 import { HttpLoggerMiddleware } from './common/middlewares/http-logger.middleware';
+import { UserMiddleware } from './common/middlewares/user.middleware';
 
 @Module({
   imports: [
@@ -68,6 +69,10 @@ export class AppModule {
     consumer.apply(UserIdMiddleware, HttpLoggerMiddleware).forRoutes({
       path: '*',
       method: RequestMethod.ALL,
+    });
+    consumer.apply(UserMiddleware, HttpLoggerMiddleware).forRoutes({
+      path: '/order',
+      method: RequestMethod.GET,
     });
   }
 }
