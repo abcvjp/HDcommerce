@@ -87,8 +87,6 @@ export class ProductService {
 
     const conditions = [];
     startId && conditions.push({ _id: { $gt: startId } });
-    categoryId &&
-      conditions.push({ categoryId: new mongoose.Types.ObjectId(categoryId) });
     name && conditions.push({ name });
     isEnabled !== undefined && conditions.push({ isEnabled });
     isPublic !== undefined && conditions.push({ isPublic });
@@ -101,6 +99,16 @@ export class ProductService {
       conditions.push({ stockQuantity: stockQuantity.toMongooseFormat() });
     soldQuantity &&
       conditions.push({ soldQuantity: soldQuantity.toMongooseFormat() });
+
+    if (categoryId) {
+      const descendants = await this.categoryService.getDescendants(categoryId);
+      conditions.push({
+        categoryId: {
+          $in: descendants.map(descendant => (new mongoose.Types.ObjectId(descendant._id)))
+            .concat(new mongoose.Types.ObjectId(categoryId))
+        }
+      });
+    }
 
     const dbQuery = this.productModel.aggregate();
 

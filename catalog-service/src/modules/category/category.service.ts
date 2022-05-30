@@ -239,4 +239,30 @@ export class CategoryService {
       session.endSession();
     }
   }
+
+  async getDescendants(id: string): Promise<Category[]> {
+    const categoryWithDescendants = await this.categoryModel.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(id)
+        }
+      },
+      {
+        $graphLookup: {
+          from: "categories",
+          startWith: "$children",
+          connectFromField: "children",
+          connectToField: "_id",
+          maxDepth: 5,
+          as: "children"
+        }
+      }
+    ]);
+    
+    if (!categoryWithDescendants) {
+      throw new NotFoundException('Category not found');
+    }
+
+    return categoryWithDescendants[0].children;
+  }
 }
