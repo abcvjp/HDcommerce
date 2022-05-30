@@ -81,9 +81,9 @@ const RegisterPage = () => {
     <>
       <Helmet>
         <title>
-          {APP_TITLE}
+          Register |
           {' '}
-          | Register
+          {APP_TITLE}
         </title>
       </Helmet>
 

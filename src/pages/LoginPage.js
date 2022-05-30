@@ -77,7 +77,11 @@ const LoginPage = () => {
   return (
     <>
       <Helmet>
-        <title>{APP_TITLE}</title>
+        <title>
+          Login |
+          {' '}
+          {APP_TITLE}
+        </title>
       </Helmet>
 
       <Grid container justifyContent="space-between" className={classes.root}>

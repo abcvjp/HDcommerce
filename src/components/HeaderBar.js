@@ -37,8 +37,12 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1
   },
   logo: {
-    maxHeight: 80,
-    maxWidth: 160,
+    // minHeight: 55,
+    // maxHeight: 60,
+    // minWidth: 180,
+    // maxWidth: 200,
+    width: theme.spacing(27),
+    height: theme.spacing(8),
     margin: theme.spacing(1)
   }
 }));
@@ -78,7 +82,7 @@ const HeaderBar = () => {
                 className={classes.logo}
                 id="logo"
                 alt="logo"
-                src={`${process.env.PUBLIC_URL}/logo.jpg`}
+                src={`${process.env.PUBLIC_URL}/logo.png`}
               />
             </RouterLink>
             <div className={classes.grow} />

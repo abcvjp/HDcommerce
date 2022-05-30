@@ -90,7 +90,7 @@ const ShippingMethod = ({ fieldName, setShippingMethod }) => {
                   </Grid>
                   <Grid key="shipping_fee" item className={classes.shipfee}>
                     $
-                    {shippingMethod.fixedFee}
+                    {shippingMethod.fixedFee ? shippingMethod.fixedFee : 0}
                   </Grid>
                 </Grid>
               ))}
