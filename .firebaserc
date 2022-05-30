@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "hdcommerce-b0ea9"
+  },
+  "targets": {
+    "hdcommerce-b0ea9": {
+      "hosting": {
+        "app": [
+          "hdcommerce"
+        ]
+      }
+    }
+  }
+}
