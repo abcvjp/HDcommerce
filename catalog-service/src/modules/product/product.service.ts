@@ -28,6 +28,7 @@ import { IReview } from '../review/interfaces/review.interface';
 import { ReviewService } from '../review/review.service';
 import { FindAllResult } from 'src/common/classes/find-all.result';
 import { DeleteMultiProductDto } from './dto/delete-multi-product.dto';
+import { FindHotProductDto } from './dto/find-hot-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -154,6 +155,48 @@ export class ProductService {
         })
         .exec(),
       this.productModel.countDocuments(filters),
+    ]);
+    return new FindAllResult(records, count);
+  }
+
+  async findHotProduct(query: FindHotProductDto): Promise<FindAllResult<IProduct>> {
+    const {
+      startId,
+      skip,
+      limit,
+      recent
+    } = query;
+
+    const dbQuery = this.productModel.aggregate();
+
+    const filter = {
+      $expr: {
+        $gte: [
+          "$createdAt",
+          { $dateSubtract: { startDate: "$$NOW", unit: "day", amount: recent } }
+        ]
+      }
+    };
+    startId && Object.assign(filter, { _id: { $gt: startId } });
+
+    const [records, count] = await Promise.all([
+      dbQuery
+        .match(filter)
+        .append({
+          $sort: {
+            soldQuantity: -1
+          }
+        })
+        .skip(skip ? skip : DEFAULT_DBQUERY_SKIP)
+        .limit(limit ? limit : DEFAULT_DBQUERY_LIMIT)
+        .append({
+          $set: {
+            _id: { $toString: '$_id' },
+            categoryId: { $toString: '$categoryId' },
+          },
+        })
+        .exec(),
+      this.productModel.countDocuments(filter),
     ]);
     return new FindAllResult(records, count);
   }

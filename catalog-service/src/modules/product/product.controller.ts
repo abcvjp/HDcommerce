@@ -21,6 +21,7 @@ import { GetRelatedProductsDto } from './dto/ get-related-product.dto';
 import { UserId } from 'src/common/decorators/user-id.decorator';
 import { ReviewProductDto } from './dto/review-product.dto';
 import { DeleteMultiProductDto } from './dto/delete-multi-product.dto';
+import { FindHotProductDto } from './dto/find-hot-product.dto';
 
 @Controller('product')
 @UseInterceptors(
@@ -31,6 +32,11 @@ import { DeleteMultiProductDto } from './dto/delete-multi-product.dto';
 )
 export class ProductController {
   constructor(private productService: ProductService) {}
+
+  @Get('hot')
+  findHotProduct(@Query() query: FindHotProductDto) {
+    return this.productService.findHotProduct(query);
+  }
 
   @Get(':id')
   findOne(@Param('id', MongoIdPipe) id: string) {
