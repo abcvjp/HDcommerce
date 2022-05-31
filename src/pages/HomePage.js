@@ -58,8 +58,8 @@ const HomePage = () => {
       data.current.newProducts = response.data.data.records;
     };
     const fetchHotProducts = async () => {
-      const response = await productApi.getAll({ sort: 'sold.desc', page_size: HOT_PRODUCT_QUANTITY });
-      data.current.hotProducts = response.data.data;
+      const response = await productApi.getHotProduct({ recent: 30, limit: 8 });
+      data.current.hotProducts = response.data.data.records;
     };
     Promise.all([fetchNewProducts(), fetchHotProducts()]).finally(() => {
       setIsLoading(false);

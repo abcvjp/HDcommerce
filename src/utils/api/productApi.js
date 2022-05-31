@@ -10,6 +10,10 @@ const productApi = {
     const url = '/product';
     return API.get(url + convertObjToQuery(cleanObj(query)));
   },
+  getHotProduct: (query) => {
+    const url = '/product/hot';
+    return API.get(url + convertObjToQuery(cleanObj(query)));
+  },
   getProductById: (id) => API.get(`/product/${id}`),
   getRelatedProducts: (id) => API.get(`/product/${id}/relate`),
   deleteProduct: (id) => API.delete(`/product/${id}`),

@@ -1,6 +1,7 @@
 import {
   Container, makeStyles, Paper, Box, Typography
 } from '@material-ui/core';
+import { APP_TITLE } from 'src/constants/appInfo';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,13 +23,19 @@ const Footer = () => {
           <Typography variant="caption">
             <b>Address:</b>
             {' '}
-            52 Út Tịch, phường 4, quận Tân Bình, thành phố Hồ Chí Minh
+            144 Xuân Thủy, phường Dịch Vọng Hậu, quận Cầu Giấy, thành phố Hà Nội
             <br />
-            Webshop nhận đặt hàng trực tuyến và giao hàng tận nơi, chưa hỗ trợ mua và nhận hàng trực tiếp tại văn phòng hoặc trung tâm xử lý đơn hàng
+            {APP_TITLE}
+            {' '}
+            nhận đặt hàng trực tuyến và giao hàng tận nơi, chưa hỗ trợ mua và nhận hàng trực tiếp tại văn phòng hoặc trung tâm xử lý đơn hàng.
+            <br />
+            Mọi thông tin vui lòng liên hệ admin@
+            {APP_TITLE}
+            .com !
           </Typography>
         </Box>
         <Typography>
-          <strong>© 2021 - Copyright Zinza Technology.</strong>
+          <strong>© 2022 - Copyright HD Technology.</strong>
         </Typography>
       </Container>
     </Paper>
