@@ -75,7 +75,7 @@ const HomePage = () => {
 
       <HomeSlider slides={slides} />
 
-      <Typography variant="h5" className={classes.title}>New Product</Typography>
+      <Typography variant="h4" className={classes.title}>New Product</Typography>
       <Paper elevation={0}>
         {
           // eslint-disable-next-line
@@ -88,7 +88,7 @@ const HomePage = () => {
               )
         }
       </Paper>
-      <Typography variant="h5" className={classes.title}>Hot Sale</Typography>
+      <Typography variant="h4" className={classes.title}>Hot Sale</Typography>
       <Paper elevation={0}>
         {
           // eslint-disable-next-line
