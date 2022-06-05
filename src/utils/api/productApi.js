@@ -4,11 +4,11 @@ import API from './apiClient';
 const productApi = {
   getAll: (query) => {
     const url = '/product';
-    return API.get(url + convertObjToQuery(cleanObj(query)));
+    return API.get(url + convertObjToQuery(cleanObj({ ...query, isPublic: true, isEnabled: true })));
   },
   getProduct: (query) => {
     const url = '/product';
-    return API.get(url + convertObjToQuery(cleanObj(query)));
+    return API.get(url + convertObjToQuery(cleanObj({ ...query, isPublic: true, isEnabled: true })));
   },
   getHotProduct: (query) => {
     const url = '/product/hot';
