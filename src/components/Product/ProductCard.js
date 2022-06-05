@@ -14,6 +14,7 @@ import { Rating } from '@material-ui/lab';
 
 import { Link as RouterLink } from 'react-router-dom';
 import { checkAndAddToCart } from 'src/actions/cartActions';
+import { getRandomArbitrary } from 'src/utils/utilFuncs';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -103,7 +104,7 @@ const ProductCard = ({ product }) => {
           justifyContent="flex-start"
           alignItems="center"
         >
-          <Box mr={0.5} mt={0.5}><Rating size="small" defaultValue={2.5} precision={0.5} readOnly /></Box>
+          <Box mr={0.5} mt={0.5}><Rating size="small" defaultValue={getRandomArbitrary(3.5, 5)} precision={0.5} readOnly /></Box>
           <Typography variant="body2" className={classes.sold}>
             | Sold
             {' '}

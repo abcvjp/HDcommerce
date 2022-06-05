@@ -108,8 +108,10 @@ export const deleteCart = () => async (dispatch) => {
 
 export const checkAndAddToCart = ({
   productId, productName, price, quantity
-}) => async (dispatch) => {
-  if (!quantity || Number.isNaN(quantity)) {
+}) => async (dispatch, getState) => {
+  if (!getState().user) {
+    dispatch(showAlertMessage({ type: 'error', content: 'You must login to add product to cart' }));
+  } else if (!quantity || Number.isNaN(quantity)) {
     dispatch(showAlertMessage({ type: 'error', content: 'Quantity is invalid' }));
   } else {
     productApi.getProductById(

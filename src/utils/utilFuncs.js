@@ -74,3 +74,7 @@ export const statusColors = {
   PUBLISHED: 'green',
   UNPUBLISHED: 'red'
 };
+
+export function getRandomArbitrary(min, max) {
+  return Math.random() * (max - min) + min;
+}

@@ -3,6 +3,7 @@ import {
   makeStyles, Typography, Box, Divider, Grid
 } from '@material-ui/core';
 import { Rating } from '@material-ui/lab';
+import { getRandomArbitrary } from 'src/utils/utilFuncs';
 
 const useStyles = makeStyles((theme) => ({
   margin: {
@@ -53,7 +54,7 @@ const ProductDetail = ({ product }) => {
         style={{ marginBlock: 8 }}
       >
         <Grid item>
-          <Rating size="medium" defaultValue={2.5} precision={0.5} readOnly />
+          <Rating size="medium" defaultValue={getRandomArbitrary(3.5, 5)} precision={0.5} readOnly />
         </Grid>
         <Divider flexItem orientation="vertical" variant="middle" />
         <Grid item>
