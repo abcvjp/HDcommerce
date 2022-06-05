@@ -21,11 +21,12 @@ import { getCart } from './actions/cartActions';
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  const savedUser = window.localStorage.getItem('user');
+  const savedUser = JSON.parse(window.localStorage.getItem('user'));
   const savedAccessToken = window.localStorage.getItem('access_token');
 
   useEffect(() => {
     if (savedUser && savedAccessToken && !user) {
+      console.log(savedUser);
       dispatch(setUser(savedUser));
       dispatch(getCart());
     }

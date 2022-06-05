@@ -1,7 +1,7 @@
 import {
   useEffect, useRef, useState, useCallback
 } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import * as Yup from 'yup';
 import {
@@ -73,6 +73,7 @@ const CheckoutPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
 
   const orderItems = useRef([]);
 
@@ -144,12 +145,13 @@ const CheckoutPage = () => {
       }
     }));
   });
+  console.log(user);
 
   const formik = useFormik({
     initialValues: {
-      email: '',
-      customer_name: '',
-      phone_number: '',
+      email: user ? user.email : '',
+      customer_name: user ? user.fullName : '',
+      phone_number: user ? user.phoneNumber : '',
       address: '',
       shipping_note: '',
       shipping_method_id: '',
